@@ -179,57 +179,57 @@ export default function TradingInterface() {
   return (
     <div className="h-screen overflow-hidden bg-background flex flex-col">
       {/* Content - Interface responsive */}
-      <div className="flex-1 p-2 lg:p-6 overflow-hidden">
+      <div className="flex-1 p-3 sm:p-4 lg:p-6 overflow-hidden">
         <div className="h-full max-w-sm sm:max-w-md lg:max-w-2xl xl:max-w-4xl mx-auto flex flex-col">
           {/* Header avec bouton d'inversion */}
-          <div className="flex items-center justify-between mb-2 lg:mb-4 flex-shrink-0">
-            <h1 className="text-lg sm:text-xl lg:text-3xl font-semibold text-foreground">
+          <div className="flex items-center justify-between mb-3 sm:mb-4 lg:mb-6 flex-shrink-0">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-foreground">
               {!isInverted ? "FCFA → USDT" : "USDT → FCFA"}
             </h1>
             <Button
               onClick={handleInvert}
               variant="outline"
               size="sm"
-              className="gap-2 h-8 lg:h-10 px-3 lg:px-4 text-sm lg:text-sm"
+              className="gap-2 h-9 sm:h-10 lg:h-11 px-3 sm:px-4 lg:px-5 text-sm"
             >
-              <ArrowUpDown className="w-4 h-4 lg:w-4 lg:h-4" />
-              <span className="hidden sm:inline lg:inline">Inverser</span>
+              <ArrowUpDown className="w-4 h-4" />
+              <span className="hidden sm:inline">Inverser</span>
             </Button>
           </div>
 
-          {/* Layout responsive pour desktop */}
-          <div className="grid lg:grid-cols-2 gap-4 lg:gap-6 flex-1 overflow-hidden">
+          {/* Layout responsive - stacked on mobile, side by side on desktop */}
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-5 lg:gap-8 flex-1 overflow-hidden">
             {/* Je Donne Section */}
-            <div className="flex flex-col space-y-2 lg:space-y-3">
-              <h2 className="text-sm lg:text-xl font-semibold text-foreground">Je Donne</h2>
+            <div className="flex flex-col space-y-3 sm:space-y-4 lg:space-y-5">
+              <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-foreground">Je Donne</h2>
             
-              <div className="relative flex-1">
-                <div className="crypto-card p-2 lg:p-4 rounded-lg">
+              <div className="relative">
+                <div className="crypto-card p-3 sm:p-4 lg:p-5 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="text-xs lg:text-sm text-muted-foreground mb-1">
+                      <div className="text-xs sm:text-sm text-muted-foreground mb-2">
                         Je Donne ({!isInverted ? 'FCFA' : 'USDT'})
                       </div>
                       <Input
                         type="number"
                         value={!isInverted ? amountFcfa : amountUsdt}
                         onChange={(e) => !isInverted ? setAmountFcfa(e.target.value) : setAmountUsdt(e.target.value)}
-                        className="text-lg lg:text-2xl font-semibold bg-transparent border-0 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="text-xl sm:text-2xl lg:text-3xl font-semibold bg-transparent border-0 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
                         placeholder="0"
                       />
                     </div>
-                    <div className="ml-2 lg:ml-3">
-                      <Badge className="bg-primary/20 text-primary border border-primary/30 px-2 lg:px-3 py-1 lg:py-1.5 text-xs lg:text-sm">
-                        <div className="flex items-center gap-1 lg:gap-2">
+                    <div className="ml-3 sm:ml-4">
+                      <Badge className="bg-primary/20 text-primary border border-primary/30 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm">
+                        <div className="flex items-center gap-1 sm:gap-2">
                           {!isInverted ? (
                             <>
-                              <Smartphone className="w-3 h-3 lg:w-4 lg:h-4" />
+                              <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
                               <span className="font-medium hidden sm:inline">Mobile Money</span>
                               <span className="font-medium sm:hidden">MoMo</span>
                             </>
                           ) : (
                             <>
-                              <WalletIcon className="w-3 h-3 lg:w-4 lg:h-4" />
+                              <WalletIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                               <span className="font-medium">Crypto</span>
                             </>
                           )}
@@ -239,41 +239,41 @@ export default function TradingInterface() {
                   </div>
                 </div>
                 {showFcfaMinError && (
-                  <div className="text-xs text-destructive mt-1">
+                  <div className="text-xs text-destructive mt-2">
                     Minimum: {settings.min_fcfa.toLocaleString()} FCFA
                   </div>
                 )}
                 {showUsdtMinError && (
-                  <div className="text-xs text-destructive mt-1">
+                  <div className="text-xs text-destructive mt-2">
                     Minimum: {settings.min_usdt} USDT
                   </div>
                 )}
               </div>
 
-              <div className="space-y-2 lg:space-y-2">
-                <label className="text-xs lg:text-sm font-medium text-foreground">
+              <div className="space-y-2 sm:space-y-3">
+                <label className="text-sm sm:text-base font-medium text-foreground">
                   {!isInverted ? 'Compte Mobile Money' : 'Adresse Crypto'}
                 </label>
                 <Select 
                   value={!isInverted ? selectedNumber : selectedAddress} 
                   onValueChange={!isInverted ? setSelectedNumber : setSelectedAddress}
                 >
-                  <SelectTrigger className="crypto-input h-8 lg:h-10 px-2 lg:px-3 text-xs lg:text-sm">
-                    <SelectValue placeholder={!isInverted ? "Numéro" : "Adresse"} />
+                  <SelectTrigger className="crypto-input h-10 sm:h-11 lg:h-12 px-3 sm:px-4 text-sm sm:text-base">
+                    <SelectValue placeholder={!isInverted ? "Sélectionnez votre numéro" : "Sélectionnez votre adresse"} />
                   </SelectTrigger>
-                  <SelectContent className="z-50 bg-popover">
+                  <SelectContent className="z-50 bg-popover border shadow-lg">
                     {(!isInverted ? mobileWallets : cryptoWallets).map((wallet) => (
                       <SelectItem key={wallet.id} value={!isInverted ? wallet.phoneNumber : wallet.address}>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2 w-full">
                           {!isInverted ? (
                             <>
                               <Badge variant="outline" className="text-xs">{wallet.operator}</Badge>
-                              <span className="font-mono text-xs">{wallet.phoneNumber}</span>
+                              <span className="font-mono text-sm">{wallet.phoneNumber}</span>
                             </>
                           ) : (
                             <>
                               <Badge variant="outline" className="text-xs">{wallet.network}</Badge>
-                              <span className="font-mono text-xs">{wallet.address.slice(0, 6)}...{wallet.address.slice(-3)}</span>
+                              <span className="font-mono text-sm">{wallet.address.slice(0, 8)}...{wallet.address.slice(-4)}</span>
                             </>
                           )}
                         </div>
@@ -282,37 +282,37 @@ export default function TradingInterface() {
                   </SelectContent>
                 </Select>
               </div>
-          </div>
+            </div>
 
             {/* Je Reçois Section */}
-            <div className="flex flex-col space-y-2 lg:space-y-3">
-              <h2 className="text-sm lg:text-xl font-semibold text-foreground">Je Reçois</h2>
+            <div className="flex flex-col space-y-3 sm:space-y-4 lg:space-y-5">
+              <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-foreground">Je Reçois</h2>
               
-              <div className="relative flex-1">
-                <div className="crypto-card p-2 lg:p-4 rounded-lg">
+              <div className="relative">
+                <div className="crypto-card p-3 sm:p-4 lg:p-5 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="text-xs lg:text-sm text-muted-foreground mb-1">
+                      <div className="text-xs sm:text-sm text-muted-foreground mb-2">
                         Je Reçois ({!isInverted ? 'USDT' : 'FCFA'})
                       </div>
-                      <div className="text-lg lg:text-2xl font-semibold text-foreground">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-semibold text-foreground">
                         {!isInverted 
                           ? (calculatedUsdt > 0 ? calculatedUsdt.toFixed(6) : '0.000000')
                           : (calculatedFcfa > 0 ? calculatedFcfa.toLocaleString() : '0')
                         }
                       </div>
                     </div>
-                    <div className="ml-2 lg:ml-3">
-                      <Badge className="bg-primary/20 text-primary border border-primary/30 px-2 lg:px-3 py-1 lg:py-1.5 text-xs lg:text-sm">
-                        <div className="flex items-center gap-1 lg:gap-2">
+                    <div className="ml-3 sm:ml-4">
+                      <Badge className="bg-primary/20 text-primary border border-primary/30 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm">
+                        <div className="flex items-center gap-1 sm:gap-2">
                           {!isInverted ? (
                             <>
-                              <WalletIcon className="w-3 h-3 lg:w-4 lg:h-4" />
+                              <WalletIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                               <span className="font-medium">Crypto</span>
                             </>
                           ) : (
                             <>
-                              <Smartphone className="w-3 h-3 lg:w-4 lg:h-4" />
+                              <Smartphone className="w-3 h-3 sm:w-4 sm:h-4" />
                               <span className="font-medium hidden sm:inline">Mobile Money</span>
                               <span className="font-medium sm:hidden">MoMo</span>
                             </>
@@ -324,30 +324,30 @@ export default function TradingInterface() {
                 </div>
               </div>
 
-              <div className="space-y-2 lg:space-y-2">
-                <label className="text-xs lg:text-sm font-medium text-foreground">
-                  {!isInverted ? 'Adresse réception' : 'Compte réception'}
+              <div className="space-y-2 sm:space-y-3">
+                <label className="text-sm sm:text-base font-medium text-foreground">
+                  {!isInverted ? 'Adresse de réception' : 'Compte de réception'}
                 </label>
                 <Select 
                   value={!isInverted ? selectedAddress : selectedNumber} 
                   onValueChange={!isInverted ? setSelectedAddress : setSelectedNumber}
                 >
-                  <SelectTrigger className="crypto-input h-8 lg:h-10 px-2 lg:px-3 text-xs lg:text-sm">
-                    <SelectValue placeholder={!isInverted ? "Adresse" : "Numéro"} />
+                  <SelectTrigger className="crypto-input h-10 sm:h-11 lg:h-12 px-3 sm:px-4 text-sm sm:text-base">
+                    <SelectValue placeholder={!isInverted ? "Sélectionnez votre adresse" : "Sélectionnez votre numéro"} />
                   </SelectTrigger>
-                  <SelectContent className="z-50 bg-popover">
+                  <SelectContent className="z-50 bg-popover border shadow-lg">
                     {(!isInverted ? cryptoWallets : mobileWallets).map((wallet) => (
                       <SelectItem key={wallet.id} value={!isInverted ? wallet.address : wallet.phoneNumber}>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2 w-full">
                           {!isInverted ? (
                             <>
                               <Badge variant="outline" className="text-xs">{wallet.network}</Badge>
-                              <span className="font-mono text-xs">{wallet.address.slice(0, 6)}...{wallet.address.slice(-3)}</span>
+                              <span className="font-mono text-sm">{wallet.address.slice(0, 8)}...{wallet.address.slice(-4)}</span>
                             </>
                           ) : (
                             <>
                               <Badge variant="outline" className="text-xs">{wallet.operator}</Badge>
-                              <span className="font-mono text-xs">{wallet.phoneNumber}</span>
+                              <span className="font-mono text-sm">{wallet.phoneNumber}</span>
                             </>
                           )}
                         </div>
@@ -362,13 +362,13 @@ export default function TradingInterface() {
         </div>
       </div>
       
-      {/* Next Button - Fixed at bottom */}
-      <div className="flex-shrink-0 p-3 bg-background border-t">
+      {/* Next Button - Fixed at bottom with enhanced styling */}
+      <div className="flex-shrink-0 p-4 sm:p-5 lg:p-6 bg-background/95 backdrop-blur border-t border-border/50 z-10 shadow-lg">
         <div className="max-w-sm sm:max-w-md lg:max-w-2xl xl:max-w-4xl mx-auto">
           <Button
             onClick={handleNext}
             disabled={isLoading}
-            className="w-full h-12 px-4 text-base font-semibold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg"
+            className="w-full h-12 sm:h-14 px-4 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg transition-all duration-200"
           >
             Suivant
           </Button>
