@@ -58,12 +58,13 @@ serve(async (req) => {
       throw new Error(`Unsupported payment method: ${paymentMethod}`);
     }
 
-    // Update transaction status to processing
+    // Update transaction status to processing with retry info
     const { error: updateError } = await supabase
       .from('transactions')
       .update({
         status: 'processing',
-        admin_notes: `Payment retry initiated at ${new Date().toISOString()}`
+        admin_notes: `Relance manuelle par admin - ${new Date().toLocaleString('fr-FR')} - Motif: ${getRetryReason(transaction)}`,
+        updated_at: new Date().toISOString()
       })
       .eq('id', transactionId);
 
@@ -207,4 +208,23 @@ async function retryNowPaymentsPayment(transaction: any) {
     payment_address: result.payment_address || result.order?.payment_address,
     invoice_url: result.invoice_url
   };
+}
+
+// Helper function to determine retry reason based on previous failure
+function getRetryReason(transaction: any): string {
+  const adminNotes = transaction.admin_notes || '';
+  
+  if (adminNotes.includes('Solde insuffisant')) {
+    return 'Solde insuffisant résolu';
+  } else if (adminNotes.includes('Problème de solde')) {
+    return 'Problème de solde résolu';
+  } else if (adminNotes.includes('Limite dépassée')) {
+    return 'Limite rétablie';
+  } else if (adminNotes.includes('mobile invalide')) {
+    return 'Numéro mobile corrigé';
+  } else if (adminNotes.includes('failed')) {
+    return 'Erreur technique résolue';
+  }
+  
+  return 'Nouvelle tentative manuelle';
 }

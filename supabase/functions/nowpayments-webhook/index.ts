@@ -124,16 +124,32 @@ serve(async (req) => {
       } catch (transferError) {
         console.error('Error creating Moneroo transfer:', transferError)
         
-        // Update transaction as failed
+        // Detect specific error types for better admin visibility
         const errorMessage = transferError instanceof Error ? transferError.message : 'Unknown error'
+        let failureReason = 'FCFA transfer failed'
+        
+        // Check for common failure reasons
+        if (errorMessage.toLowerCase().includes('insufficient')) {
+          failureReason = 'Solde insuffisant - FCFA transfer'
+        } else if (errorMessage.toLowerCase().includes('balance')) {
+          failureReason = 'Problème de solde - FCFA transfer'
+        } else if (errorMessage.toLowerCase().includes('limit')) {
+          failureReason = 'Limite dépassée - FCFA transfer'
+        } else if (errorMessage.toLowerCase().includes('recipient')) {
+          failureReason = 'Numéro mobile invalide - FCFA transfer'
+        }
+        
+        // Update transaction as failed with detailed reason
         await supabase
           .from('transactions')
           .update({
             status: 'failed',
-            admin_notes: `FCFA transfer failed: ${errorMessage}`,
+            admin_notes: `${failureReason}: ${errorMessage} - Peut être relancé`,
             updated_at: new Date().toISOString()
           })
           .eq('id', order_id)
+          
+        console.log(`Transaction ${order_id} marked as failed - reason: ${failureReason}`)
       }
     }
     

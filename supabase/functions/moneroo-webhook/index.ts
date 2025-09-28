@@ -89,16 +89,30 @@ serve(async (req) => {
         } catch (payoutError) {
           console.error('Error creating NOWPayments payout:', payoutError)
           
-          // Update transaction as failed
+          // Detect specific error types for better admin visibility
           const errorMessage = payoutError instanceof Error ? payoutError.message : 'Unknown error'
+          let failureReason = 'USDT payout failed'
+          
+          // Check for common failure reasons
+          if (errorMessage.toLowerCase().includes('insufficient')) {
+            failureReason = 'Solde insuffisant - USDT payout'
+          } else if (errorMessage.toLowerCase().includes('balance')) {
+            failureReason = 'Problème de solde - USDT payout'
+          } else if (errorMessage.toLowerCase().includes('limit')) {
+            failureReason = 'Limite dépassée - USDT payout'
+          }
+          
+          // Update transaction as failed with detailed reason
           await supabase
             .from('transactions')
             .update({
               status: 'failed',
-              admin_notes: `USDT payout failed: ${errorMessage}`,
+              admin_notes: `${failureReason}: ${errorMessage} - Peut être relancé`,
               updated_at: new Date().toISOString()
             })
             .eq('id', transactionId)
+            
+          console.log(`Transaction ${transactionId} marked as failed - reason: ${failureReason}`)
         }
       }
       
