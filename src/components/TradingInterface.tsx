@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpDown, ArrowLeft, Home, Briefcase, Clock, User, Smartphone, Wallet as WalletIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAppSettings } from '@/hooks/useAppSettings';
+import { calculateUSDTPurchase, calculateUSDTSale, formatAmount } from '@/utils/paymentUtils';
 import TransactionSummary from './TransactionSummary';
 
 export default function TradingInterface() {
@@ -20,20 +22,9 @@ export default function TradingInterface() {
   const [showSummary, setShowSummary] = useState(false);
   
   const { toast } = useToast();
+  const { settings } = useAppSettings();
   
-  // Configuration from admin (mock - should come from backend)
-  const config = {
-    rate: 595.23, // 1 USD = 595.23 FCFA
-    min_fcfa: 3000,
-    min_usd: 15, // Minimum 15 USDT
-    fees: {
-      usdt_withdrawal_fee: 1, // 1 USDT flat fee for crypto reception
-      mobile_money_fee_percentage: 1.5, // 1.5% fee for mobile money reception
-      moneroo_gateway_fee_percentage: 3, // 3% frais de passerelle Moneroo supporté par le client
-      moneroo_fixed_fee: 100, // 100 FCFA frais fixe Moneroo
-      nowpayments_fee: 3 // 3 USDT flat fee for NOWPayments (USDT to mobile money)
-    }
-  };
+  // Configuration from admin settings
 
   // Mock wallets from localStorage simulation
   const mockWallets = [
@@ -52,19 +43,19 @@ export default function TradingInterface() {
   useEffect(() => {
     if (!isInverted && amountFcfa) {
       const fcfa = parseFloat(amountFcfa);
-      const usd = fcfa / config.rate;
+      const usd = fcfa / settings.usdt_to_xof_rate;
       setCalculatedUsdt(usd);
       setAmountUsdt('');
     } else if (isInverted && amountUsdt) {
       const usd = parseFloat(amountUsdt);
-      const fcfa = usd * config.rate;
+      const fcfa = usd * settings.usdt_to_xof_rate;
       setCalculatedFcfa(fcfa);
       setAmountFcfa('');
     } else {
       setCalculatedUsdt(0);
       setCalculatedFcfa(0);
     }
-  }, [amountFcfa, amountUsdt, isInverted, config.rate]);
+  }, [amountFcfa, amountUsdt, isInverted, settings.usdt_to_xof_rate]);
 
   const handleInvert = () => {
     setIsInverted(!isInverted);
@@ -85,7 +76,7 @@ export default function TradingInterface() {
 
   const handleNext = () => {
     const amount = !isInverted ? parseFloat(amountFcfa) : parseFloat(amountUsdt);
-    const minAmount = !isInverted ? config.min_fcfa : config.min_usd;
+    const minAmount = !isInverted ? settings.min_fcfa : settings.min_usdt;
     const currency = !isInverted ? 'FCFA' : 'USD';
     
     if (isNaN(amount) || amount < minAmount) {
@@ -161,8 +152,14 @@ export default function TradingInterface() {
         selectedAddress={selectedAddress}
         mobileWallets={mobileWallets}
         cryptoWallets={cryptoWallets}
-        rate={config.rate}
-        fees={config.fees}
+        rate={settings.usdt_to_xof_rate}
+        fees={{
+          usdt_withdrawal_fee: settings.usdt_withdrawal_fee,
+          mobile_money_fee_percentage: settings.mobile_money_fee_percentage,
+          moneroo_gateway_fee_percentage: settings.moneroo_gateway_fee_percentage,
+          moneroo_fixed_fee: settings.moneroo_fixed_fee,
+          nowpayments_fee: settings.nowpayments_fee_usdt
+        }}
         onBack={handleBack}
         onConfirm={handleConfirm}
         isLoading={isLoading}
@@ -229,7 +226,7 @@ export default function TradingInterface() {
               </div>
             </div>
             <div className="text-[11px] text-destructive mt-1">
-              Montant minimum: {!isInverted ? config.min_fcfa.toLocaleString() + ' FCFA' : config.min_usd + ' USDT'}
+              Montant minimum: {!isInverted ? settings.min_fcfa.toLocaleString() + ' FCFA' : settings.min_usdt + ' USDT'}
             </div>
           </div>
 
@@ -305,7 +302,7 @@ export default function TradingInterface() {
               </div>
             </div>
             <div className="text-[11px] text-destructive mt-1">
-              Montant minimum: {!isInverted ? config.min_usd + ' USDT' : config.min_fcfa.toLocaleString() + ' FCFA'}
+              Montant minimum: {!isInverted ? settings.min_usdt + ' USDT' : settings.min_fcfa.toLocaleString() + ' FCFA'}
             </div>
           </div>
 
