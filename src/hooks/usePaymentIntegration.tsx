@@ -19,7 +19,10 @@ export function usePaymentIntegration() {
   const processMonerooPayment = async (paymentData: PaymentData) => {
     setIsLoading(true);
     try {
-      console.log('Processing Moneroo payment:', paymentData);
+      console.log('Processing Moneroo payment with user data:', {
+        ...paymentData,
+        customerPhone: paymentData.customerPhone, // Log the actual phone number being used
+      });
       
       const { data, error } = await supabase.functions.invoke('process-moneroo-payment', {
         body: paymentData
@@ -61,7 +64,10 @@ export function usePaymentIntegration() {
   const processNowPaymentsPayment = async (paymentData: PaymentData) => {
     setIsLoading(true);
     try {
-      console.log('Processing NOWPayments payment:', paymentData);
+      console.log('Processing NOWPayments payment with user data:', {
+        ...paymentData,
+        customerPhone: paymentData.customerPhone,
+      });
       
       const { data, error } = await supabase.functions.invoke('process-nowpayments-payment', {
         body: paymentData

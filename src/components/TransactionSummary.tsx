@@ -5,6 +5,7 @@ import { ArrowLeft, Smartphone, Wallet as WalletIcon, Info, Bitcoin } from 'luci
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { usePaymentIntegration } from '@/hooks/usePaymentIntegration';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TransactionSummaryProps {
   isInverted: boolean;
@@ -86,12 +87,18 @@ export default function TransactionSummary({
 
       const transaction = await createTransaction(transactionData);
       
+      // Get real user data from auth instead of hardcoded values
+      const { data: { user } } = await supabase.auth.getUser();
+      const userDisplayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || "Client Exchange";
+      const userEmail = user?.email || "client@exchange.com";
+      const userPhoneNumber = user?.user_metadata?.phone_number || selectedNumber || "22700000000";
+      
       const paymentData = {
         transactionId: transaction.id,
         amount: sourceAmount,
-        customerName: "Client Exchange",
-        customerEmail: "client@exchange.com", 
-        customerPhone: !isInverted ? selectedNumber : "22700000000",
+        customerName: userDisplayName,
+        customerEmail: userEmail, 
+        customerPhone: !isInverted ? selectedNumber : userPhoneNumber,
         description: `${!isInverted ? 'Achat' : 'Vente'} ${!isInverted ? finalAmount.toFixed(8) + ' USDT' : finalAmount.toLocaleString() + ' FCFA'}`,
         transactionType: (!isInverted ? 'fcfa_to_usdt' : 'usdt_to_fcfa') as 'fcfa_to_usdt' | 'usdt_to_fcfa'
       };
