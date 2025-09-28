@@ -176,7 +176,7 @@ export default function AdminInterface() {
     <div className="min-h-screen bg-background">
       {/* Mobile Header - Only visible on small screens */}
       <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card/80 backdrop-blur-sm">
-        <h1 className="text-xl font-semibold text-foreground">Administration</h1>
+        <h1 className="text-xl font-semibold text-foreground">Gestion</h1>
         <Button 
           onClick={refreshOrders} 
           disabled={isLoading}
@@ -192,7 +192,7 @@ export default function AdminInterface() {
         <div className="hidden lg:flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Administration G-Transfert
+              Gestion G-Transfert
             </h1>
             <p className="text-muted-foreground">Gestion des commandes et transactions</p>
           </div>
