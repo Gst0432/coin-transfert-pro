@@ -74,7 +74,7 @@ export function AppSidebar() {
     <Sidebar
       variant="sidebar"
       side="left"
-      className="border-r border-border bg-card/50 backdrop-blur-sm w-40 sm:w-56 max-w-[80vw] data-[state=collapsed]:w-12"
+      className="border-r border-border bg-background w-40 sm:w-56 max-w-[80vw] data-[state=collapsed]:w-12"
       collapsible="icon"
     >
       {/* Header */}
