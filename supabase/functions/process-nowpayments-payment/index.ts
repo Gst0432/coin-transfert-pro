@@ -14,44 +14,44 @@ serve(async (req) => {
   try {
     const { transactionId, amount, customerEmail, description } = await req.json();
 
-    console.log('Processing NOWPayments payment for transaction:', transactionId);
+    console.log('Processing NOWPayments invoice for transaction:', transactionId);
 
     const nowpaymentsApiKey = Deno.env.get('NOWPAYMENTS_API_KEY');
     if (!nowpaymentsApiKey) {
       throw new Error('NOWPAYMENTS_API_KEY not configured');
     }
 
-    // Create NOWPayments payment using standard API
-    const paymentData = {
+    // Create NOWPayments invoice for USDT deposit
+    const invoiceData = {
       price_amount: amount,
-      price_currency: "USD",
-      pay_currency: "USDT", // Use USDT exclusively as requested
-      ipn_callback_url: `https://bvleffevnnugjdwygqyz.supabase.co/functions/v1/nowpayments-webhook`,
+      price_currency: "usdttrc20", // USDT TRC20 exclusively
+      pay_currency: "usdttrc20", // Client pays in USDT TRC20
       order_id: transactionId,
-      order_description: description || `Transaction Exchange - ${transactionId}`,
+      order_description: description || `Dépôt USDT - ${transactionId}`,
+      ipn_callback_url: `https://bvleffevnnugjdwygqyz.supabase.co/functions/v1/nowpayments-webhook`,
       success_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/wallet?status=success`,
       cancel_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/trading`,
     };
 
-    console.log('Creating NOWPayments payment with data:', paymentData);
+    console.log('Creating NOWPayments invoice with data:', invoiceData);
 
-    const response = await fetch('https://api.nowpayments.io/v1/payment', {
+    const response = await fetch('https://api.nowpayments.io/v1/invoice', {
       method: 'POST',
       headers: {
         'x-api-key': nowpaymentsApiKey,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(paymentData),
+      body: JSON.stringify(invoiceData),
     });
 
     const result = await response.json();
-    console.log('NOWPayments API response:', result);
+    console.log('NOWPayments invoice API response:', result);
 
     if (!response.ok) {
-      throw new Error(`NOWPayments API error: ${JSON.stringify(result)}`);
+      throw new Error(`NOWPayments invoice API error: ${JSON.stringify(result)}`);
     }
 
-    // Update transaction with NOWPayments payment ID
+    // Update transaction with NOWPayments invoice details
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
@@ -65,8 +65,8 @@ serve(async (req) => {
           'apikey': supabaseServiceKey,
         },
         body: JSON.stringify({
-          nowpayments_payment_id: result.payment_id,
-          nowpayments_checkout_url: result.payment_url || result.invoice_url,
+          nowpayments_payment_id: result.id,
+          nowpayments_checkout_url: result.invoice_url,
           status: 'processing'
         }),
       }
@@ -79,9 +79,12 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        payment_id: result.payment_id,
-        payment_url: result.payment_url || result.invoice_url,
-        checkout_url: result.payment_url || result.invoice_url
+        invoice_id: result.id,
+        payment_address: result.payment_address || result.order?.payment_address,
+        invoice_url: result.invoice_url,
+        checkout_url: result.invoice_url,
+        amount: result.price_amount,
+        currency: result.payment_currency || result.price_currency
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
