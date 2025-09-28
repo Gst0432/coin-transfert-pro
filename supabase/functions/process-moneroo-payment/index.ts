@@ -72,17 +72,18 @@ serve(async (req) => {
           amount: Math.round(amount * 100), // Convert to cents
           currency: 'XOF',
           customer: {
-            name: customerName,
+            first_name: customerName?.split(' ')[0] || 'Client',
+            last_name: customerName?.split(' ').slice(1).join(' ') || 'Utilisateur',
             email: customerEmail,
-            phone: customerPhone
+            phone: parseInt(customerPhone?.replace(/[^\d]/g, '') || '22700000000', 10)
           },
           description: description || `Achat USDT - Transaction ${transactionId}`,
           metadata: {
             transaction_id: transactionId
           },
           callback_url: `${supabaseUrl}/functions/v1/moneroo-webhook`,
-          return_url: `${supabaseUrl.replace('https://', 'https://app.')}/wallet?status=success`,
-          cancel_url: `${supabaseUrl.replace('https://', 'https://app.')}/wallet?status=cancelled`
+          return_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/wallet?status=success`,
+          cancel_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/wallet?status=cancelled`
         })
       })
 

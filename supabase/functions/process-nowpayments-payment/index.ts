@@ -25,12 +25,12 @@ serve(async (req) => {
     const paymentData = {
       price_amount: amount,
       price_currency: "USD",
-      pay_currency: "USDT",
+      pay_currency: "USDC",
       ipn_callback_url: `https://bvleffevnnugjdwygqyz.supabase.co/functions/v1/nowpayments-webhook`,
       order_id: transactionId,
       order_description: description,
-      success_url: `${req.headers.get('origin') || 'https://yourapp.com'}/success`,
-      cancel_url: `${req.headers.get('origin') || 'https://yourapp.com'}/trading`,
+      success_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/success`,
+      cancel_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/trading`,
     };
 
     console.log('Creating NOWPayments payment with data:', paymentData);
