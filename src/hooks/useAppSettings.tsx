@@ -28,6 +28,11 @@ export interface AppSettings {
   // Statut de la plateforme
   platform_active: boolean;
   maintenance_message: string;
+  
+  // Configuration Resend pour emails
+  resend_api_key: string;
+  resend_from_email: string;
+  password_reset_enabled: boolean;
 }
 
 const defaultSettings: AppSettings = {
@@ -44,7 +49,10 @@ const defaultSettings: AppSettings = {
   success_url: 'https://coin-transfert-pro.lovable.app/wallet?status=success',
   cancel_url: 'https://coin-transfert-pro.lovable.app/trading',
   platform_active: true,
-  maintenance_message: ''
+  maintenance_message: '',
+  resend_api_key: 'RESEND_API_KEY',
+  resend_from_email: 'onboarding@resend.dev',
+  password_reset_enabled: true
 };
 
 export const useAppSettings = () => {
@@ -192,7 +200,10 @@ const getSettingDescription = (key: string): string => {
     success_url: 'URL de redirection succès',
     cancel_url: 'URL de redirection annulation',
     platform_active: 'Statut actif de la plateforme',
-    maintenance_message: 'Message de maintenance'
+    maintenance_message: 'Message de maintenance',
+    resend_api_key: 'Clé API Resend pour l\'envoi d\'emails',
+    resend_from_email: 'Adresse email d\'expéditeur Resend',
+    password_reset_enabled: 'Activer la réinitialisation de mot de passe par email'
   };
   
   return descriptions[key] || '';

@@ -369,6 +369,20 @@ export default function AuthPage() {
               </Button>
             </form>
 
+            {isLogin && (
+              <div className="mt-3 text-center">
+                <Button
+                  variant="link"
+                  className="text-sm text-muted-foreground hover:text-primary p-0"
+                  asChild
+                >
+                  <a href="/reset-password">
+                    Mot de passe oublié ?
+                  </a>
+                </Button>
+              </div>
+            )}
+
             <div className="mt-4 text-center">
               <p className="text-xs text-muted-foreground">
                 {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}

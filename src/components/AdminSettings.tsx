@@ -15,7 +15,8 @@ import {
   Shield,
   Save,
   RefreshCw,
-  AlertTriangle
+  AlertTriangle,
+  Mail
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAppSettings } from '@/hooks/useAppSettings';
@@ -104,11 +105,12 @@ export default function AdminSettings() {
       )}
 
       <Tabs defaultValue="rates" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="rates">Taux & Frais</TabsTrigger>
           <TabsTrigger value="limits">Limites</TabsTrigger>
           <TabsTrigger value="urls">URLs & Webhooks</TabsTrigger>
           <TabsTrigger value="platform">Plateforme</TabsTrigger>
+          <TabsTrigger value="email">Email & Sécurité</TabsTrigger>
         </TabsList>
 
         {/* Taux et Frais */}
@@ -326,6 +328,63 @@ export default function AdminSettings() {
                   placeholder="Message affiché lors de la maintenance..."
                   rows={3}
                   className="crypto-input"
+                />
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Email & Sécurité */}
+        <TabsContent value="email" className="space-y-4">
+          <Card className="crypto-card">
+            <div className="flex items-center gap-3 p-4 border-b">
+              <Mail className="w-5 h-5 text-primary" />
+              <h3 className="font-semibold">Configuration Email Resend</h3>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <Label htmlFor="resend_api_key">Clé API Resend</Label>
+                <Input
+                  id="resend_api_key"
+                  type="password"
+                  value={localSettings.resend_api_key}
+                  onChange={(e) => updateLocalSetting('resend_api_key', e.target.value)}
+                  placeholder="re_xxxxxxxxxxxx"
+                  className="crypto-input"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Clé API obtenue depuis votre tableau de bord Resend
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="resend_from_email">Email d'expéditeur</Label>
+                <Input
+                  id="resend_from_email"
+                  type="email"
+                  value={localSettings.resend_from_email}
+                  onChange={(e) => updateLocalSetting('resend_from_email', e.target.value)}
+                  placeholder="noreply@votredomaine.com"
+                  className="crypto-input"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Adresse email vérifiée dans Resend
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg">
+                <div>
+                  <Label htmlFor="password_reset_enabled" className="text-base font-medium">
+                    Réinitialisation de mot de passe
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Permettre aux utilisateurs de réinitialiser leur mot de passe par email
+                  </p>
+                </div>
+                <Switch
+                  id="password_reset_enabled"
+                  checked={localSettings.password_reset_enabled}
+                  onCheckedChange={(checked) => updateLocalSetting('password_reset_enabled', checked)}
                 />
               </div>
             </div>

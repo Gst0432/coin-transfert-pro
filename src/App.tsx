@@ -17,6 +17,9 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ResetPasswordConfirm from "./pages/ResetPasswordConfirm";
+import PasswordSettings from "./pages/PasswordSettings";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +46,8 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/reset-password-confirm" element={<ResetPasswordConfirm />} />
           <Route path="/success" element={<PaymentSuccess />} />
           <Route path="/cancel" element={<PaymentCancel />} />
           <Route path="*" element={<Index />} />
@@ -78,6 +83,7 @@ const AppContent = () => {
               <Route path="/history" element={<History />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/settings/password" element={<PasswordSettings />} />
               <Route path="/success" element={<PaymentSuccess />} />
               <Route path="/cancel" element={<PaymentCancel />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
