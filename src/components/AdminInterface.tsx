@@ -27,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import TransactionManagement from './TransactionManagement';
 import AdminSettings from './AdminSettings';
 import { AdminCredentialsManager } from './AdminCredentialsManager';
+import { ApiKeysManager } from './ApiKeysManager';
 import BrandingManager from './BrandingManager';
 import { useBrandingSettings } from '@/hooks/useBrandingSettings';
 
@@ -180,7 +181,10 @@ export default function AdminInterface() {
           </TabsContent>
 
           <TabsContent value="admin" className="space-y-6">
-            <AdminCredentialsManager />
+            <div className="space-y-6">
+              <AdminCredentialsManager />
+              <ApiKeysManager />
+            </div>
           </TabsContent>
         </Tabs>
       </div>

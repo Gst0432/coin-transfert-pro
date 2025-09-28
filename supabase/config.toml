@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.update-admin-credentials]
 verify_jwt = true
+
+[functions.update-api-keys]
+verify_jwt = true
