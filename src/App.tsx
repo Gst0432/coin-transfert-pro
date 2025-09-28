@@ -9,6 +9,7 @@ import { AppSidebar } from "./components/AppSidebar";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
+import Wallet from "./pages/Wallet";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -42,7 +43,7 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/trading" element={<Index />} />
-                    <Route path="/wallet" element={<Index />} />
+                    <Route path="/wallet" element={<Wallet />} />
                     <Route path="/history" element={<Index />} />
                     <Route path="/admin" element={<Admin />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
