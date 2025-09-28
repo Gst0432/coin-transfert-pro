@@ -65,8 +65,8 @@ serve(async (req) => {
           'apikey': supabaseServiceKey,
         },
         body: JSON.stringify({
-          moneroo_payment_id: result.payment_id,
-          moneroo_checkout_url: result.payment_url || result.invoice_url,
+          nowpayments_payment_id: result.payment_id,
+          nowpayments_checkout_url: result.payment_url || result.invoice_url,
           status: 'processing'
         }),
       }
