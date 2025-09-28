@@ -9,28 +9,18 @@ const corsHeaders = {
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-async function getMonerooApiKey(supabase: any) {
-  // Get Moneroo configuration from app_settings
-  const { data: settings, error } = await supabase
-    .from('app_settings')
-    .select('setting_value')
-    .eq('setting_key', 'moneroo_config')
-    .single();
-
-  if (error || !settings) {
-    console.error('Error fetching Moneroo config:', error);
-    // Fallback to environment variable
-    return Deno.env.get('MONEROO_API_KEY');
+async function getMonerooApiKey() {
+  // Use the live API key directly
+  const liveApiKey = Deno.env.get('MONEROO_LIVE_API_KEY');
+  if (liveApiKey) {
+    console.log('Using Moneroo Live API key');
+    return liveApiKey;
   }
-
-  const config = settings.setting_value as any;
-  const mode = config.mode || 'sandbox';
   
-  if (mode === 'live') {
-    return config.live_api_key || Deno.env.get('MONEROO_LIVE_API_KEY');
-  } else {
-    return config.sandbox_api_key || Deno.env.get('MONEROO_API_KEY');
-  }
+  // Fallback to sandbox key
+  const sandboxKey = Deno.env.get('MONEROO_API_KEY');
+  console.log('Using Moneroo Sandbox API key');
+  return sandboxKey;
 }
 
 serve(async (req) => {
@@ -59,8 +49,8 @@ serve(async (req) => {
         customerPhone
       })
 
-      // Get the appropriate Moneroo API key
-      const monerooApiKey = await getMonerooApiKey(supabase);
+      // Get the Moneroo API key
+      const monerooApiKey = await getMonerooApiKey();
 
       if (!monerooApiKey) {
         throw new Error('Moneroo API key not configured');
@@ -75,27 +65,42 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           amount: Math.round(amount * 100), // Convert to cents
-          currency: 'XOF',
+          currency: 'XOF', // West African CFA franc
           customer: {
             first_name: customerName?.split(' ')[0] || 'Client',
             last_name: customerName?.split(' ').slice(1).join(' ') || 'Exchange',
             email: customerEmail || 'client@exchange.com',
-            phone: parseInt(customerPhone?.replace(/[^\d]/g, '') || '22700000000', 10)
+            phone: customerPhone?.replace(/[^\d]/g, '') || '22700000000' // Keep as string for international format
           },
           description: description || `Achat USDT - Transaction ${transactionId}`,
           metadata: {
-            transaction_id: transactionId
+            transaction_id: transactionId,
+            service: 'exchange'
           },
           callback_url: `${supabaseUrl}/functions/v1/moneroo-webhook`,
-          return_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/wallet?status=success`,
-          cancel_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/wallet?status=cancelled`
+          return_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/success`,
+          cancel_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/cancel`
         })
       })
 
       if (!monerooResponse.ok) {
         const errorText = await monerooResponse.text()
-        console.error('Moneroo API Error:', errorText)
-        throw new Error(`Moneroo API Error: ${errorText}`)
+        console.error('Moneroo API Error Response:', {
+          status: monerooResponse.status,
+          statusText: monerooResponse.statusText,
+          body: errorText
+        })
+        
+        // Try to parse error details
+        let errorDetails = errorText;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorDetails = errorJson.message || errorText;
+        } catch {
+          // Keep original error text if not JSON
+        }
+        
+        throw new Error(`Moneroo API Error: ${errorDetails}`)
       }
 
       const monerooData = await monerooResponse.json()
