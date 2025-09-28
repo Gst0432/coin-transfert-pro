@@ -79,16 +79,9 @@ export default function TradingInterface() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <ArrowLeft className="w-6 h-6 text-foreground" />
-        <h1 className="text-xl font-semibold text-foreground">Achats & Ventes</h1>
-        <div className="w-6" />
-      </div>
-
+    <div className="min-h-screen bg-background">
       {/* Content */}
-      <div className="flex-1 p-4 space-y-6">
+      <div className="p-4 space-y-6">
         {/* Je Donne Section */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-foreground">Je Donne</h2>
@@ -196,28 +189,6 @@ export default function TradingInterface() {
           >
             {isLoading ? 'Traitement...' : 'Confirmer'}
           </Button>
-        </div>
-      </div>
-
-      {/* Bottom Navigation */}
-      <div className="border-t border-border bg-card">
-        <div className="flex items-center justify-around py-3">
-          <div className="flex flex-col items-center gap-1 text-primary">
-            <Home className="w-6 h-6" />
-            <span className="text-xs font-medium">Accueil</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-muted-foreground">
-            <Briefcase className="w-6 h-6" />
-            <span className="text-xs">Portefeuille</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-muted-foreground">
-            <Clock className="w-6 h-6" />
-            <span className="text-xs">Historique</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-muted-foreground">
-            <User className="w-6 h-6" />
-            <span className="text-xs">Profil</span>
-          </div>
         </div>
       </div>
     </div>
