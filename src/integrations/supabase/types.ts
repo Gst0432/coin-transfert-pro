@@ -14,16 +14,118 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      transactions: {
+        Row: {
+          admin_notes: string | null
+          amount_fcfa: number
+          amount_usdt: number
+          created_at: string | null
+          destination_wallet: Json | null
+          exchange_rate: number
+          fees_fcfa: number | null
+          fees_usdt: number | null
+          final_amount_fcfa: number | null
+          final_amount_usdt: number | null
+          id: string
+          moneroo_checkout_url: string | null
+          moneroo_payment_id: string | null
+          processed_at: string | null
+          processed_by: string | null
+          source_wallet: Json | null
+          status: Database["public"]["Enums"]["transaction_status"] | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount_fcfa: number
+          amount_usdt: number
+          created_at?: string | null
+          destination_wallet?: Json | null
+          exchange_rate: number
+          fees_fcfa?: number | null
+          fees_usdt?: number | null
+          final_amount_fcfa?: number | null
+          final_amount_usdt?: number | null
+          id?: string
+          moneroo_checkout_url?: string | null
+          moneroo_payment_id?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          source_wallet?: Json | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          amount_fcfa?: number
+          amount_usdt?: number
+          created_at?: string | null
+          destination_wallet?: Json | null
+          exchange_rate?: number
+          fees_fcfa?: number | null
+          fees_usdt?: number | null
+          final_amount_fcfa?: number | null
+          final_amount_usdt?: number | null
+          id?: string
+          moneroo_checkout_url?: string | null
+          moneroo_payment_id?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          source_wallet?: Json | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      transaction_status:
+        | "pending"
+        | "processing"
+        | "completed"
+        | "rejected"
+        | "failed"
+      transaction_type: "fcfa_to_usdt" | "usdt_to_fcfa"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +252,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      transaction_status: [
+        "pending",
+        "processing",
+        "completed",
+        "rejected",
+        "failed",
+      ],
+      transaction_type: ["fcfa_to_usdt", "usdt_to_fcfa"],
+    },
   },
 } as const
