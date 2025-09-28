@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Check, X, AlertCircle } from 'lucide-react';
+import { Clock, Check, X, AlertCircle, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -68,8 +68,8 @@ export default function TransactionHistory() {
     const Icon = config.icon;
 
     return (
-      <Badge variant={config.variant} className="gap-1">
-        <Icon className="w-3 h-3" />
+      <Badge variant={config.variant} className="gap-1 text-[11px]">
+        <Icon className="w-2.5 h-2.5" />
         {config.label}
       </Badge>
     );
@@ -112,32 +112,43 @@ export default function TransactionHistory() {
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-foreground mb-4">
-        Historique des transactions
-      </h2>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-base font-bold text-foreground">
+          Historique récent
+        </h2>
+        <Button
+          onClick={fetchTransactions}
+          variant="outline"
+          size="sm"
+          className="gap-1 h-7 px-2 text-[11px]"
+        >
+          <RefreshCw className="w-2.5 h-2.5" />
+          Actualiser
+        </Button>
+      </div>
       
-      {transactions.map((transaction) => (
-        <Card key={transaction.id} className="p-4">
-          <div className="flex items-start justify-between mb-3">
+      {transactions.slice(0, 5).map((transaction) => (
+        <Card key={transaction.id} className="p-2">
+          <div className="flex items-start justify-between mb-1">
             <div>
-              <h3 className="font-medium text-foreground">
+              <h3 className="text-xs font-medium text-foreground">
                 {transaction.transaction_type === 'fcfa_to_usdt' ? 'FCFA → USDT' : 'USDT → FCFA'}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 {formatDate(transaction.created_at)}
               </p>
             </div>
             {getStatusBadge(transaction.status)}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-2 gap-2 text-[11px]">
             <div>
               <p className="text-muted-foreground">Montant donné</p>
               <p className="font-medium">
                 {transaction.transaction_type === 'fcfa_to_usdt' 
                   ? `${transaction.amount_fcfa.toLocaleString()} FCFA`
-                  : `${transaction.amount_usdt.toFixed(8)} USDT`
+                  : `${transaction.amount_usdt.toFixed(6)} USDT`
                 }
               </p>
             </div>
@@ -145,15 +156,15 @@ export default function TransactionHistory() {
               <p className="text-muted-foreground">Montant reçu</p>
               <p className="font-medium">
                 {transaction.transaction_type === 'fcfa_to_usdt' 
-                  ? `${transaction.final_amount_usdt?.toFixed(8) || 0} USDT`
+                  ? `${transaction.final_amount_usdt?.toFixed(6) || 0} USDT`
                   : `${transaction.final_amount_fcfa?.toLocaleString() || 0} FCFA`
                 }
               </p>
             </div>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-border">
-            <div className="flex items-center justify-between text-sm">
+          <div className="mt-1 pt-1 border-t border-border">
+            <div className="flex items-center justify-between text-[11px]">
               <span className="text-muted-foreground">
                 Taux: 1 USD = {transaction.exchange_rate.toFixed(2)} FCFA
               </span>
@@ -167,13 +178,21 @@ export default function TransactionHistory() {
           </div>
 
           {transaction.admin_notes && (
-            <div className="mt-3 p-3 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Note admin:</p>
-              <p className="text-sm">{transaction.admin_notes}</p>
+            <div className="mt-2 p-2 bg-muted rounded-lg">
+              <p className="text-[11px] text-muted-foreground mb-1">Note admin:</p>
+              <p className="text-[11px]">{transaction.admin_notes}</p>
             </div>
           )}
         </Card>
       ))}
+      
+      {transactions.length > 5 && (
+        <div className="text-center pt-2">
+          <p className="text-[11px] text-muted-foreground">
+            {transactions.length - 5} transaction(s) de plus disponible(s) dans l'historique complet
+          </p>
+        </div>
+      )}
     </div>
   );
 }

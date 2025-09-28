@@ -11,6 +11,7 @@ import Navigation from "./components/Navigation";
 import { useAuth } from "./hooks/useAuth";
 import Index from "./pages/Index";
 import Wallet from "./pages/Wallet";
+import History from "./pages/History";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -74,7 +75,7 @@ const AppContent = () => {
               <Route path="/" element={<Index />} />
               <Route path="/trading" element={<Index />} />
               <Route path="/wallet" element={<Wallet />} />
-              <Route path="/history" element={<Index />} />
+              <Route path="/history" element={<History />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/success" element={<PaymentSuccess />} />
