@@ -99,7 +99,7 @@ const AppContent = () => {
           
           {/* Main Content */}
           <main className="flex-1 overflow-auto pb-16 lg:pb-0 flex flex-col">
-            <div className="flex-1">
+            <div className="flex-1 px-2 sm:px-4 lg:px-6 py-2 sm:py-4 lg:py-6">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/trading" element={<Index />} />

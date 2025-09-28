@@ -171,25 +171,25 @@ export const LandingPageNew = () => {
       </nav>
 
       {/* Section Hero */}
-      <section className="py-20 px-4 bg-gradient-to-br from-background via-background to-muted/20">
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gradient-to-br from-background via-background to-muted/20">
         <div className="container mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Contenu textuel */}
-            <div className="space-y-8">
-              <div className="space-y-6">
-                <h1 className="text-5xl lg:text-7xl font-bold text-foreground leading-tight">
+            <div className="space-y-6 lg:space-y-8">
+              <div className="space-y-4 lg:space-y-6">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-tight">
                   {settings.hero_title}
                 </h1>
-                <p className="text-xl lg:text-2xl text-muted-foreground leading-relaxed">
+                <p className="text-base sm:text-lg lg:text-xl xl:text-2xl text-muted-foreground leading-relaxed">
                   {settings.hero_subtitle}
                 </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">
                 <Button 
                   asChild 
                   size="lg" 
-                  className="text-lg px-8 py-4 crypto-button-primary border-0 shadow-[var(--shadow-button)]"
+                  className="text-sm sm:text-base lg:text-lg px-6 sm:px-8 py-3 sm:py-4 crypto-button-primary border-0 shadow-[var(--shadow-button)]"
                 >
                   <Link to="/auth">{settings.hero_cta_text}</Link>
                 </Button>
@@ -197,46 +197,46 @@ export const LandingPageNew = () => {
                   asChild 
                   variant="outline" 
                   size="lg" 
-                  className="text-lg px-8 py-4 crypto-button-secondary"
+                  className="text-sm sm:text-base lg:text-lg px-6 sm:px-8 py-3 sm:py-4 crypto-button-secondary"
                 >
                   <a href="#about">{settings.hero_secondary_cta_text}</a>
                 </Button>
               </div>
 
               {/* Stats rapides */}
-              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-border/50">
+              <div className="grid grid-cols-3 gap-4 lg:gap-6 pt-6 lg:pt-8 border-t border-border/50">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">24/7</div>
-                  <div className="text-sm text-muted-foreground">Trading</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-primary">24/7</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">Trading</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">0.1%</div>
-                  <div className="text-sm text-muted-foreground">Frais</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-primary">0.1%</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">Frais</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">50K+</div>
-                  <div className="text-sm text-muted-foreground">Utilisateurs</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-primary">50K+</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">Utilisateurs</div>
                 </div>
               </div>
             </div>
 
             {/* Image USDT */}
-            <div className="relative">
-              <div className="relative z-10 crypto-card bg-gradient-to-br from-card to-muted/20 p-8">
+            <div className="relative mt-8 lg:mt-0">
+              <div className="relative z-10 crypto-card bg-gradient-to-br from-card to-muted/20 p-4 sm:p-6 lg:p-8">
                 <img 
                   src={usdtCoin} 
                   alt="USDT Cryptocurrency" 
-                  className="w-full max-w-md mx-auto rounded-2xl shadow-[var(--shadow-glow)]"
+                  className="w-full max-w-xs sm:max-w-sm lg:max-w-md mx-auto rounded-2xl shadow-[var(--shadow-glow)]"
                 />
                 
                 {/* Indicateurs de prix flottants */}
-                <div className="absolute top-4 right-4 crypto-card px-4 py-2 bg-success/20 border border-success/30">
-                  <div className="text-success font-semibold">USDT</div>
+                <div className="absolute top-2 sm:top-4 right-2 sm:right-4 crypto-card px-2 sm:px-4 py-1 sm:py-2 bg-success/20 border border-success/30">
+                  <div className="text-success font-semibold text-sm sm:text-base">USDT</div>
                   <div className="text-xs text-success/80">$1.00</div>
                 </div>
                 
-                <div className="absolute bottom-4 left-4 crypto-card px-4 py-2 bg-primary/20 border border-primary/30">
-                  <div className="text-primary font-semibold">Échange</div>
+                <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 crypto-card px-2 sm:px-4 py-1 sm:py-2 bg-primary/20 border border-primary/30">
+                  <div className="text-primary font-semibold text-sm sm:text-base">Échange</div>
                   <div className="text-xs text-primary/80">Instantané</div>
                 </div>
               </div>
@@ -249,25 +249,25 @@ export const LandingPageNew = () => {
       </section>
 
       {/* Section Services */}
-      <section id="services" className="py-20 px-4 bg-muted/20">
+      <section id="services" className="py-12 sm:py-16 lg:py-20 px-4 bg-muted/20">
         <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 lg:mb-4 text-foreground">
             {settings.services_title}
           </h2>
-          <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-8 lg:mb-12 max-w-3xl mx-auto">
             {settings.services_subtitle}
           </p>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {Array.isArray(settings.services_items) && settings.services_items.map((service: any, index: number) => {
               const IconComponent = iconMap[service.icon as keyof typeof iconMap];
               
               return (
                 <Card key={index} className="crypto-card text-center">
-                  <CardContent className="pt-6">
-                    {IconComponent && <IconComponent className="w-12 h-12 text-primary mx-auto mb-4" />}
-                    <h3 className="text-xl font-semibold mb-2 text-foreground">{service.title}</h3>
-                    <p className="text-muted-foreground">{service.description}</p>
+                  <CardContent className="pt-4 lg:pt-6">
+                    {IconComponent && <IconComponent className="w-10 h-10 lg:w-12 lg:h-12 text-primary mx-auto mb-3 lg:mb-4" />}
+                    <h3 className="text-lg lg:text-xl font-semibold mb-2 text-foreground">{service.title}</h3>
+                    <p className="text-sm lg:text-base text-muted-foreground">{service.description}</p>
                   </CardContent>
                 </Card>
               );
@@ -277,19 +277,19 @@ export const LandingPageNew = () => {
       </section>
 
       {/* Section About */}
-      <section id="about" className="py-20 px-4">
+      <section id="about" className="py-12 sm:py-16 lg:py-20 px-4">
         <div className="container mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-5xl font-bold mb-6 text-foreground">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 lg:mb-6 text-foreground">
                 {settings.about_title}
               </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <p className="text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed">
                 {settings.about_content}
               </p>
             </div>
             {settings.about_image && (
-              <div className="relative">
+              <div className="relative mt-6 lg:mt-0">
                 <img 
                   src={settings.about_image} 
                   alt="À propos" 
@@ -302,19 +302,19 @@ export const LandingPageNew = () => {
       </section>
 
       {/* Section Partners */}
-      <section id="partners" className="py-20 px-4 bg-muted/20">
+      <section id="partners" className="py-12 sm:py-16 lg:py-20 px-4 bg-muted/20">
         <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-12 text-foreground">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-8 lg:mb-12 text-foreground">
             {settings.partners_title}
           </h2>
           
-          <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-8 items-center">
             {Array.isArray(settings.partners_items) && settings.partners_items.map((partner: any, index: number) => (
-              <div key={index} className="crypto-card p-6">
+              <div key={index} className="crypto-card p-3 sm:p-4 lg:p-6">
                 <img 
                   src={partner.logo} 
                   alt={partner.name} 
-                  className="w-full h-16 object-contain grayscale hover:grayscale-0 transition-all"
+                  className="w-full h-12 sm:h-14 lg:h-16 object-contain grayscale hover:grayscale-0 transition-all"
                 />
               </div>
             ))}
@@ -323,34 +323,34 @@ export const LandingPageNew = () => {
       </section>
 
       {/* Section Contact */}
-      <section id="contact" className="py-20 px-4">
+      <section id="contact" className="py-12 sm:py-16 lg:py-20 px-4">
         <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-12 text-foreground">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-8 lg:mb-12 text-foreground">
             Contactez-nous
           </h2>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             <Card className="crypto-card text-center">
-              <CardContent className="pt-6">
-                <Phone className="w-12 h-12 text-primary mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Téléphone</h3>
-                <p className="text-muted-foreground">{settings.contact_phone}</p>
+              <CardContent className="pt-4 lg:pt-6">
+                <Phone className="w-10 h-10 lg:w-12 lg:h-12 text-primary mx-auto mb-3 lg:mb-4" />
+                <h3 className="text-lg lg:text-xl font-semibold mb-2 text-foreground">Téléphone</h3>
+                <p className="text-sm lg:text-base text-muted-foreground">{settings.contact_phone}</p>
               </CardContent>
             </Card>
             
             <Card className="crypto-card text-center">
-              <CardContent className="pt-6">
-                <Mail className="w-12 h-12 text-primary mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Email</h3>
-                <p className="text-muted-foreground">{settings.contact_email}</p>
+              <CardContent className="pt-4 lg:pt-6">
+                <Mail className="w-10 h-10 lg:w-12 lg:h-12 text-primary mx-auto mb-3 lg:mb-4" />
+                <h3 className="text-lg lg:text-xl font-semibold mb-2 text-foreground">Email</h3>
+                <p className="text-sm lg:text-base text-muted-foreground">{settings.contact_email}</p>
               </CardContent>
             </Card>
             
-            <Card className="crypto-card text-center">
-              <CardContent className="pt-6">
-                <MapPin className="w-12 h-12 text-primary mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Adresse</h3>
-                <p className="text-muted-foreground">{settings.contact_address}</p>
+            <Card className="crypto-card text-center sm:col-span-2 lg:col-span-1">
+              <CardContent className="pt-4 lg:pt-6">
+                <MapPin className="w-10 h-10 lg:w-12 lg:h-12 text-primary mx-auto mb-3 lg:mb-4" />
+                <h3 className="text-lg lg:text-xl font-semibold mb-2 text-foreground">Adresse</h3>
+                <p className="text-sm lg:text-base text-muted-foreground">{settings.contact_address}</p>
               </CardContent>
             </Card>
           </div>
@@ -358,24 +358,24 @@ export const LandingPageNew = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 bg-muted/20 border-t border-border">
+      <footer className="py-8 lg:py-12 px-4 bg-muted/20 border-t border-border">
         <div className="container mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {/* Logo et description */}
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2">
               <div className="flex items-center space-x-3 mb-4">
                 {settings.main_logo_url && (
                   <img 
                     src={settings.main_logo_url} 
                     alt="Logo" 
-                    className="h-8 w-8 object-contain"
+                    className="h-6 lg:h-8 w-6 lg:w-8 object-contain"
                   />
                 )}
-                <span className="text-xl font-bold text-foreground">
+                <span className="text-lg lg:text-xl font-bold text-foreground">
                   {settings.site_name}
                 </span>
               </div>
-              <p className="text-muted-foreground mb-4 max-w-md">
+              <p className="text-sm lg:text-base text-muted-foreground mb-4 max-w-md">
                 {settings.footer_description}
               </p>
               
@@ -392,7 +392,7 @@ export const LandingPageNew = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {IconComponent && <IconComponent className="w-5 h-5" />}
+                      {IconComponent && <IconComponent className="w-4 lg:w-5 h-4 lg:h-5" />}
                     </a>
                   );
                 })}
@@ -401,12 +401,12 @@ export const LandingPageNew = () => {
 
             {/* Liens légaux */}
             <div>
-              <h3 className="text-lg font-semibold mb-4 text-foreground">Légal</h3>
+              <h3 className="text-base lg:text-lg font-semibold mb-3 lg:mb-4 text-foreground">Légal</h3>
               <div className="space-y-2">
-                <a href="/privacy" className="block text-muted-foreground hover:text-primary transition-colors">
+                <a href="/privacy" className="block text-sm lg:text-base text-muted-foreground hover:text-primary transition-colors">
                   Politique de confidentialité
                 </a>
-                <a href="/terms" className="block text-muted-foreground hover:text-primary transition-colors">
+                <a href="/terms" className="block text-sm lg:text-base text-muted-foreground hover:text-primary transition-colors">
                   Conditions d'utilisation
                 </a>
               </div>
@@ -414,8 +414,8 @@ export const LandingPageNew = () => {
 
             {/* Contact */}
             <div>
-              <h3 className="text-lg font-semibold mb-4 text-foreground">Contact</h3>
-              <div className="space-y-2 text-sm text-muted-foreground">
+              <h3 className="text-base lg:text-lg font-semibold mb-3 lg:mb-4 text-foreground">Contact</h3>
+              <div className="space-y-2 text-sm lg:text-base text-muted-foreground">
                 <p>{settings.contact_phone}</p>
                 <p>{settings.contact_email}</p>
                 <p>{settings.contact_address}</p>
@@ -423,8 +423,8 @@ export const LandingPageNew = () => {
             </div>
           </div>
 
-          <div className="border-t border-border pt-8 mt-8 text-center">
-            <p className="text-muted-foreground">
+          <div className="border-t border-border pt-6 lg:pt-8 mt-6 lg:mt-8 text-center">
+            <p className="text-sm lg:text-base text-muted-foreground">
               {settings.copyright_text}
             </p>
           </div>
