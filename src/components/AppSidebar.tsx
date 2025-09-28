@@ -66,8 +66,8 @@ export function AppSidebar() {
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
       isActive 
-        ? "bg-accent text-accent-foreground"
-        : "text-foreground/85 hover:bg-muted hover:text-foreground"
+        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+        : "text-sidebar-foreground/85 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
     }`;
 
   return (
@@ -78,36 +78,36 @@ export function AppSidebar() {
       collapsible="icon"
     >
       {/* Header */}
-      <SidebarHeader className="p-2 border-b border-border">
+      <SidebarHeader className="p-2 border-b border-sidebar-border bg-sidebar">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-xs">G</span>
+          <div className="w-6 h-6 rounded-md bg-sidebar-primary flex items-center justify-center">
+            <span className="text-sidebar-primary-foreground font-bold text-xs">G</span>
           </div>
           {!collapsed && (
             <div>
-              <h2 className="font-medium text-foreground text-sm">G-Transfert</h2>
-              <p className="text-[10px] text-muted-foreground">Crypto Exchange</p>
+              <h2 className="font-medium text-sidebar-foreground text-sm">G-Transfert</h2>
+              <p className="text-[10px] text-sidebar-foreground/70">Crypto Exchange</p>
             </div>
           )}
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="p-2">
+      <SidebarContent className="p-2 bg-sidebar">
         {/* User Profile */}
         {!collapsed && (
-          <div className="mb-3 p-2 rounded-md bg-muted/50">
+          <div className="mb-3 p-2 rounded-md bg-sidebar-accent">
             <div className="flex items-center gap-2">
               <Avatar className="w-7 h-7">
                 <AvatarImage src="" />
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground text-xs">
                   AD
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-foreground truncate">
+                <p className="text-xs font-medium text-sidebar-foreground truncate">
                   Amadou Diallo
                 </p>
-                <p className="text-[10px] text-muted-foreground truncate">
+                <p className="text-[10px] text-sidebar-foreground/70 truncate">
                   amadou@example.com
                 </p>
               </div>
@@ -120,7 +120,7 @@ export function AppSidebar() {
 
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide px-2">
+          <SidebarGroupLabel className="text-[10px] font-medium text-sidebar-foreground/70 uppercase tracking-wide px-2">
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -145,18 +145,18 @@ export function AppSidebar() {
 
         {/* Balance Overview */}
         {!collapsed && (
-          <div className="my-3 p-2 rounded-md bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
-            <h3 className="text-xs font-medium text-foreground mb-1">
+          <div className="my-3 p-2 rounded-md bg-gradient-to-r from-sidebar-primary/10 to-sidebar-primary/5 border border-sidebar-primary/20">
+            <h3 className="text-xs font-medium text-sidebar-foreground mb-1">
               Solde Total
             </h3>
             <div className="space-y-0.5">
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">FCFA</span>
-                <span className="font-medium text-foreground">125,000</span>
+                <span className="text-sidebar-foreground/70">FCFA</span>
+                <span className="font-medium text-sidebar-foreground">125,000</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">USD</span>
-                <span className="font-medium text-foreground">210.15</span>
+                <span className="text-sidebar-foreground/70">USD</span>
+                <span className="font-medium text-sidebar-foreground">210.15</span>
               </div>
             </div>
           </div>
@@ -164,7 +164,7 @@ export function AppSidebar() {
 
         {/* Support & Settings */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide px-2">
+          <SidebarGroupLabel className="text-[10px] font-medium text-sidebar-foreground/70 uppercase tracking-wide px-2">
             Support
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -188,12 +188,12 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Footer */}
-      <SidebarFooter className="p-2 border-t border-border space-y-1">
+      <SidebarFooter className="p-2 border-t border-sidebar-border space-y-1 bg-sidebar">
         {/* Theme Selector */}
         {!collapsed && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground h-7 text-xs">
+              <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-sidebar-foreground/85 hover:text-sidebar-foreground hover:bg-sidebar-accent h-7 text-xs">
                 {theme === 'dark' ? <Moon className="w-3 h-3" /> : 
                  theme === 'light' ? <Sun className="w-3 h-3" /> : 
                  <Monitor className="w-3 h-3" />}
@@ -220,7 +220,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <button className="flex items-center gap-2 w-full text-left text-xs text-muted-foreground hover:text-destructive transition-colors py-1.5 px-2">
+              <button className="flex items-center gap-2 w-full text-left text-xs text-sidebar-foreground/85 hover:text-destructive hover:bg-sidebar-accent transition-colors py-1.5 px-2 rounded-md">
                 <LogOut className="w-3.5 h-3.5" />
                 {!collapsed && <span>Déconnexion</span>}
               </button>
