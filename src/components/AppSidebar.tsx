@@ -64,17 +64,17 @@ export function AppSidebar() {
 
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-all ${
+    `flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
       isActive 
         ? "bg-accent text-accent-foreground"
-        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+        : "text-foreground/85 hover:bg-muted hover:text-foreground"
     }`;
 
   return (
     <Sidebar
       variant="sidebar"
       side="left"
-      className="border-r border-border bg-background w-40 sm:w-56 max-w-[80vw] data-[state=collapsed]:w-12"
+      className="border-r border-border bg-card w-40 sm:w-56 max-w-[80vw] data-[state=collapsed]:w-12"
       collapsible="icon"
     >
       {/* Header */}
