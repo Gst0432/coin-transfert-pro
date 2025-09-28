@@ -117,7 +117,7 @@
   }
 
   .crypto-input {
-    @apply w-full px-4 py-3 bg-input border border-input-border rounded-lg text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-[var(--transition-fast)];
+    @apply w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-[var(--transition-fast)];
   }
 
   .crypto-button-primary {
