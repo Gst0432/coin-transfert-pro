@@ -196,22 +196,22 @@ export default function Wallet() {
   const cryptoWallets = wallets.filter(w => w.type === "crypto") as CryptoWallet[];
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl space-y-6">
+    <div className="container mx-auto p-2 max-w-xs space-y-2">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col justify-between items-start gap-2">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Portefeuille</h1>
-          <p className="text-muted-foreground">Gérez vos comptes mobile money et adresses crypto</p>
+          <h1 className="text-lg font-bold text-foreground">Portefeuille</h1>
+          <p className="text-[11px] text-muted-foreground">Gérez vos comptes mobile money et adresses crypto</p>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-1 w-full">
           <Button
             onClick={handleAutoConvert}
             variant="outline"
             size="sm"
-            className="gap-2"
+            className="gap-1 h-7 px-2 text-[11px] flex-1"
           >
-            <ArrowUpDown className="w-4 h-4" />
+            <ArrowUpDown className="w-2.5 h-2.5" />
             Inverser
           </Button>
           
@@ -219,37 +219,37 @@ export default function Wallet() {
             onClick={() => setShowAllWallets(!showAllWallets)}
             variant="outline"
             size="sm"
-            className="gap-2"
+            className="gap-1 h-7 px-2 text-[11px] flex-1"
           >
-            <WalletIcon className="w-4 h-4" />
-            {showAllWallets ? "Masquer" : "Tous les portefeuilles"}
+            <WalletIcon className="w-2.5 h-2.5" />
+            {showAllWallets ? "Masquer" : "Tous"}
           </Button>
         </div>
       </div>
 
       {/* Résumé rapide */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-2">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Smartphone className="w-8 h-8 text-primary" />
+          <CardContent className="p-2">
+            <div className="flex items-center gap-2">
+              <Smartphone className="w-4 h-4 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Mobile Money</p>
-                <p className="text-xl font-semibold">{mobileWallets.length} comptes</p>
-                <Badge variant="outline" className="text-xs">FCFA</Badge>
+                <p className="text-[11px] text-muted-foreground">Mobile Money</p>
+                <p className="text-lg font-semibold">{mobileWallets.length} comptes</p>
+                <Badge variant="outline" className="text-[11px]">FCFA</Badge>
               </div>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <WalletIcon className="w-8 h-8 text-primary" />
+          <CardContent className="p-2">
+            <div className="flex items-center gap-2">
+              <WalletIcon className="w-4 h-4 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Crypto</p>
-                <p className="text-xl font-semibold">{cryptoWallets.length} adresses</p>
-                <Badge variant="outline" className="text-xs">USDT</Badge>
+                <p className="text-[11px] text-muted-foreground">Crypto</p>
+                <p className="text-lg font-semibold">{cryptoWallets.length} adresses</p>
+                <Badge variant="outline" className="text-[11px]">USDT</Badge>
               </div>
             </div>
           </CardContent>
@@ -258,38 +258,38 @@ export default function Wallet() {
 
       {/* Tabs pour ajouter des portefeuilles */}
       <Card>
-        <CardHeader>
+        <CardHeader className="p-2">
           <CardTitle className="text-lg">Gestion du portefeuille</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-[11px]">
             Ajoutez vos comptes et consultez l'historique des transactions
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-2">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="mobile" className="gap-2">
-                <Smartphone className="w-4 h-4" />
-                Mobile Money
+            <TabsList className="grid w-full grid-cols-3 h-7">
+              <TabsTrigger value="mobile" className="gap-1 h-7 px-2 text-[11px]">
+                <Smartphone className="w-2.5 h-2.5" />
+                Mobile
               </TabsTrigger>
-              <TabsTrigger value="crypto" className="gap-2">
-                <WalletIcon className="w-4 h-4" />
+              <TabsTrigger value="crypto" className="gap-1 h-7 px-2 text-[11px]">
+                <WalletIcon className="w-2.5 h-2.5" />
                 Crypto
               </TabsTrigger>
-              <TabsTrigger value="history" className="gap-2">
-                <History className="w-4 h-4" />
+              <TabsTrigger value="history" className="gap-1 h-7 px-2 text-[11px]">
+                <History className="w-2.5 h-2.5" />
                 Historique
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="mobile" className="space-y-4 mt-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="country">Pays</Label>
+            <TabsContent value="mobile" className="space-y-2 mt-2">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <Label htmlFor="country" className="text-xs font-medium">Pays</Label>
                   <Select value={selectedCountry} onValueChange={(value) => {
                     setSelectedCountry(value);
                     setSelectedOperator(""); // Reset operator when country changes
                   }}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder="Choisir un pays" />
                     </SelectTrigger>
                     <SelectContent>
@@ -302,14 +302,14 @@ export default function Wallet() {
                   </Select>
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="operator">Opérateur</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="operator" className="text-xs font-medium">Opérateur</Label>
                   <Select 
                     value={selectedOperator} 
                     onValueChange={setSelectedOperator}
                     disabled={!selectedCountry}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder="Choisir un opérateur" />
                     </SelectTrigger>
                     <SelectContent>
@@ -327,28 +327,29 @@ export default function Wallet() {
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="phone">Numéro de téléphone</Label>
+              <div className="space-y-1 col-span-2">
+                <Label htmlFor="phone" className="text-xs font-medium">Numéro de téléphone</Label>
                 <Input
                   id="phone"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="+227 96 12 34 56"
                   type="tel"
+                  className="h-8 px-1.5 text-xs"
                 />
               </div>
               
-              <Button onClick={addMobileWallet} className="w-full gap-2">
-                <Plus className="w-4 h-4" />
+              <Button onClick={addMobileWallet} className="w-full gap-1 h-8 px-2 text-xs col-span-2">
+                <Plus className="w-2.5 h-2.5" />
                 Ajouter compte mobile money
               </Button>
             </TabsContent>
             
-            <TabsContent value="crypto" className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <Label htmlFor="network">Réseau</Label>
+            <TabsContent value="crypto" className="space-y-2 mt-2">
+              <div className="space-y-1">
+                <Label htmlFor="network" className="text-xs font-medium">Réseau</Label>
                 <Select value={selectedNetwork} onValueChange={setSelectedNetwork}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="Choisir un réseau" />
                   </SelectTrigger>
                   <SelectContent>
@@ -361,23 +362,24 @@ export default function Wallet() {
                 </Select>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="address">Adresse USDT</Label>
+              <div className="space-y-1">
+                <Label htmlFor="address" className="text-xs font-medium">Adresse USDT</Label>
                 <Input
                   id="address"
                   value={cryptoAddress}
                   onChange={(e) => setCryptoAddress(e.target.value)}
                   placeholder="Coller l'adresse du portefeuille"
+                  className="h-8 px-1.5 text-xs"
                 />
               </div>
               
-              <Button onClick={addCryptoWallet} className="w-full gap-2">
-                <Plus className="w-4 h-4" />
+              <Button onClick={addCryptoWallet} className="w-full gap-1 h-8 px-2 text-xs">
+                <Plus className="w-2.5 h-2.5" />
                 Ajouter adresse USDT
               </Button>
             </TabsContent>
             
-            <TabsContent value="history" className="mt-4">
+            <TabsContent value="history" className="mt-2">
               <TransactionHistory />
             </TabsContent>
           </Tabs>

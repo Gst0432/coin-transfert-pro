@@ -133,16 +133,16 @@ export default function TransactionSummary({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="p-3 space-y-3 max-w-sm mx-auto">
+      <div className="p-2 space-y-2 max-w-xs mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2">
           <Button
             onClick={onBack}
             variant="ghost"
             size="sm"
-            className="gap-1 h-8 px-3 text-xs"
+            className="gap-1 h-8 px-1.5 text-[11px]"
           >
-            <ArrowLeft className="w-3 h-3" />
+            <ArrowLeft className="w-2.5 h-2.5" />
             Retour
           </Button>
           <h1 className="text-lg font-bold text-foreground">
@@ -152,21 +152,21 @@ export default function TransactionSummary({
         </div>
 
         {/* Transaction Type */}
-        <Card className="crypto-card p-3">
+        <Card className="crypto-card p-2">
           <div className="text-center">
             <h2 className="text-base font-bold text-foreground mb-2">
               {!isInverted ? "FCFA → USDT" : "USDT → FCFA"}
             </h2>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground">
               Vérifiez les détails de votre transaction
             </p>
           </div>
         </Card>
 
         {/* Source Amount */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <h3 className="text-xs font-medium text-foreground">Vous donnez</h3>
-          <Card className="crypto-card p-3">
+          <Card className="crypto-card p-2">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="text-2xl font-bold text-foreground">
@@ -178,10 +178,10 @@ export default function TransactionSummary({
                 <div className="text-sm text-muted-foreground mt-1">
                   {sourceWallet && (
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-[11px]">
                         {!isInverted ? sourceWallet.operator : sourceWallet.network}
                       </Badge>
-                      <span className="font-mono text-xs">
+                      <span className="font-mono text-[11px]">
                         {!isInverted 
                           ? sourceWallet.phoneNumber 
                           : `${sourceWallet.address.slice(0, 8)}...${sourceWallet.address.slice(-4)}`
@@ -195,13 +195,13 @@ export default function TransactionSummary({
                 <div className="flex items-center gap-1.5">
                   {!isInverted ? (
                     <>
-                      <Smartphone className="w-4 h-4" />
-                      <span className="text-xs">MoMo</span>
+                      <Smartphone className="w-2.5 h-2.5" />
+                      <span className="text-[11px]">MoMo</span>
                     </>
                   ) : (
                     <>
-                      <WalletIcon className="w-4 h-4" />
-                      <span className="text-xs">Crypto</span>
+                      <WalletIcon className="w-2.5 h-2.5" />
+                      <span className="text-[11px]">Crypto</span>
                     </>
                   )}
                 </div>
@@ -211,9 +211,9 @@ export default function TransactionSummary({
         </div>
 
         {/* Conversion Rate */}
-        <Card className="crypto-card p-3">
-          <div className="flex items-center gap-2 text-sm">
-            <Info className="w-4 h-4 text-muted-foreground" />
+        <Card className="crypto-card p-2">
+          <div className="flex items-center gap-2 text-xs">
+            <Info className="w-2.5 h-2.5 text-muted-foreground" />
             <span className="text-muted-foreground">
               Taux de conversion: 1 USD = {rate.toFixed(2)} FCFA
             </span>
@@ -221,13 +221,13 @@ export default function TransactionSummary({
         </Card>
 
         {/* Fees Breakdown */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-foreground">Frais de transaction</h3>
-          <Card className="crypto-card p-4">
-            <div className="space-y-3">
+        <div className="space-y-2">
+          <h3 className="text-xs font-medium text-foreground">Frais de transaction</h3>
+          <Card className="crypto-card p-2">
+            <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Montant à recevoir</span>
-                <span className="font-medium">
+                <span className="text-[11px] text-muted-foreground">Montant à recevoir</span>
+                <span className="font-medium text-xs">
                   {!isInverted 
                     ? `${destinationAmount.toFixed(8)} USDT`
                     : `${destinationAmount.toLocaleString()} FCFA`
@@ -235,19 +235,19 @@ export default function TransactionSummary({
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-[11px] text-muted-foreground">
                   Frais de retrait {!isInverted ? '' : '(0.5 USDT)'}
                 </span>
-                <span className="text-destructive font-medium">
+                <span className="text-destructive font-medium text-xs">
                   -{!isInverted 
                     ? `${withdrawalFee} USDT`
                     : `${withdrawalFee} USDT`
                   }
                 </span>
               </div>
-              <div className="border-t border-border pt-3">
+              <div className="border-t border-border pt-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-foreground">Montant final</span>
+                  <span className="text-xs font-medium text-foreground">Montant final</span>
                   <span className="text-lg font-bold text-foreground">
                     {!isInverted 
                       ? `${finalAmount.toFixed(8)} USDT`
@@ -261,9 +261,9 @@ export default function TransactionSummary({
         </div>
 
         {/* Destination */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-foreground">Vous recevez sur</h3>
-          <Card className="crypto-card p-4">
+        <div className="space-y-2">
+          <h3 className="text-xs font-medium text-foreground">Vous recevez sur</h3>
+          <Card className="crypto-card p-2">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="text-lg font-bold text-foreground">
@@ -275,10 +275,10 @@ export default function TransactionSummary({
                 <div className="text-sm text-muted-foreground mt-1">
                   {destinationWallet && (
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-[11px]">
                         {!isInverted ? destinationWallet.network : destinationWallet.operator}
                       </Badge>
-                      <span className="font-mono text-xs">
+                      <span className="font-mono text-[11px]">
                         {!isInverted 
                           ? `${destinationWallet.address.slice(0, 8)}...${destinationWallet.address.slice(-4)}`
                           : destinationWallet.phoneNumber
@@ -292,13 +292,13 @@ export default function TransactionSummary({
                 <div className="flex items-center gap-1.5">
                   {!isInverted ? (
                     <>
-                      <WalletIcon className="w-4 h-4" />
-                      <span className="text-xs">Crypto</span>
+                      <WalletIcon className="w-2.5 h-2.5" />
+                      <span className="text-[11px]">Crypto</span>
                     </>
                   ) : (
                     <>
-                      <Smartphone className="w-4 h-4" />
-                      <span className="text-xs">MoMo</span>
+                      <Smartphone className="w-2.5 h-2.5" />
+                      <span className="text-[11px]">MoMo</span>
                     </>
                   )}
                 </div>
@@ -309,17 +309,17 @@ export default function TransactionSummary({
 
         {/* Payment Method Selection */}
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-foreground">Méthode de paiement</h3>
+          <h3 className="text-xs font-medium text-foreground">Méthode de paiement</h3>
           <div className="grid grid-cols-2 gap-2">
             <Button
               type="button"
               variant={paymentMethod === 'moneroo' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setPaymentMethod('moneroo')}
-              className="flex items-center gap-1 h-8 text-xs"
+              className="flex items-center gap-1 h-7 px-2 text-[11px]"
               disabled={isInverted} // Moneroo only for FCFA to USDT
             >
-              <Smartphone className="w-3 h-3" />
+              <Smartphone className="w-2.5 h-2.5" />
               Mobile Money
             </Button>
             <Button
@@ -327,21 +327,21 @@ export default function TransactionSummary({
               variant={paymentMethod === 'nowpayments' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setPaymentMethod('nowpayments')}
-              className="flex items-center gap-1 h-8 text-xs"
+              className="flex items-center gap-1 h-7 px-2 text-[11px]"
               disabled={!isInverted} // NOWPayments only for USDT to FCFA
             >
-              <Bitcoin className="w-3 h-3" />
+              <Bitcoin className="w-2.5 h-2.5" />
               Crypto
             </Button>
           </div>
         </div>
 
         {/* Confirm Button */}
-        <div className="pt-4">
+        <div className="pt-2">
           <Button
             onClick={handleConfirm}
             disabled={isLoading || paymentLoading}
-            className="w-full h-12 text-base font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
+            className="w-full h-8 px-2 text-xs font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
           >
             {isLoading || paymentLoading ? 'Traitement...' : 
              `Confirmer avec ${paymentMethod === 'moneroo' ? 'Mobile Money' : 'Crypto'}`}
