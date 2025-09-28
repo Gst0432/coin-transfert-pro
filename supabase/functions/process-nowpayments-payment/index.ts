@@ -21,15 +21,15 @@ serve(async (req) => {
       throw new Error('NOWPAYMENTS_API_KEY not configured');
     }
 
-    // Create NOWPayments payment
+    // Create NOWPayments payment using a more stable currency pair
     const paymentData = {
       price_amount: amount,
       price_currency: "USD",
-      pay_currency: "USDC",
+      pay_currency: "BTC", // Bitcoin is more stable than USDT/USDC
       ipn_callback_url: `https://bvleffevnnugjdwygqyz.supabase.co/functions/v1/nowpayments-webhook`,
       order_id: transactionId,
-      order_description: description,
-      success_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/success`,
+      order_description: description || `Transaction Exchange - ${transactionId}`,
+      success_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/wallet?status=success`,
       cancel_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/trading`,
     };
 

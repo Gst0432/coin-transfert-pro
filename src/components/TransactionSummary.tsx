@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Smartphone, Wallet as WalletIcon, Info } from 'lucide-react';
+import { ArrowLeft, Smartphone, Wallet as WalletIcon, Info, Bitcoin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { usePaymentIntegration } from '@/hooks/usePaymentIntegration';
 
 interface TransactionSummaryProps {
   isInverted: boolean;
@@ -43,6 +44,13 @@ export default function TransactionSummary({
   isLoading
 }: TransactionSummaryProps) {
   const { toast } = useToast();
+  const [paymentMethod, setPaymentMethod] = useState<'moneroo' | 'nowpayments'>(!isInverted ? 'moneroo' : 'nowpayments');
+  const { 
+    processMonerooPayment, 
+    processNowPaymentsPayment, 
+    createTransaction,
+    isLoading: paymentLoading 
+  } = usePaymentIntegration();
 
   // Calculate amounts and fees
   const sourceAmount = !isInverted ? parseFloat(amountFcfa) : parseFloat(amountUsdt);
@@ -57,100 +65,51 @@ export default function TransactionSummary({
 
   // Handle transaction confirmation
   const handleConfirm = async () => {
+    if (isLoading || paymentLoading) return;
+    
     try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour effectuer cette transaction",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Create transaction record
+      // Create transaction first
       const transactionData = {
-        user_id: user.id,
-        transaction_type: (!isInverted ? 'fcfa_to_usdt' : 'usdt_to_fcfa') as 'fcfa_to_usdt' | 'usdt_to_fcfa',
         amount_fcfa: !isInverted ? sourceAmount : calculatedFcfa,
         amount_usdt: !isInverted ? calculatedUsdt : sourceAmount,
         exchange_rate: rate,
-        fees_fcfa: !isInverted ? 0 : (finalAmount * fees.mobile_money_fee_percentage / 100),
-        fees_usdt: !isInverted ? withdrawalFee : withdrawalFee,
-        final_amount_fcfa: !isInverted ? 0 : (calculatedFcfa - (calculatedFcfa * fees.mobile_money_fee_percentage / 100)),
-        final_amount_usdt: !isInverted ? finalAmount : (calculatedUsdt - withdrawalFee),
+        transaction_type: (!isInverted ? 'fcfa_to_usdt' : 'usdt_to_fcfa') as 'fcfa_to_usdt' | 'usdt_to_fcfa',
         source_wallet: !isInverted 
           ? { type: 'mobile', phoneNumber: selectedNumber, operator: sourceWallet?.operator }
           : { type: 'crypto', address: selectedAddress, network: sourceWallet?.network },
         destination_wallet: !isInverted 
           ? { type: 'crypto', address: selectedAddress, network: destinationWallet?.network }
-          : { type: 'mobile', phoneNumber: selectedNumber, operator: destinationWallet?.operator }
+          : { type: 'mobile', phoneNumber: selectedNumber, operator: destinationWallet?.operator },
+        fees_fcfa: !isInverted ? 0 : (finalAmount * fees.mobile_money_fee_percentage / 100),
+        fees_usdt: withdrawalFee
       };
 
-      const { data: transaction, error: transactionError } = await supabase
-        .from('transactions')
-        .insert([transactionData])
-        .select()
-        .single();
+      const transaction = await createTransaction(transactionData);
+      
+      const paymentData = {
+        transactionId: transaction.id,
+        amount: sourceAmount,
+        customerName: "Client Exchange",
+        customerEmail: "client@exchange.com", 
+        customerPhone: !isInverted ? selectedNumber : "22700000000",
+        description: `${!isInverted ? 'Achat' : 'Vente'} ${!isInverted ? finalAmount.toFixed(8) + ' USDT' : finalAmount.toLocaleString() + ' FCFA'}`,
+        transactionType: (!isInverted ? 'fcfa_to_usdt' : 'usdt_to_fcfa') as 'fcfa_to_usdt' | 'usdt_to_fcfa'
+      };
 
-      if (transactionError) {
-        console.error('Transaction creation error:', transactionError);
-        throw transactionError;
-      }
-
-      // If it's FCFA to USDT, redirect to Moneroo
-      if (!isInverted) {
-        const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
-          'process-moneroo-payment',
-          {
-            body: {
-              transactionId: transaction.id,
-              amount: sourceAmount,
-              customerName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Client',
-              customerEmail: user.email,
-              customerPhone: selectedNumber,
-              description: `Achat ${finalAmount.toFixed(8)} USDT`
-            }
-          }
-        );
-
-        if (paymentError) {
-          console.error('Payment creation error:', paymentError);
-          throw paymentError;
-        }
-
-        // Redirect to Moneroo checkout
-        if (paymentData?.checkout_url) {
-          window.location.href = paymentData.checkout_url;
-        } else {
-          throw new Error('URL de paiement non reçue');
-        }
+      if (paymentMethod === 'moneroo' && !isInverted) {
+        // Mobile Money to USDT via Moneroo
+        await processMonerooPayment(paymentData);
+        
+        // Call onConfirm to go back to trading interface
+        setTimeout(() => onConfirm(), 2000);
+      } else if (paymentMethod === 'nowpayments' && isInverted) {
+        // USDT to Mobile Money via NOWPayments
+        await processNowPaymentsPayment(paymentData);
+        
+        // Call onConfirm to go back to trading interface
+        setTimeout(() => onConfirm(), 2000);
       } else {
-        // For USDT to mobile money, redirect to NOWPayments
-        const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
-          'process-nowpayments-payment',
-          {
-            body: {
-              transactionId: transaction.id,
-              amount: sourceAmount,
-              customerEmail: user.email,
-              description: `Conversion ${sourceAmount} USDT vers ${finalAmount.toLocaleString()} FCFA`
-            }
-          }
-        );
-
-        if (paymentError) {
-          console.error('NOWPayments creation error:', paymentError);
-          throw paymentError;
-        }
-
-        // Redirect to NOWPayments checkout
-        if (paymentData?.checkout_url) {
-          window.location.href = paymentData.checkout_url;
-        } else {
-          throw new Error('URL de paiement NOWPayments non reçue');
-        }
+        throw new Error('Méthode de paiement non compatible avec le type de transaction');
       }
 
     } catch (error) {
@@ -348,14 +307,44 @@ export default function TransactionSummary({
           </Card>
         </div>
 
+        {/* Payment Method Selection */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-foreground">Méthode de paiement</h3>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant={paymentMethod === 'moneroo' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPaymentMethod('moneroo')}
+              className="flex items-center gap-1 h-8 text-xs"
+              disabled={isInverted} // Moneroo only for FCFA to USDT
+            >
+              <Smartphone className="w-3 h-3" />
+              Mobile Money
+            </Button>
+            <Button
+              type="button"
+              variant={paymentMethod === 'nowpayments' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPaymentMethod('nowpayments')}
+              className="flex items-center gap-1 h-8 text-xs"
+              disabled={!isInverted} // NOWPayments only for USDT to FCFA
+            >
+              <Bitcoin className="w-3 h-3" />
+              Crypto
+            </Button>
+          </div>
+        </div>
+
         {/* Confirm Button */}
         <div className="pt-4">
           <Button
             onClick={handleConfirm}
-            disabled={isLoading}
+            disabled={isLoading || paymentLoading}
             className="w-full h-12 text-base font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
           >
-            {isLoading ? 'Traitement...' : 'Confirmer la transaction'}
+            {isLoading || paymentLoading ? 'Traitement...' : 
+             `Confirmer avec ${paymentMethod === 'moneroo' ? 'Mobile Money' : 'Crypto'}`}
           </Button>
         </div>
       </div>

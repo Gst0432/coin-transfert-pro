@@ -46,13 +46,18 @@ serve(async (req) => {
       const { 
         transactionId,
         amount,
-        customerName,
-        customerEmail,
-        customerPhone,
-        description
+        customerName = "Client Exchange",
+        customerEmail = "client@example.com",
+        customerPhone = "22700000000",
+        description = "Transaction Exchange"
       } = await req.json()
 
-      console.log('Creating Moneroo payment for transaction:', transactionId)
+      console.log('Creating Moneroo payment for transaction:', transactionId, {
+        amount,
+        customerName,
+        customerEmail,
+        customerPhone
+      })
 
       // Get the appropriate Moneroo API key
       const monerooApiKey = await getMonerooApiKey(supabase);
@@ -73,8 +78,8 @@ serve(async (req) => {
           currency: 'XOF',
           customer: {
             first_name: customerName?.split(' ')[0] || 'Client',
-            last_name: customerName?.split(' ').slice(1).join(' ') || 'Utilisateur',
-            email: customerEmail,
+            last_name: customerName?.split(' ').slice(1).join(' ') || 'Exchange',
+            email: customerEmail || 'client@exchange.com',
             phone: parseInt(customerPhone?.replace(/[^\d]/g, '') || '22700000000', 10)
           },
           description: description || `Achat USDT - Transaction ${transactionId}`,
