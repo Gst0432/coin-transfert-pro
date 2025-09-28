@@ -13,7 +13,8 @@ import {
   Moon,
   Sun,
   Monitor,
-  UserCog
+  UserCog,
+  Layout
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -161,19 +162,32 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              {/* Admin Link - Only show for admin users */}
+              {/* Admin Links - Only show for admin users */}
               {isAdmin && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to="/admin" 
-                      className={getNavCls({ isActive: isActive("/admin") })}
-                    >
-                      <UserCog className="w-3.5 h-3.5" />
-                      {!collapsed && <span className="text-xs">Administration</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <NavLink 
+                        to="/admin" 
+                        className={getNavCls({ isActive: isActive("/admin") })}
+                      >
+                        <UserCog className="w-3.5 h-3.5" />
+                        {!collapsed && <span className="text-xs">Administration</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <NavLink 
+                        to="/admin/landing-page" 
+                        className={getNavCls({ isActive: isActive("/admin/landing-page") })}
+                      >
+                        <Layout className="w-3.5 h-3.5" />
+                        {!collapsed && <span className="text-xs">Landing Page</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </>
               )}
             </SidebarMenu>
           </SidebarGroupContent>
