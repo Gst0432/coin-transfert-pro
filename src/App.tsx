@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AppSidebar } from "./components/AppSidebar";
 import { MobileBottomNav } from "./components/MobileBottomNav";
@@ -27,6 +27,7 @@ import LandingPage from "./pages/LandingPage";
 import LandingPageManagement from "./pages/LandingPageManagement";
 import PasswordSettings from "./pages/PasswordSettings";
 import AdminAuth from "./pages/AdminAuth";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AdminLoginLink } from "./components/AdminLoginLink";
 
 const queryClient = new QueryClient();
@@ -127,7 +128,9 @@ const App = () => (
             v7_relativeSplatPath: true,
           }}
         >
-          <AppContent />
+          <ErrorBoundary>
+            <AppContent />
+          </ErrorBoundary>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
