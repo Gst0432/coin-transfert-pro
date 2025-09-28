@@ -7,7 +7,7 @@
 /* G-Transfert Design System - Crypto Exchange Theme */
 
 @layer base {
-  :root {
+:root {
     /* Light theme (system default) */
     --background: 0 0% 100%;
     --foreground: 220 8% 4%;
@@ -47,10 +47,20 @@
     --input: 220 8% 98%;
     --ring: 170 74% 35%;
 
+    /* Sidebar tokens */
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 220 8% 4%;
+    --sidebar-primary: 170 74% 35%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 220 8% 96%;
+    --sidebar-accent-foreground: 220 8% 4%;
+    --sidebar-border: 220 8% 90%;
+    --sidebar-ring: 170 74% 35%;
+
     --radius: 0.75rem;
   }
 
-  .dark {
+.dark {
     /* Dark crypto theme - homogeneous and professional */
     --background: 220 8% 3%;
     --foreground: 0 0% 98%;
@@ -89,6 +99,16 @@
     --border: 220 8% 12%;
     --input: 220 8% 8%;
     --ring: 170 74% 35%;
+
+    /* Sidebar tokens */
+    --sidebar: 220 8% 4%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 170 74% 35%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 220 8% 8%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 220 8% 12%;
+    --sidebar-ring: 170 74% 35%;
   }
 
   /* Global Variables */
