@@ -47,8 +47,8 @@
     --input: 220 8% 98%;
     --ring: 170 74% 35%;
 
-    /* Sidebar tokens */
-    --sidebar: 0 0% 100%;
+    /* Sidebar tokens (must match tailwind.config.ts keys) */
+    --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 8% 4%;
     --sidebar-primary: 170 74% 35%;
     --sidebar-primary-foreground: 0 0% 98%;
@@ -100,8 +100,8 @@
     --input: 220 8% 8%;
     --ring: 170 74% 35%;
 
-    /* Sidebar tokens */
-    --sidebar: 220 8% 4%;
+    /* Sidebar tokens (must match tailwind.config.ts keys) */
+    --sidebar-background: 220 8% 4%;
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 170 74% 35%;
     --sidebar-primary-foreground: 0 0% 98%;
