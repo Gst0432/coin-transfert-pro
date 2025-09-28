@@ -4,57 +4,100 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Home, Briefcase, Clock, User } from 'lucide-react';
+import { ArrowUpDown, ArrowLeft, Home, Briefcase, Clock, User, Smartphone, Wallet as WalletIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function TradingInterface() {
   const [amountFcfa, setAmountFcfa] = useState('1000');
+  const [amountUsdt, setAmountUsdt] = useState('');
   const [selectedNumber, setSelectedNumber] = useState('');
   const [selectedAddress, setSelectedAddress] = useState('');
   const [calculatedUsdt, setCalculatedUsdt] = useState(0);
+  const [calculatedFcfa, setCalculatedFcfa] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInverted, setIsInverted] = useState(false); // false = FCFA->USDT, true = USDT->FCFA
   
   const { toast } = useToast();
   
-  const RATE = 595.23; // 1 USD = 595.23 FCFA (approximatif du screenshot)
+  const RATE = 595.23; // 1 USD = 595.23 FCFA
   const MIN_FCFA = 3000;
   const MIN_USD = 2;
 
+  // Mock wallets from localStorage simulation
+  const mockWallets = [
+    // Mobile Money wallets
+    { id: '1', type: 'mobile_money', operator: 'Orange Money', country: 'Niger', phoneNumber: '+227 70 13 80 31', currency: 'FCFA' },
+    { id: '2', type: 'mobile_money', operator: 'Airtel Money', country: 'Niger', phoneNumber: '+227 90 12 34 56', currency: 'FCFA' },
+    { id: '3', type: 'mobile_money', operator: 'Mynita', country: 'Niger', phoneNumber: '+227 91 23 45 67', currency: 'FCFA' },
+    { id: '4', type: 'mobile_money', operator: 'Amanata', country: 'Niger', phoneNumber: '+227 94 56 78 90', currency: 'FCFA' },
+    // Crypto wallets
+    { id: '5', type: 'crypto', network: 'TRC20', address: 'TQMfqFK7Lh8jKzHj2sTJbx6W...xyz123', currency: 'USDT' },
+    { id: '6', type: 'crypto', network: 'ERC20', address: '0x742d35Cc6346C7ac8577A42C...5A42C', currency: 'USDT' },
+    { id: '7', type: 'crypto', network: 'BEP20', address: 'TKzxh8xF9Gm3pL7qR4tB9...9xKl2A', currency: 'USDT' },
+  ];
+
   // Calculate conversion
   useEffect(() => {
-    if (amountFcfa) {
+    if (!isInverted && amountFcfa) {
       const fcfa = parseFloat(amountFcfa);
       const usd = fcfa / RATE;
       setCalculatedUsdt(usd);
+      setAmountUsdt('');
+    } else if (isInverted && amountUsdt) {
+      const usd = parseFloat(amountUsdt);
+      const fcfa = usd * RATE;
+      setCalculatedFcfa(fcfa);
+      setAmountFcfa('');
     } else {
       setCalculatedUsdt(0);
+      setCalculatedFcfa(0);
     }
-  }, [amountFcfa]);
+  }, [amountFcfa, amountUsdt, isInverted]);
+
+  const handleInvert = () => {
+    setIsInverted(!isInverted);
+    setAmountFcfa('');
+    setAmountUsdt('');
+    setCalculatedUsdt(0);
+    setCalculatedFcfa(0);
+    setSelectedNumber('');
+    setSelectedAddress('');
+    toast({
+      title: "Inversion automatique",
+      description: `Basculé vers ${!isInverted ? "USDT → FCFA" : "FCFA → USDT"}`,
+    });
+  };
+
+  const mobileWallets = mockWallets.filter(w => w.type === 'mobile_money');
+  const cryptoWallets = mockWallets.filter(w => w.type === 'crypto');
 
   const handleConfirm = async () => {
-    const fcfa = parseFloat(amountFcfa);
-    if (isNaN(fcfa) || fcfa < MIN_FCFA) {
+    const amount = !isInverted ? parseFloat(amountFcfa) : parseFloat(amountUsdt);
+    const minAmount = !isInverted ? MIN_FCFA : MIN_USD;
+    const currency = !isInverted ? 'FCFA' : 'USD';
+    
+    if (isNaN(amount) || amount < minAmount) {
       toast({
         title: "Montant invalide",
-        description: `Montant minimum : ${MIN_FCFA.toLocaleString()} FCFA`,
+        description: `Montant minimum : ${minAmount.toLocaleString()} ${currency}`,
         variant: "destructive"
       });
       return;
     }
 
-    if (!selectedNumber) {
+    if ((!isInverted && !selectedNumber) || (isInverted && !selectedAddress)) {
       toast({
-        title: "Numéro requis",
-        description: "Veuillez sélectionner un numéro MoMo",
+        title: "Portefeuille source requis",
+        description: `Veuillez sélectionner votre ${!isInverted ? 'numéro MoMo' : 'adresse crypto'}`,
         variant: "destructive"
       });
       return;
     }
 
-    if (!selectedAddress) {
+    if ((!isInverted && !selectedAddress) || (isInverted && !selectedNumber)) {
       toast({
-        title: "Adresse requise",
-        description: "Veuillez sélectionner une adresse USD",
+        title: "Portefeuille destination requis",
+        description: `Veuillez sélectionner votre ${!isInverted ? 'adresse crypto' : 'numéro MoMo'}`,
         variant: "destructive"
       });
       return;
@@ -82,6 +125,22 @@ export default function TradingInterface() {
     <div className="min-h-screen bg-background">
       {/* Content - Interface mobile compacte */}
       <div className="p-3 space-y-4 max-w-md mx-auto">
+        {/* Header avec bouton d'inversion */}
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-xl font-bold text-foreground">
+            {!isInverted ? "FCFA → USDT" : "USDT → FCFA"}
+          </h1>
+          <Button
+            onClick={handleInvert}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            Inverser
+          </Button>
+        </div>
+
         {/* Je Donne Section */}
         <div className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">Je Donne</h2>
@@ -90,11 +149,13 @@ export default function TradingInterface() {
             <div className="crypto-card p-3 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-1">Je Donne (FCFA)</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Je Donne ({!isInverted ? 'FCFA' : 'USDT'})
+                  </div>
                   <Input
                     type="number"
-                    value={amountFcfa}
-                    onChange={(e) => setAmountFcfa(e.target.value)}
+                    value={!isInverted ? amountFcfa : amountUsdt}
+                    onChange={(e) => !isInverted ? setAmountFcfa(e.target.value) : setAmountUsdt(e.target.value)}
                     className="text-3xl font-bold bg-transparent border-0 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
                     placeholder="0"
                   />
@@ -102,32 +163,56 @@ export default function TradingInterface() {
                 <div className="ml-3">
                   <Badge className="bg-primary/20 text-primary border border-primary/30 px-2 py-1 text-xs">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">
-                        OM
-                      </div>
-                      <span className="font-medium text-xs">OM Niger</span>
+                      {!isInverted ? (
+                        <>
+                          <Smartphone className="w-4 h-4" />
+                          <span className="font-medium text-xs">Mobile Money</span>
+                        </>
+                      ) : (
+                        <>
+                          <WalletIcon className="w-4 h-4" />
+                          <span className="font-medium text-xs">Crypto</span>
+                        </>
+                      )}
                     </div>
                   </Badge>
                 </div>
               </div>
             </div>
             <div className="text-xs text-destructive mt-1">
-              Montant minimum: {MIN_FCFA.toLocaleString()} FCFA
+              Montant minimum: {!isInverted ? MIN_FCFA.toLocaleString() + ' FCFA' : MIN_USD + ' USDT'}
             </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-sm text-foreground font-medium">
-              Renseignez votre Numéro MoMo (FCFA)
+              {!isInverted ? 'Sélectionner votre compte Mobile Money' : 'Sélectionner votre adresse Crypto'}
             </label>
-            <Select value={selectedNumber} onValueChange={setSelectedNumber}>
+            <Select 
+              value={!isInverted ? selectedNumber : selectedAddress} 
+              onValueChange={!isInverted ? setSelectedNumber : setSelectedAddress}
+            >
               <SelectTrigger className="crypto-input h-12 text-sm">
-                <SelectValue placeholder="Sélectionnez un numéro" />
+                <SelectValue placeholder={!isInverted ? "Choisir un numéro" : "Choisir une adresse"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="+22770138031">+227 70 13 80 31</SelectItem>
-                <SelectItem value="+22790123456">+227 90 12 34 56</SelectItem>
-                <SelectItem value="+22791234567">+227 91 23 45 67</SelectItem>
+                {(!isInverted ? mobileWallets : cryptoWallets).map((wallet) => (
+                  <SelectItem key={wallet.id} value={!isInverted ? wallet.phoneNumber : wallet.address}>
+                    <div className="flex items-center gap-2">
+                      {!isInverted ? (
+                        <>
+                          <Badge variant="outline" className="text-xs">{wallet.operator}</Badge>
+                          <span className="font-mono text-sm">{wallet.phoneNumber}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Badge variant="outline" className="text-xs">{wallet.network}</Badge>
+                          <span className="font-mono text-sm">{wallet.address.slice(0, 10)}...{wallet.address.slice(-6)}</span>
+                        </>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -141,40 +226,69 @@ export default function TradingInterface() {
             <div className="crypto-card p-3 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-1">Je Reçois (USD)</div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Je Reçois ({!isInverted ? 'USDT' : 'FCFA'})
+                  </div>
                   <div className="text-3xl font-bold text-foreground">
-                    {calculatedUsdt > 0 ? calculatedUsdt.toFixed(8) : '0.00000000'}
+                    {!isInverted 
+                      ? (calculatedUsdt > 0 ? calculatedUsdt.toFixed(8) : '0.00000000')
+                      : (calculatedFcfa > 0 ? calculatedFcfa.toLocaleString() : '0')
+                    }
                   </div>
                 </div>
                 <div className="ml-3">
                   <Badge className="bg-primary/20 text-primary border border-primary/30 px-2 py-1 text-xs">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">
-                        $
-                      </div>
-                      <span className="font-medium text-xs">VOLET (USD)</span>
+                      {!isInverted ? (
+                        <>
+                          <WalletIcon className="w-4 h-4" />
+                          <span className="font-medium text-xs">Crypto</span>
+                        </>
+                      ) : (
+                        <>
+                          <Smartphone className="w-4 h-4" />
+                          <span className="font-medium text-xs">Mobile Money</span>
+                        </>
+                      )}
                     </div>
                   </Badge>
                 </div>
               </div>
             </div>
             <div className="text-xs text-destructive mt-1">
-              Montant minimum: {MIN_USD} USD
+              Montant minimum: {!isInverted ? MIN_USD + ' USDT' : MIN_FCFA.toLocaleString() + ' FCFA'}
             </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-sm text-foreground font-medium">
-              Renseignez votre Adresse (USD)
+              {!isInverted ? 'Sélectionner votre adresse de réception' : 'Sélectionner votre compte de réception'}
             </label>
-            <Select value={selectedAddress} onValueChange={setSelectedAddress}>
+            <Select 
+              value={!isInverted ? selectedAddress : selectedNumber} 
+              onValueChange={!isInverted ? setSelectedAddress : setSelectedNumber}
+            >
               <SelectTrigger className="crypto-input h-12 text-sm">
-                <SelectValue placeholder="Sélectionnez une adresse" />
+                <SelectValue placeholder={!isInverted ? "Choisir une adresse" : "Choisir un numéro"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="addr1">1A1zP1...4frfgt (Bitcoin)</SelectItem>
-                <SelectItem value="addr2">0x742d...5A42C (Ethereum)</SelectItem>
-                <SelectItem value="addr3">TKzxh8...9xKl2A (Tron)</SelectItem>
+                {(!isInverted ? cryptoWallets : mobileWallets).map((wallet) => (
+                  <SelectItem key={wallet.id} value={!isInverted ? wallet.address : wallet.phoneNumber}>
+                    <div className="flex items-center gap-2">
+                      {!isInverted ? (
+                        <>
+                          <Badge variant="outline" className="text-xs">{wallet.network}</Badge>
+                          <span className="font-mono text-sm">{wallet.address.slice(0, 10)}...{wallet.address.slice(-6)}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Badge variant="outline" className="text-xs">{wallet.operator}</Badge>
+                          <span className="font-mono text-sm">{wallet.phoneNumber}</span>
+                        </>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
