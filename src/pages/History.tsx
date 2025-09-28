@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { PaginationCustom } from '@/components/ui/pagination-custom';
 
 interface Transaction {
   id: string;
@@ -59,7 +60,8 @@ export default function History() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
 
   // Function definitions
   const fetchTransactions = async () => {
@@ -193,10 +195,19 @@ export default function History() {
   };
 
   // Pagination
-  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+  const paginationTotalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentTransactions = filteredTransactions.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
 
   // Stats
   const totalTransactions = transactions.length;

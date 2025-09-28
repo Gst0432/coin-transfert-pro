@@ -187,6 +187,21 @@ export default function AdminInterface() {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Footer Admin */}
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="text-center text-sm text-muted-foreground">
+            Propulsé avec amour ❤️ par{' '}
+            <a 
+              href="https://gstartup.pro" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 font-medium transition-colors"
+            >
+              G-STARTUP
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );

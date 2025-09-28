@@ -15,6 +15,7 @@ import { usePayoutManagement } from '@/hooks/usePayoutManagement';
 import { Search, RotateCcw, CheckCircle, XCircle, Clock, AlertCircle, RefreshCw, Eye, Check, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { PaginationCustom } from '@/components/ui/pagination-custom';
 
 interface Transaction {
   id: string;
@@ -51,12 +52,18 @@ const statusConfig = {
 export default function TransactionManagement() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+  const [paginatedTransactions, setPaginatedTransactions] = useState<Transaction[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
   
   const { toast } = useToast();
   const { retryPayment, isLoading: isRetrying } = useRetryPayment();
@@ -69,6 +76,10 @@ export default function TransactionManagement() {
   useEffect(() => {
     filterTransactions();
   }, [transactions, searchTerm, statusFilter, typeFilter]);
+
+  useEffect(() => {
+    paginateTransactions();
+  }, [filteredTransactions, currentPage, itemsPerPage]);
 
   const fetchTransactions = async () => {
     setIsLoading(true);
@@ -119,6 +130,22 @@ export default function TransactionManagement() {
     }
 
     setFilteredTransactions(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  const paginateTransactions = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setPaginatedTransactions(filteredTransactions.slice(startIndex, endIndex));
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
   };
 
   const handleTransactionAction = async (transactionId: string, action: 'approve' | 'reject', notes?: string) => {
@@ -141,233 +168,175 @@ export default function TransactionManagement() {
 
       if (error) throw error;
 
-      // Update local state
-      setTransactions(prev => prev.map(transaction => 
-        transaction.id === transactionId 
-          ? { 
-              ...transaction, 
-              status: newStatus as any,
-              admin_notes: notes || null,
-              processed_by: user.id,
-              processed_at: new Date().toISOString()
-            }
-          : transaction
-      ));
-
       toast({
         title: "Transaction mise à jour",
         description: `Transaction ${action === 'approve' ? 'approuvée' : 'rejetée'} avec succès`,
       });
 
-      setSelectedTransaction(null);
-      setAdminNotes('');
+      await fetchTransactions();
     } catch (error) {
       console.error('Error updating transaction:', error);
       toast({
         title: "Erreur",
         description: "Impossible de mettre à jour la transaction",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // New payout management functions
+  const handleRetryPayment = async (transaction: Transaction) => {
+    try {
+      await retryPayment({
+        transactionId: transaction.id,
+        paymentMethod: 'moneroo'
+      });
+
+      toast({
+        title: "Paiement relancé",
+        description: "La transaction a été relancée avec succès",
+      });
+
+      await fetchTransactions();
+    } catch (error) {
+      console.error('Error retrying payment:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de relancer le paiement",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleConfirmPayout = async (transactionId: string) => {
     try {
-      await handlePayoutAction({ transactionId, action: 'confirm' });
+      await handlePayoutAction({
+        transactionId,
+        action: 'confirm'
+      });
+
+      toast({
+        title: "Payout confirmé",
+        description: "Le payout a été confirmé avec succès",
+      });
+
       await fetchTransactions();
     } catch (error) {
       console.error('Error confirming payout:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de confirmer le payout",
+        variant: "destructive",
+      });
     }
   };
 
   const handleRejectPayout = async (transactionId: string) => {
     try {
-      await handlePayoutAction({ transactionId, action: 'reject' });
+      await handlePayoutAction({
+        transactionId,
+        action: 'reject'
+      });
+
+      toast({
+        title: "Payout rejeté",
+        description: "Le payout a été rejeté",
+      });
+
       await fetchTransactions();
     } catch (error) {
       console.error('Error rejecting payout:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de rejeter le payout",
+        variant: "destructive",
+      });
     }
   };
 
   const handleRetryPayout = async (transactionId: string) => {
     try {
-      await handlePayoutAction({ transactionId, action: 'retry' });
+      await handlePayoutAction({
+        transactionId,
+        action: 'retry'
+      });
+
+      toast({
+        title: "Payout relancé",
+        description: "Le payout a été relancé",
+      });
+
       await fetchTransactions();
     } catch (error) {
       console.error('Error retrying payout:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de relancer le payout",
+        variant: "destructive",
+      });
     }
   };
 
-  // Enhanced retry function that handles both payment retry and payout actions
-  const handleRetryPayment = async (transaction: Transaction) => {
-    try {
-      const paymentMethod = transaction.transaction_type === 'fcfa_to_usdt' ? 'moneroo' : 'nowpayments';
-      await retryPayment({ transactionId: transaction.id, paymentMethod });
-      await fetchTransactions();
-    } catch (error) {
-      console.error('Error retrying payment:', error);
-    }
-  };
-
-  // Enhanced function to check if transaction can be retried
   const canRetryTransaction = (transaction: Transaction) => {
     return ['failed', 'rejected'].includes(transaction.status);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const formatWalletInfo = (wallet: any, type: 'source' | 'destination') => {
-    if (!wallet) return 'N/A';
-    
-    if (wallet.type === 'mobile') {
-      const phone = wallet.phoneNumber || '';
-      const operator = wallet.operator || '';
-      return `${operator} - ${phone.slice(0, 8)}***${phone.slice(-2)}`;
-    } else if (wallet.type === 'crypto') {
-      const address = wallet.address || '';
-      const network = wallet.network || '';
-      return `${network} - ${address.slice(0, 6)}...${address.slice(-4)}`;
+  const formatAmount = (amount: number, currency: string) => {
+    if (currency === 'FCFA') {
+      return new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: 'XOF',
+        minimumFractionDigits: 0,
+      }).format(amount);
+    } else {
+      return `${amount.toFixed(2)} USDT`;
     }
-    
-    return 'N/A';
   };
 
-  // Statistics
-  const stats = {
-    total: transactions.length,
-    pending_admin_validation: transactions.filter(t => t.status === 'pending_admin_validation').length,
-    processing: transactions.filter(t => t.status === 'processing').length,
-    completed: transactions.filter(t => t.status === 'completed').length,
-    rejected: transactions.filter(t => t.status === 'rejected').length,
-    failed: transactions.filter(t => t.status === 'failed').length,
-    canRetry: transactions.filter(t => ['failed', 'rejected'].includes(t.status)).length,
+  const getTransactionTypeLabel = (type: string) => {
+    return type === 'fcfa_to_usdt' ? 'FCFA → USDT' : 'USDT → FCFA';
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Gestion des Transactions</h2>
-          <p className="text-muted-foreground">Validez ou rejetez les transactions</p>
-        </div>
-        <Button 
-          onClick={fetchTransactions} 
-          disabled={isLoading}
-          className="gap-2"
-        >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-          Actualiser
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="crypto-card">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/20 rounded-lg">
-              <AlertCircle className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total</p>
-              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="crypto-card">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/20 rounded-lg">
-              <AlertCircle className="w-5 h-5 test-blue-500" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Validation admin</p>
-              <p className="text-2xl font-bold text-foreground">{stats.pending_admin_validation}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="crypto-card">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-success/20 rounded-lg">
-              <Check className="w-5 h-5 text-success" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Complétées</p>
-              <p className="text-2xl font-bold text-foreground">{stats.completed}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="crypto-card">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-destructive/20 rounded-lg">
-              <X className="w-5 h-5 text-destructive" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Rejetées</p>
-              <p className="text-2xl font-bold text-foreground">{stats.rejected}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="crypto-card">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-500/20 rounded-lg">
-              <RotateCcw className="w-5 h-5 text-orange-500" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">À relancer</p>
-              <p className="text-2xl font-bold text-foreground">{stats.canRetry}</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card className="crypto-card">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <RefreshCw className="w-5 h-5" />
+            Gestion des Transactions
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Rechercher par ID transaction..."
+                placeholder="Rechercher par ID de transaction..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="crypto-input pl-10"
+                className="pl-9"
               />
             </div>
-          </div>
-          <div className="flex gap-2">
+            
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="crypto-input w-40">
-                <SelectValue placeholder="Statut" />
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filtrer par statut" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les statuts</SelectItem>
+                <SelectItem value="pending">En attente</SelectItem>
                 <SelectItem value="pending_admin_validation">Validation admin</SelectItem>
                 <SelectItem value="processing">En traitement</SelectItem>
-                <SelectItem value="completed">Complétées</SelectItem>
-                <SelectItem value="rejected">Rejetées</SelectItem>
-                <SelectItem value="failed">Échouées</SelectItem>
+                <SelectItem value="completed">Complétée</SelectItem>
                 <SelectItem value="failed,rejected">À relancer</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="crypto-input w-40">
-                <SelectValue placeholder="Type" />
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filtrer par type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les types</SelectItem>
@@ -375,17 +344,21 @@ export default function TransactionManagement() {
                 <SelectItem value="usdt_to_fcfa">USDT → FCFA</SelectItem>
               </SelectContent>
             </Select>
+
+            <Button onClick={fetchTransactions} disabled={isLoading}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              Actualiser
+            </Button>
           </div>
-        </div>
+        </CardContent>
       </Card>
 
-      {/* Transactions Table */}
-      <Card className="crypto-card">
+      <Card>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
+                <TableHead>ID Transaction</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Montant</TableHead>
                 <TableHead>Taux</TableHead>
@@ -395,7 +368,7 @@ export default function TransactionManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTransactions.map((transaction) => {
+              {paginatedTransactions.map((transaction) => {
                 const statusInfo = statusConfig[transaction.status];
                 const StatusIcon = statusInfo.icon;
                 
@@ -405,55 +378,49 @@ export default function TransactionManagement() {
                       {transaction.id.slice(0, 8)}...
                     </TableCell>
                     <TableCell>
-                      <Badge variant={transaction.transaction_type === 'fcfa_to_usdt' ? 'default' : 'secondary'}>
-                        {transaction.transaction_type === 'fcfa_to_usdt' ? 'FCFA → USDT' : 'USDT → FCFA'}
+                      <Badge variant="outline">
+                        {getTransactionTypeLabel(transaction.transaction_type)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="text-sm">
+                          {formatAmount(transaction.amount_fcfa, 'FCFA')}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {formatAmount(transaction.amount_usdt, 'USDT')}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm font-mono">
+                        {transaction.exchange_rate.toFixed(2)}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={statusInfo.variant} className="flex items-center gap-1 w-fit">
+                        <StatusIcon className="w-3 h-3" />
+                        {statusInfo.label}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        <div className="font-medium">
-                          {transaction.transaction_type === 'fcfa_to_usdt' 
-                            ? `${transaction.amount_fcfa.toLocaleString()} FCFA`
-                            : `${transaction.amount_usdt.toFixed(8)} USDT`
-                          }
-                        </div>
-                        <div className="text-muted-foreground">
-                          → {transaction.transaction_type === 'fcfa_to_usdt' 
-                            ? `${transaction.final_amount_usdt?.toFixed(8) || 0} USDT`
-                            : `${transaction.final_amount_fcfa?.toLocaleString() || 0} FCFA`
-                          }
-                        </div>
+                        {format(new Date(transaction.created_at), 'dd/MM/yyyy HH:mm', { locale: fr })}
                       </div>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {transaction.exchange_rate.toFixed(2)} FCFA
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <StatusIcon className="w-4 h-4" />
-                        <Badge variant={statusInfo.variant}>
-                          {statusInfo.label}
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {formatDate(transaction.created_at)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
+                        {/* Dialog pour voir les détails */}
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => {
-                                setSelectedTransaction(transaction);
-                                setAdminNotes(transaction.admin_notes || '');
-                              }}
+                              onClick={() => setSelectedTransaction(transaction)}
                               className="text-xs"
                             >
                               <Eye className="w-3 h-3 mr-1" />
-                              Voir
+                              Détails
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="max-w-2xl">
@@ -462,89 +429,92 @@ export default function TransactionManagement() {
                             </DialogHeader>
                             {selectedTransaction && (
                               <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="grid grid-cols-2 gap-4">
                                   <div>
-                                    <Label className="font-medium">ID Transaction</Label>
-                                    <p className="font-mono">{selectedTransaction.id}</p>
+                                    <Label>ID Transaction</Label>
+                                    <p className="font-mono text-sm">{selectedTransaction.id}</p>
                                   </div>
                                   <div>
-                                    <Label className="font-medium">Type</Label>
-                                    <p>{selectedTransaction.transaction_type === 'fcfa_to_usdt' ? 'FCFA → USDT' : 'USDT → FCFA'}</p>
+                                    <Label>Type</Label>
+                                    <p>{getTransactionTypeLabel(selectedTransaction.transaction_type)}</p>
                                   </div>
                                   <div>
-                                    <Label className="font-medium">Portefeuille source</Label>
-                                    <p>{formatWalletInfo(selectedTransaction.source_wallet, 'source')}</p>
+                                    <Label>Montant FCFA</Label>
+                                    <p>{formatAmount(selectedTransaction.amount_fcfa, 'FCFA')}</p>
                                   </div>
                                   <div>
-                                    <Label className="font-medium">Portefeuille destination</Label>
-                                    <p>{formatWalletInfo(selectedTransaction.destination_wallet, 'destination')}</p>
+                                    <Label>Montant USDT</Label>
+                                    <p>{formatAmount(selectedTransaction.amount_usdt, 'USDT')}</p>
                                   </div>
                                   <div>
-                                    <Label className="font-medium">Montant donné</Label>
-                                    <p>{selectedTransaction.transaction_type === 'fcfa_to_usdt' 
-                                      ? `${selectedTransaction.amount_fcfa.toLocaleString()} FCFA`
-                                      : `${selectedTransaction.amount_usdt.toFixed(8)} USDT`
-                                    }</p>
+                                    <Label>Taux de change</Label>
+                                    <p>{selectedTransaction.exchange_rate.toFixed(2)}</p>
                                   </div>
                                   <div>
-                                    <Label className="font-medium">Montant final</Label>
-                                    <p>{selectedTransaction.transaction_type === 'fcfa_to_usdt' 
-                                      ? `${selectedTransaction.final_amount_usdt?.toFixed(8) || 0} USDT`
-                                      : `${selectedTransaction.final_amount_fcfa?.toLocaleString() || 0} FCFA`
-                                    }</p>
-                                  </div>
-                                  <div>
-                                    <Label className="font-medium">Frais appliqués</Label>
-                                    <p>{selectedTransaction.transaction_type === 'fcfa_to_usdt' 
-                                      ? `${selectedTransaction.fees_usdt} USDT`
-                                      : `${selectedTransaction.fees_fcfa.toLocaleString()} FCFA`
-                                    }</p>
-                                  </div>
-                                  <div>
-                                    <Label className="font-medium">Taux de change</Label>
-                                    <p>1 USD = {selectedTransaction.exchange_rate.toFixed(2)} FCFA</p>
+                                    <Label>Statut</Label>
+                                    <Badge variant={statusConfig[selectedTransaction.status].variant}>
+                                      {statusConfig[selectedTransaction.status].label}
+                                    </Badge>
                                   </div>
                                 </div>
-
-                                {selectedTransaction.moneroo_payment_id && (
+                                
+                                {selectedTransaction.source_wallet && (
                                   <div>
-                                    <Label className="font-medium">ID Paiement Moneroo</Label>
-                                    <p className="font-mono text-sm">{selectedTransaction.moneroo_payment_id}</p>
+                                    <Label>Portefeuille source</Label>
+                                    <pre className="text-xs bg-muted p-2 rounded mt-1">
+                                      {JSON.stringify(selectedTransaction.source_wallet, null, 2)}
+                                    </pre>
+                                  </div>
+                                )}
+                                
+                                {selectedTransaction.destination_wallet && (
+                                  <div>
+                                    <Label>Portefeuille destination</Label>
+                                    <pre className="text-xs bg-muted p-2 rounded mt-1">
+                                      {JSON.stringify(selectedTransaction.destination_wallet, null, 2)}
+                                    </pre>
+                                  </div>
+                                )}
+
+                                {selectedTransaction.admin_notes && (
+                                  <div>
+                                    <Label>Notes administrateur</Label>
+                                    <p className="text-sm bg-muted p-2 rounded mt-1">
+                                      {selectedTransaction.admin_notes}
+                                    </p>
                                   </div>
                                 )}
 
                                 <div className="space-y-2">
-                                  <Label htmlFor="admin-notes">Notes admin</Label>
+                                  <Label htmlFor="adminNotes">Ajouter une note</Label>
                                   <Textarea
-                                    id="admin-notes"
+                                    id="adminNotes"
                                     value={adminNotes}
                                     onChange={(e) => setAdminNotes(e.target.value)}
-                                    placeholder="Ajouter une note..."
+                                    placeholder="Ajouter une note administrative..."
                                     rows={3}
                                   />
-                                </div>
-
-                                {selectedTransaction.status === 'pending_admin_validation' && (
-                                  <div className="flex gap-2 pt-4">
+                                  <div className="flex gap-2">
                                     <Button
-                                      onClick={() => handleConfirmPayout(selectedTransaction.id)}
-                                      disabled={isProcessingPayout}
-                                      className="flex-1 bg-green-600 hover:bg-green-700"
+                                      size="sm"
+                                      onClick={() => handleTransactionAction(selectedTransaction.id, 'approve', adminNotes)}
+                                      disabled={isLoading}
+                                      className="bg-green-600 hover:bg-green-700"
                                     >
-                                      <Check className="w-4 h-4 mr-2" />
-                                      Confirmer payout
+                                      <Check className="w-4 h-4 mr-1" />
+                                      Approuver
                                     </Button>
                                     <Button
-                                      onClick={() => handleRejectPayout(selectedTransaction.id)}
-                                      disabled={isProcessingPayout}
+                                      size="sm"
                                       variant="destructive"
-                                      className="flex-1"
+                                      onClick={() => handleTransactionAction(selectedTransaction.id, 'reject', adminNotes)}
+                                      disabled={isLoading}
                                     >
-                                      <X className="w-4 h-4 mr-2" />
+                                      <X className="w-4 h-4 mr-1" />
                                       Rejeter
                                     </Button>
                                   </div>
-                                )}
+                                </div>
                               </div>
                             )}
                           </DialogContent>
@@ -603,6 +573,20 @@ export default function TransactionManagement() {
             </TableBody>
           </Table>
         </div>
+        
+        {/* Pagination */}
+        {filteredTransactions.length > 0 && (
+          <div className="border-t px-4 py-4">
+            <PaginationCustom
+              currentPage={currentPage}
+              totalPages={totalPages}
+              itemsPerPage={itemsPerPage}
+              totalItems={filteredTransactions.length}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+            />
+          </div>
+        )}
         
         {filteredTransactions.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
