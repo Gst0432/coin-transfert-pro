@@ -43,16 +43,10 @@ interface Transaction {
 }
 
 export default function History() {
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL LOGIC
   const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // Authentication check
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/');
-    }
-  }, [user, authLoading, navigate]);
   
   // States
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -67,6 +61,22 @@ export default function History() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
+  // Effects
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/');
+    }
+  }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  useEffect(() => {
+    filterAndSortTransactions();
+  }, [transactions, searchTerm, statusFilter, typeFilter, sortBy, sortOrder]);
+  
+  // Authentication check
   // Show loading while checking auth
   if (authLoading) {
     return (
@@ -83,14 +93,6 @@ export default function History() {
   if (!user) {
     return null;
   }
-
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  useEffect(() => {
-    filterAndSortTransactions();
-  }, [transactions, searchTerm, statusFilter, typeFilter, sortBy, sortOrder]);
 
   const fetchTransactions = async () => {
     try {
