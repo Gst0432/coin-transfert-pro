@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider } from "react-router-dom";
+import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider, useLocation } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AppSidebar } from "./components/AppSidebar";
 import { MobileBottomNav } from "./components/MobileBottomNav";
@@ -38,6 +38,11 @@ const queryClient = new QueryClient();
 // Main App component with conditional sidebar
 const AppContent = () => {
   const { user, isLoading } = useAuth();
+  const location = useLocation();
+  
+  // Routes où le footer doit être affiché (uniquement landing page et pages légales)
+  const footerRoutes = ['/', '/landing', '/privacy-policy', '/terms-of-service'];
+  const shouldShowFooter = !user && footerRoutes.includes(location.pathname);
 
   // Show loading while checking auth
   if (isLoading) {
@@ -69,7 +74,7 @@ const AppContent = () => {
           <Route path="/cancel" element={<PaymentCancel />} />
           <Route path="*" element={<LandingPage />} />
         </Routes>
-        <Footer />
+        {shouldShowFooter && <Footer />}
       </div>
     );
   }
@@ -116,7 +121,6 @@ const AppContent = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
-            <Footer />
           </main>
           
           {/* Mobile Bottom Navigation */}
