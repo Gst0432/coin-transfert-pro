@@ -173,10 +173,23 @@ export default function AdminInterface() {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background">
+      {/* Mobile Header - Only visible on small screens */}
+      <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card/80 backdrop-blur-sm">
+        <h1 className="text-xl font-semibold text-foreground">Administration</h1>
+        <Button 
+          onClick={refreshOrders} 
+          disabled={isLoading}
+          size="sm"
+          variant="ghost"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+        </Button>
+      </div>
+      
+      <div className="p-4 lg:p-8 space-y-6 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="hidden lg:flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
               Administration G-Transfert

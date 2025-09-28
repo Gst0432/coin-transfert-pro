@@ -80,8 +80,13 @@ export default function TradingInterface() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Mobile Header - Only visible on small screens */}
+      <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card/80 backdrop-blur-sm">
+        <h1 className="text-xl font-semibold text-foreground">Achats & Ventes</h1>
+      </div>
+      
       {/* Content */}
-      <div className="p-4 space-y-6">
+      <div className="p-4 lg:p-8 space-y-6 max-w-4xl mx-auto">
         {/* Je Donne Section */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-foreground">Je Donne</h2>

@@ -9,7 +9,10 @@ import {
   User,
   Shield,
   Bell,
-  LogOut 
+  LogOut,
+  Moon,
+  Sun,
+  Monitor
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -29,6 +32,14 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "@/components/ThemeProvider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const mainItems = [
   { title: "Accueil", url: "/", icon: Home },
@@ -49,6 +60,7 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const currentPath = location.pathname;
+  const { theme, setTheme } = useTheme();
 
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
@@ -60,7 +72,8 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${collapsed ? "w-16" : "w-64"} border-r border-border bg-card`}
+      variant="inset"
+      className="border-r border-border bg-card/50 backdrop-blur-sm"
       collapsible="icon"
     >
       {/* Header */}
@@ -177,7 +190,35 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Footer */}
-      <SidebarFooter className="p-4 border-t border-border">
+      <SidebarFooter className="p-4 border-t border-border space-y-2">
+        {/* Theme Selector */}
+        {!collapsed && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground">
+                {theme === 'dark' ? <Moon className="w-4 h-4" /> : 
+                 theme === 'light' ? <Sun className="w-4 h-4" /> : 
+                 <Monitor className="w-4 h-4" />}
+                <span className="capitalize">{theme === 'system' ? 'Système' : theme === 'dark' ? 'Sombre' : 'Clair'}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setTheme('light')} className="gap-2">
+                <Sun className="w-4 h-4" />
+                <span>Clair</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme('dark')} className="gap-2">
+                <Moon className="w-4 h-4" />
+                <span>Sombre</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme('system')} className="gap-2">
+                <Monitor className="w-4 h-4" />
+                <span>Système</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+        
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>

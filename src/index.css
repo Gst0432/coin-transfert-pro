@@ -8,7 +8,50 @@
 
 @layer base {
   :root {
-    /* Dark crypto theme */
+    /* Light theme (system default) */
+    --background: 0 0% 100%;
+    --foreground: 220 8% 4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 8% 4%;
+    --card-hover: 0 0% 96%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 8% 4%;
+
+    /* Crypto green accent - consistent across themes */
+    --primary: 170 74% 35%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 170 74% 45%;
+    --primary-muted: 170 30% 15%;
+
+    --secondary: 220 8% 96%;
+    --secondary-foreground: 220 8% 4%;
+
+    --muted: 220 8% 96%;
+    --muted-foreground: 220 8% 40%;
+
+    --accent: 170 74% 35%;
+    --accent-foreground: 0 0% 98%;
+
+    /* Status colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* UI elements */
+    --border: 220 8% 90%;
+    --input: 220 8% 98%;
+    --ring: 170 74% 35%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Dark crypto theme - homogeneous and professional */
     --background: 220 8% 3%;
     --foreground: 0 0% 98%;
 
@@ -19,7 +62,7 @@
     --popover: 220 8% 4%;
     --popover-foreground: 0 0% 98%;
 
-    /* Crypto green accent */
+    /* Crypto green accent - same as light */
     --primary: 170 74% 35%;
     --primary-foreground: 0 0% 98%;
     --primary-glow: 170 74% 45%;
@@ -34,20 +77,22 @@
     --accent: 170 74% 35%;
     --accent-foreground: 0 0% 98%;
 
-    /* Status colors */
-    --success: 142 76% 36%;
+    /* Status colors - optimized for dark */
+    --success: 142 76% 40%;
     --success-foreground: 0 0% 98%;
-    --warning: 38 92% 50%;
+    --warning: 38 92% 55%;
     --warning-foreground: 0 0% 98%;
-    --destructive: 0 72% 51%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
 
     /* UI elements */
     --border: 220 8% 12%;
     --input: 220 8% 8%;
-    --input-border: 220 8% 15%;
     --ring: 170 74% 35%;
+  }
 
+  /* Global Variables */
+  :root {
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted)));
@@ -61,24 +106,6 @@
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s ease-out;
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
