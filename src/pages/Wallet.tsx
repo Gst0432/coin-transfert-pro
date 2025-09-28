@@ -15,8 +15,10 @@ import {
   Copy,
   Eye,
   EyeOff,
-  Trash2
+  Trash2,
+  History
 } from "lucide-react";
+import TransactionHistory from '@/components/TransactionHistory';
 
 interface MobileWallet {
   id: string;
@@ -229,21 +231,25 @@ export default function Wallet() {
       {/* Tabs pour ajouter des portefeuilles */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Ajouter un portefeuille</CardTitle>
+          <CardTitle className="text-lg">Gestion du portefeuille</CardTitle>
           <CardDescription>
-            Ajoutez vos comptes mobile money (FCFA) ou adresses crypto (USDT)
+            Ajoutez vos comptes et consultez l'historique des transactions
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="mobile" className="gap-2">
                 <Smartphone className="w-4 h-4" />
-                Mobile Money (FCFA)
+                Mobile Money
               </TabsTrigger>
               <TabsTrigger value="crypto" className="gap-2">
                 <WalletIcon className="w-4 h-4" />
-                Crypto (USDT)
+                Crypto
+              </TabsTrigger>
+              <TabsTrigger value="history" className="gap-2">
+                <History className="w-4 h-4" />
+                Historique
               </TabsTrigger>
             </TabsList>
             
@@ -341,6 +347,10 @@ export default function Wallet() {
                 <Plus className="w-4 h-4" />
                 Ajouter adresse USDT
               </Button>
+            </TabsContent>
+            
+            <TabsContent value="history" className="mt-4">
+              <TransactionHistory />
             </TabsContent>
           </Tabs>
         </CardContent>

@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Smartphone, Wallet as WalletIcon, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TransactionSummaryProps {
   isInverted: boolean;
@@ -52,6 +53,92 @@ export default function TransactionSummary({
     : (calculatedFcfa * fees.mobile_money_fee_percentage / 100); // Percentage for mobile money reception
   
   const finalAmount = destinationAmount - withdrawalFee;
+
+  // Handle transaction confirmation
+  const handleConfirm = async () => {
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour effectuer cette transaction",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create transaction record
+      const transactionData = {
+        user_id: user.id,
+        transaction_type: (!isInverted ? 'fcfa_to_usdt' : 'usdt_to_fcfa') as 'fcfa_to_usdt' | 'usdt_to_fcfa',
+        amount_fcfa: !isInverted ? sourceAmount : calculatedFcfa,
+        amount_usdt: !isInverted ? calculatedUsdt : sourceAmount,
+        exchange_rate: rate,
+        fees_fcfa: !isInverted ? 0 : withdrawalFee,
+        fees_usdt: !isInverted ? withdrawalFee : 0,
+        final_amount_fcfa: !isInverted ? 0 : finalAmount,
+        final_amount_usdt: !isInverted ? finalAmount : 0,
+        source_wallet: !isInverted 
+          ? { type: 'mobile', phoneNumber: selectedNumber, operator: sourceWallet?.operator }
+          : { type: 'crypto', address: selectedAddress, network: sourceWallet?.network },
+        destination_wallet: !isInverted 
+          ? { type: 'crypto', address: selectedAddress, network: destinationWallet?.network }
+          : { type: 'mobile', phoneNumber: selectedNumber, operator: destinationWallet?.operator }
+      };
+
+      const { data: transaction, error: transactionError } = await supabase
+        .from('transactions')
+        .insert([transactionData])
+        .select()
+        .single();
+
+      if (transactionError) {
+        console.error('Transaction creation error:', transactionError);
+        throw transactionError;
+      }
+
+      // If it's FCFA to USDT, redirect to Moneroo
+      if (!isInverted) {
+        const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
+          'process-moneroo-payment',
+          {
+            body: {
+              transactionId: transaction.id,
+              amount: sourceAmount,
+              customerName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Client',
+              customerEmail: user.email,
+              customerPhone: selectedNumber,
+              description: `Achat ${finalAmount.toFixed(8)} USDT`
+            }
+          }
+        );
+
+        if (paymentError) {
+          console.error('Payment creation error:', paymentError);
+          throw paymentError;
+        }
+
+        // Redirect to Moneroo checkout
+        if (paymentData?.checkout_url) {
+          window.location.href = paymentData.checkout_url;
+        } else {
+          throw new Error('URL de paiement non reçue');
+        }
+      } else {
+        // For USDT to FCFA, call the regular onConfirm function
+        onConfirm();
+      }
+
+    } catch (error) {
+      console.error('Error processing transaction:', error);
+      toast({
+        title: "Erreur",
+        description: error instanceof Error ? error.message : "Une erreur est survenue",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Get wallet details
   const sourceWallet = !isInverted 
@@ -241,7 +328,7 @@ export default function TransactionSummary({
         {/* Confirm Button */}
         <div className="pt-4">
           <Button
-            onClick={onConfirm}
+            onClick={handleConfirm}
             disabled={isLoading}
             className="w-full h-12 text-base font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
           >

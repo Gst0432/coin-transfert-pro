@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Users, 
   DollarSign, 
@@ -19,9 +20,13 @@ import {
   AlertCircle,
   RefreshCw,
   Settings,
-  Save
+  Save,
+  Check,
+  X
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import TransactionManagement from './TransactionManagement';
 
 interface Order {
   id: string;
@@ -241,10 +246,14 @@ export default function AdminInterface() {
 
         {/* Tabs for Orders and Configuration */}
         <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="orders" className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
               Commandes
+            </TabsTrigger>
+            <TabsTrigger value="transactions" className="flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              Transactions
             </TabsTrigger>
             <TabsTrigger value="config" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
@@ -450,6 +459,10 @@ export default function AdminInterface() {
             </div>
           )}
         </Card>
+          </TabsContent>
+
+          <TabsContent value="transactions" className="space-y-6">
+            <TransactionManagement />
           </TabsContent>
 
           <TabsContent value="config" className="space-y-6">
