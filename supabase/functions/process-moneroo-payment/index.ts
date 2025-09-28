@@ -64,7 +64,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: Math.round(amount * 100), // Convert to cents
+          amount: Math.round(amount), // Amount should already be in minor units (centimes)
           currency: 'XOF', // West African CFA franc
           customer: {
             first_name: customerName?.split(' ')[0] || 'Client',
