@@ -1,0 +1,13 @@
+# Fichiers temporaires de migration
+migration-backup_*
+functions-backup_*
+*.log
+*.backup.*
+
+# Fichiers de configuration sensibles (générés)
+migration-config.json
+*.env.generated
+
+# Fichiers temporaires système
+.DS_Store
+Thumbs.db

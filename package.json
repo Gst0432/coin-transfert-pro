@@ -8,7 +8,20 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:netlify": "VITE_BACKEND_TYPE=supabase npm run build",
+    "build:hostinger": "VITE_BACKEND_TYPE=laravel npm run build",
+    "deploy:netlify": "./deploy-scripts/build-for-netlify.sh",
+    "deploy:hostinger": "./deploy-scripts/build-for-hostinger.sh",
+    "dev:supabase": "VITE_BACKEND_TYPE=supabase npm run dev",
+    "dev:laravel": "VITE_BACKEND_TYPE=laravel npm run dev",
+    "config:env": "./migration-tools/env-manager.sh",
+    "migrate:supabase": "./migration-tools/migrate-supabase.sh",
+    "functions:manage": "./migration-tools/function-manager.sh",
+    "functions:deploy": "./migration-tools/function-manager.sh deploy-all",
+    "functions:test": "./migration-tools/function-manager.sh test",
+    "migration:help": "echo 'Scripts de migration disponibles:' && echo '  npm run config:env - Configuration des variables' && echo '  npm run migrate:supabase - Migration vers nouveau Supabase' && echo '  npm run functions:manage - Gestion des Edge Functions' && echo '  npm run functions:deploy - Déployer toutes les functions' && echo '  npm run functions:test - Test local des functions'",
+    "migration:demo": "./migration-tools/demo.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
