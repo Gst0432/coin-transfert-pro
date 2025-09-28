@@ -171,9 +171,9 @@ export default function TradingInterface() {
   return (
     <div className="min-h-screen bg-background">
       {/* Content - Interface mobile compacte */}
-      <div className="p-3 space-y-3 max-w-sm mx-auto">
+      <div className="p-2 space-y-2 max-w-xs mx-auto">
         {/* Header avec bouton d'inversion */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2">
           <h1 className="text-lg font-bold text-foreground">
             {!isInverted ? "FCFA → USDT" : "USDT → FCFA"}
           </h1>
@@ -181,22 +181,22 @@ export default function TradingInterface() {
             onClick={handleInvert}
             variant="outline"
             size="sm"
-            className="gap-1 h-8 px-3 text-xs"
+            className="gap-1 h-7 px-2 text-[11px]"
           >
-            <ArrowUpDown className="w-3 h-3" />
+            <ArrowUpDown className="w-2.5 h-2.5" />
             Inverser
           </Button>
         </div>
 
         {/* Je Donne Section */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <h2 className="text-base font-bold text-foreground">Je Donne</h2>
           
           <div className="relative">
             <div className="crypto-card p-2 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-1">
+                  <div className="text-[11px] text-muted-foreground mb-1">
                     Je Donne ({!isInverted ? 'FCFA' : 'USDT'})
                   </div>
                   <Input
@@ -208,17 +208,17 @@ export default function TradingInterface() {
                   />
                 </div>
                 <div className="ml-2">
-                  <Badge className="bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 text-xs">
+                  <Badge className="bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 text-[11px]">
                     <div className="flex items-center gap-1">
                       {!isInverted ? (
                         <>
-                          <Smartphone className="w-3 h-3" />
-                          <span className="font-medium text-xs">Mobile Money</span>
+                          <Smartphone className="w-2.5 h-2.5" />
+                          <span className="font-medium text-[11px]">Mobile Money</span>
                         </>
                       ) : (
                         <>
-                          <WalletIcon className="w-3 h-3" />
-                          <span className="font-medium text-xs">Crypto</span>
+                          <WalletIcon className="w-2.5 h-2.5" />
+                          <span className="font-medium text-[11px]">Crypto</span>
                         </>
                       )}
                     </div>
@@ -226,20 +226,20 @@ export default function TradingInterface() {
                 </div>
               </div>
             </div>
-            <div className="text-xs text-destructive mt-1">
+            <div className="text-[11px] text-destructive mt-1">
               Montant minimum: {!isInverted ? config.min_fcfa.toLocaleString() + ' FCFA' : config.min_usd + ' USDT'}
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs text-foreground font-medium">
+            <label className="text-xs font-medium text-foreground">
               {!isInverted ? 'Sélectionner votre compte Mobile Money' : 'Sélectionner votre adresse Crypto'}
             </label>
             <Select 
               value={!isInverted ? selectedNumber : selectedAddress} 
               onValueChange={!isInverted ? setSelectedNumber : setSelectedAddress}
             >
-              <SelectTrigger className="crypto-input h-9 text-xs">
+              <SelectTrigger className="crypto-input h-8 px-1.5 text-xs">
                 <SelectValue placeholder={!isInverted ? "Choisir un numéro" : "Choisir une adresse"} />
               </SelectTrigger>
               <SelectContent>
@@ -248,13 +248,13 @@ export default function TradingInterface() {
                     <div className="flex items-center gap-2">
                       {!isInverted ? (
                         <>
-                          <Badge variant="outline" className="text-xs">{wallet.operator}</Badge>
-                          <span className="font-mono text-sm">{wallet.phoneNumber}</span>
+                          <Badge variant="outline" className="text-[11px]">{wallet.operator}</Badge>
+                          <span className="font-mono text-xs">{wallet.phoneNumber}</span>
                         </>
                       ) : (
                         <>
-                          <Badge variant="outline" className="text-xs">{wallet.network}</Badge>
-                          <span className="font-mono text-sm">{wallet.address.slice(0, 10)}...{wallet.address.slice(-6)}</span>
+                          <Badge variant="outline" className="text-[11px]">{wallet.network}</Badge>
+                          <span className="font-mono text-xs">{wallet.address.slice(0, 10)}...{wallet.address.slice(-6)}</span>
                         </>
                       )}
                     </div>
@@ -266,14 +266,14 @@ export default function TradingInterface() {
         </div>
 
         {/* Je Reçois Section */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <h2 className="text-base font-bold text-foreground">Je Reçois</h2>
           
           <div className="relative">
             <div className="crypto-card p-2 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-1">
+                  <div className="text-[11px] text-muted-foreground mb-1">
                     Je Reçois ({!isInverted ? 'USDT' : 'FCFA'})
                   </div>
                   <div className="text-2xl font-bold text-foreground">
@@ -284,17 +284,17 @@ export default function TradingInterface() {
                   </div>
                 </div>
                 <div className="ml-2">
-                  <Badge className="bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 text-xs">
+                  <Badge className="bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 text-[11px]">
                     <div className="flex items-center gap-1">
                       {!isInverted ? (
                         <>
-                          <WalletIcon className="w-3 h-3" />
-                          <span className="font-medium text-xs">Crypto</span>
+                          <WalletIcon className="w-2.5 h-2.5" />
+                          <span className="font-medium text-[11px]">Crypto</span>
                         </>
                       ) : (
                         <>
-                          <Smartphone className="w-3 h-3" />
-                          <span className="font-medium text-xs">Mobile Money</span>
+                          <Smartphone className="w-2.5 h-2.5" />
+                          <span className="font-medium text-[11px]">Mobile Money</span>
                         </>
                       )}
                     </div>
@@ -302,20 +302,20 @@ export default function TradingInterface() {
                 </div>
               </div>
             </div>
-            <div className="text-xs text-destructive mt-1">
+            <div className="text-[11px] text-destructive mt-1">
               Montant minimum: {!isInverted ? config.min_usd + ' USDT' : config.min_fcfa.toLocaleString() + ' FCFA'}
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs text-foreground font-medium">
+            <label className="text-xs font-medium text-foreground">
               {!isInverted ? 'Sélectionner votre adresse de réception' : 'Sélectionner votre compte de réception'}
             </label>
             <Select 
               value={!isInverted ? selectedAddress : selectedNumber} 
               onValueChange={!isInverted ? setSelectedAddress : setSelectedNumber}
             >
-              <SelectTrigger className="crypto-input h-9 text-xs">
+              <SelectTrigger className="crypto-input h-8 px-1.5 text-xs">
                 <SelectValue placeholder={!isInverted ? "Choisir une adresse" : "Choisir un numéro"} />
               </SelectTrigger>
               <SelectContent>
@@ -324,13 +324,13 @@ export default function TradingInterface() {
                     <div className="flex items-center gap-2">
                       {!isInverted ? (
                         <>
-                          <Badge variant="outline" className="text-xs">{wallet.network}</Badge>
-                          <span className="font-mono text-sm">{wallet.address.slice(0, 10)}...{wallet.address.slice(-6)}</span>
+                          <Badge variant="outline" className="text-[11px]">{wallet.network}</Badge>
+                          <span className="font-mono text-xs">{wallet.address.slice(0, 10)}...{wallet.address.slice(-6)}</span>
                         </>
                       ) : (
                         <>
-                          <Badge variant="outline" className="text-xs">{wallet.operator}</Badge>
-                          <span className="font-mono text-sm">{wallet.phoneNumber}</span>
+                          <Badge variant="outline" className="text-[11px]">{wallet.operator}</Badge>
+                          <span className="font-mono text-xs">{wallet.phoneNumber}</span>
                         </>
                       )}
                     </div>
@@ -346,7 +346,7 @@ export default function TradingInterface() {
           <Button
             onClick={handleNext}
             disabled={isLoading}
-            className="w-full h-9 text-sm font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
+            className="w-full h-8 px-2 text-xs font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
           >
             Suivant
           </Button>
