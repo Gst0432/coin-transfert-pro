@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\InstallController;
+use App\Http\Controllers\Api\EmailConfigController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/settings', [AdminController::class, 'getSettings']);
         Route::put('/settings', [AdminController::class, 'updateSettings']);
         Route::get('/users', [AdminController::class, 'users']);
+        
+        // Email configuration routes
+        Route::get('/email-config', [EmailConfigController::class, 'getEmailConfig']);
+        Route::post('/email-config', [EmailConfigController::class, 'saveEmailConfig']);
+        Route::post('/test-smtp', [EmailConfigController::class, 'testSMTP']);
+        Route::post('/send-template-preview', [EmailConfigController::class, 'sendTemplatePreview']);
     });
 });
 

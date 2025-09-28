@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use App\Mail\WelcomeEmail;
 use App\Mail\PasswordResetEmail;
 use App\Mail\TransactionNotificationEmail;
@@ -14,12 +15,26 @@ use Illuminate\Support\Facades\Log;
 class EmailService
 {
     /**
-     * Send welcome email to new user
+     * Send welcome email to new user using custom templates
      */
     public function sendWelcomeEmail(User $user)
     {
         try {
-            Mail::to($user->email)->send(new WelcomeEmail($user));
+            // Get custom template
+            $template = $this->getEmailTemplate('welcome');
+            $variables = [
+                'site_name' => config('app.name'),
+                'user_name' => $user->profile->display_name ?? $user->email,
+                'app_url' => config('app.url'),
+                'primary_color' => $this->getBrandingColor(),
+            ];
+
+            $subject = $this->replaceVariables($template['subject'], $variables);
+            $content = $this->replaceVariables($template['content'], $variables);
+
+            Mail::html($content, function ($message) use ($user, $subject) {
+                $message->to($user->email)->subject($subject);
+            });
             
             Log::info('Welcome email sent successfully', [
                 'user_id' => $user->id,
@@ -39,12 +54,26 @@ class EmailService
     }
 
     /**
-     * Send password reset email
+     * Send password reset email using custom templates
      */
     public function sendPasswordResetEmail($email, $token)
     {
         try {
-            Mail::to($email)->send(new PasswordResetEmail($email, $token));
+            // Get custom template
+            $template = $this->getEmailTemplate('password_reset');
+            $variables = [
+                'site_name' => config('app.name'),
+                'app_url' => config('app.url'),
+                'primary_color' => $this->getBrandingColor(),
+                'reset_url' => config('app.url') . '/reset-password-confirm?token=' . $token . '&email=' . urlencode($email),
+            ];
+
+            $subject = $this->replaceVariables($template['subject'], $variables);
+            $content = $this->replaceVariables($template['content'], $variables);
+
+            Mail::html($content, function ($message) use ($email, $subject) {
+                $message->to($email)->subject($subject);
+            });
             
             Log::info('Password reset email sent successfully', [
                 'email' => $email
@@ -62,7 +91,7 @@ class EmailService
     }
 
     /**
-     * Send transaction notification email
+     * Send transaction notification email using custom templates
      */
     public function sendTransactionNotification(Transaction $transaction)
     {
@@ -76,7 +105,25 @@ class EmailService
                 return false;
             }
 
-            Mail::to($user->email)->send(new TransactionNotificationEmail($transaction));
+            // Get custom template
+            $template = $this->getEmailTemplate('transaction_notification');
+            $variables = [
+                'site_name' => config('app.name'),
+                'user_name' => $user->profile->display_name ?? $user->email,
+                'app_url' => config('app.url'),
+                'primary_color' => $this->getBrandingColor(),
+                'transaction_id' => $transaction->id,
+                'transaction_status' => ucfirst($transaction->status),
+                'transaction_amount' => number_format($transaction->amount_usdt, 2) . ' USDT',
+                'transaction_date' => $transaction->created_at->format('d/m/Y à H:i'),
+            ];
+
+            $subject = $this->replaceVariables($template['subject'], $variables);
+            $content = $this->replaceVariables($template['content'], $variables);
+
+            Mail::html($content, function ($message) use ($user, $subject) {
+                $message->to($user->email)->subject($subject);
+            });
             
             Log::info('Transaction notification email sent successfully', [
                 'transaction_id' => $transaction->id,
@@ -180,18 +227,84 @@ class EmailService
     }
 
     /**
-     * Get email sending statistics
+     * Get email template from database or fallback to default
      */
-    public function getEmailStats()
+    private function getEmailTemplate($type)
     {
-        // This would typically query a logs table or use Laravel Horizon
-        // For now, return mock data
-        return [
-            'sent_today' => 0,
-            'sent_this_week' => 0,
-            'sent_this_month' => 0,
-            'failed_today' => 0,
-            'queue_pending' => 0,
+        try {
+            $templateData = DB::table('admin_settings')
+                ->where('setting_key', 'email_templates')
+                ->first();
+
+            if ($templateData) {
+                $templates = json_decode($templateData->setting_value, true);
+                if (isset($templates[$type])) {
+                    return $templates[$type];
+                }
+            }
+        } catch (Exception $e) {
+            Log::warning('Failed to load custom email template, using default', [
+                'type' => $type,
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        // Fallback to default templates
+        return $this->getDefaultTemplate($type);
+    }
+
+    /**
+     * Get default email templates
+     */
+    private function getDefaultTemplate($type)
+    {
+        $defaults = [
+            'welcome' => [
+                'subject' => 'Bienvenue sur {{site_name}}',
+                'content' => '<h1>Bienvenue sur {{site_name}} !</h1><p>Nous sommes ravis de vous accueillir, {{user_name}} !</p><p>Votre compte a été créé avec succès.</p><a href="{{app_url}}" style="background: {{primary_color}}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Accéder à votre compte</a><p>L\'équipe {{site_name}}</p>',
+            ],
+            'password_reset' => [
+                'subject' => 'Réinitialisation de mot de passe - {{site_name}}',
+                'content' => '<h1>Réinitialisation de mot de passe</h1><p>Vous avez demandé la réinitialisation de votre mot de passe pour {{site_name}}.</p><a href="{{reset_url}}" style="background: {{primary_color}}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Réinitialiser mon mot de passe</a><p><strong>Ce lien expirera dans 60 minutes.</strong></p><p>L\'équipe {{site_name}}</p>',
+            ],
+            'transaction_notification' => [
+                'subject' => 'Mise à jour de votre transaction - {{site_name}}',
+                'content' => '<h1>Mise à jour de transaction</h1><p>Votre transaction {{transaction_id}} a été mise à jour.</p><p><strong>Statut :</strong> {{transaction_status}}</p><p><strong>Montant :</strong> {{transaction_amount}}</p><a href="{{app_url}}/history" style="background: {{primary_color}}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Voir mes transactions</a><p>L\'équipe {{site_name}}</p>',
+            ],
         ];
+
+        return $defaults[$type] ?? ['subject' => 'Email', 'content' => 'Contenu par défaut'];
+    }
+
+    /**
+     * Replace template variables
+     */
+    private function replaceVariables($template, $variables)
+    {
+        foreach ($variables as $key => $value) {
+            $template = str_replace('{{' . $key . '}}', $value, $template);
+        }
+        return $template;
+    }
+
+    /**
+     * Get branding primary color
+     */
+    private function getBrandingColor()
+    {
+        try {
+            $brandingData = DB::table('admin_settings')
+                ->where('setting_key', 'site_branding')
+                ->first();
+
+            if ($brandingData) {
+                $branding = json_decode($brandingData->setting_value, true);
+                return $branding['primary_color'] ?? '#3b82f6';
+            }
+        } catch (Exception $e) {
+            // Fallback to default color
+        }
+
+        return '#3b82f6';
     }
 }

@@ -21,11 +21,12 @@ import {
   CreditCard,
   Wallet,
   Bell,
-  Globe
+  Mail,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import TransactionManagement from './TransactionManagement';
 import AdminSettings from './AdminSettings';
+import EmailConfiguration from './EmailConfiguration';
 import { AdminCredentialsManager } from './AdminCredentialsManager';
 import { ApiKeysManager } from './ApiKeysManager';
 import BrandingManager from './BrandingManager';
@@ -120,10 +121,14 @@ export default function AdminInterface() {
 
         {/* Tabs for Orders and Configuration */}
         <Tabs defaultValue="branding" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="branding" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
               Identité
+            </TabsTrigger>
+            <TabsTrigger value="email" className="flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              Email
             </TabsTrigger>
             <TabsTrigger value="transactions" className="flex items-center gap-2">
               <CreditCard className="w-4 h-4" />
@@ -150,6 +155,11 @@ export default function AdminInterface() {
           {/* Onglet Identité de marque */}
           <TabsContent value="branding">
             <BrandingManager />
+          </TabsContent>
+
+          {/* Onglet Configuration Email */}
+          <TabsContent value="email">
+            <EmailConfiguration />
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">
