@@ -1,1 +1,13 @@
 project_id = "bvleffevnnugjdwygqyz"
+
+[functions.moneroo-webhook]
+verify_jwt = false
+
+[functions.process-moneroo-payment]
+verify_jwt = false
+
+[functions.nowpayments-webhook]
+verify_jwt = false
+
+[functions.process-nowpayments-payment]
+verify_jwt = false

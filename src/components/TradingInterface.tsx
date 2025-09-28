@@ -28,7 +28,8 @@ export default function TradingInterface() {
     min_usd: 2,
     fees: {
       usdt_withdrawal_fee: 1, // 1 USDT flat fee for crypto reception
-      mobile_money_fee_percentage: 1.5 // 1.5% fee for mobile money reception
+      mobile_money_fee_percentage: 1.5, // 1.5% fee for mobile money reception
+      nowpayments_fee: 0.5 // 0.5 USDT flat fee for NOWPayments (USDT to mobile money)
     }
   };
 

@@ -19,6 +19,7 @@ interface TransactionSummaryProps {
   fees: {
     usdt_withdrawal_fee: number;
     mobile_money_fee_percentage: number;
+    nowpayments_fee: number;
   };
   onBack: () => void;
   onConfirm: () => void;
@@ -50,7 +51,7 @@ export default function TransactionSummary({
   // Calculate fees
   const withdrawalFee = !isInverted 
     ? fees.usdt_withdrawal_fee // USDT withdrawal fee for crypto reception
-    : (calculatedFcfa * fees.mobile_money_fee_percentage / 100); // Percentage for mobile money reception
+    : fees.nowpayments_fee; // 0.5 USDT flat fee for NOWPayments (USDT to mobile money)
   
   const finalAmount = destinationAmount - withdrawalFee;
 
@@ -75,10 +76,10 @@ export default function TransactionSummary({
         amount_fcfa: !isInverted ? sourceAmount : calculatedFcfa,
         amount_usdt: !isInverted ? calculatedUsdt : sourceAmount,
         exchange_rate: rate,
-        fees_fcfa: !isInverted ? 0 : withdrawalFee,
-        fees_usdt: !isInverted ? withdrawalFee : 0,
-        final_amount_fcfa: !isInverted ? 0 : finalAmount,
-        final_amount_usdt: !isInverted ? finalAmount : 0,
+        fees_fcfa: !isInverted ? 0 : (finalAmount * fees.mobile_money_fee_percentage / 100),
+        fees_usdt: !isInverted ? withdrawalFee : withdrawalFee,
+        final_amount_fcfa: !isInverted ? 0 : (calculatedFcfa - (calculatedFcfa * fees.mobile_money_fee_percentage / 100)),
+        final_amount_usdt: !isInverted ? finalAmount : (calculatedUsdt - withdrawalFee),
         source_wallet: !isInverted 
           ? { type: 'mobile', phoneNumber: selectedNumber, operator: sourceWallet?.operator }
           : { type: 'crypto', address: selectedAddress, network: sourceWallet?.network },
@@ -126,8 +127,30 @@ export default function TransactionSummary({
           throw new Error('URL de paiement non reçue');
         }
       } else {
-        // For USDT to FCFA, call the regular onConfirm function
-        onConfirm();
+        // For USDT to mobile money, redirect to NOWPayments
+        const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
+          'process-nowpayments-payment',
+          {
+            body: {
+              transactionId: transaction.id,
+              amount: sourceAmount,
+              customerEmail: user.email,
+              description: `Conversion ${sourceAmount} USDT vers ${finalAmount.toLocaleString()} FCFA`
+            }
+          }
+        );
+
+        if (paymentError) {
+          console.error('NOWPayments creation error:', paymentError);
+          throw paymentError;
+        }
+
+        // Redirect to NOWPayments checkout
+        if (paymentData?.checkout_url) {
+          window.location.href = paymentData.checkout_url;
+        } else {
+          throw new Error('URL de paiement NOWPayments non reçue');
+        }
       }
 
     } catch (error) {
@@ -254,12 +277,12 @@ export default function TransactionSummary({
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
-                  Frais de retrait {!isInverted ? '' : `(${fees.mobile_money_fee_percentage}%)`}
+                  Frais de retrait {!isInverted ? '' : '(0.5 USDT)'}
                 </span>
                 <span className="text-destructive font-medium">
                   -{!isInverted 
                     ? `${withdrawalFee} USDT`
-                    : `${withdrawalFee.toLocaleString()} FCFA`
+                    : `${withdrawalFee} USDT`
                   }
                 </span>
               </div>
