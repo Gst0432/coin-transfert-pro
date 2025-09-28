@@ -110,7 +110,63 @@ export default function AdminInterface() {
     mobile_money_fee_percentage: 1.5
   });
 
+  // Moneroo configuration state
+  const [monerooConfig, setMonerooConfig] = useState({
+    mode: 'sandbox' as 'sandbox' | 'live',
+    sandbox_api_key: '',
+    live_api_key: '',
+    webhook_secret: ''
+  });
+
   const { toast } = useToast();
+
+  // Load settings from database
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      const { data: settings, error } = await supabase
+        .from('app_settings')
+        .select('*');
+
+      if (error) throw error;
+
+      settings?.forEach(setting => {
+        const value = setting.setting_value as any;
+        switch (setting.setting_key) {
+          case 'exchange_rate':
+            setConfig(prev => ({ ...prev, rate: value.rate }));
+            break;
+          case 'minimum_amounts':
+            setConfig(prev => ({ 
+              ...prev, 
+              min_fcfa: value.min_fcfa,
+              min_usd: value.min_usd 
+            }));
+            break;
+          case 'fees':
+            setConfig(prev => ({ 
+              ...prev, 
+              usdt_withdrawal_fee: value.usdt_withdrawal_fee,
+              mobile_money_fee_percentage: value.mobile_money_fee_percentage 
+            }));
+            break;
+          case 'moneroo_config':
+            setMonerooConfig(value);
+            break;
+        }
+      });
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger la configuration",
+        variant: "destructive"
+      });
+    }
+  };
 
   // Filter orders
   useEffect(() => {
@@ -185,8 +241,58 @@ export default function AdminInterface() {
   const handleConfigSave = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call to save configuration
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Save app settings
+      const settingsToUpdate = [
+        {
+          setting_key: 'exchange_rate',
+          setting_value: { rate: config.rate }
+        },
+        {
+          setting_key: 'minimum_amounts',
+          setting_value: { min_fcfa: config.min_fcfa, min_usd: config.min_usd }
+        },
+        {
+          setting_key: 'fees',
+          setting_value: { 
+            usdt_withdrawal_fee: config.usdt_withdrawal_fee,
+            mobile_money_fee_percentage: config.mobile_money_fee_percentage 
+          }
+        },
+        {
+          setting_key: 'moneroo_config',
+          setting_value: monerooConfig
+        }
+      ];
+
+      for (const setting of settingsToUpdate) {
+        const { error } = await supabase
+          .from('app_settings')
+          .upsert(setting);
+        
+        if (error) throw error;
+      }
+
+      // Update Supabase secrets for Moneroo
+      if (monerooConfig.sandbox_api_key) {
+        const { error: sandboxError } = await supabase.functions.invoke('update-secrets', {
+          body: {
+            secret_name: 'MONEROO_API_KEY',
+            secret_value: monerooConfig.sandbox_api_key
+          }
+        });
+        if (sandboxError) console.error('Error updating sandbox key:', sandboxError);
+      }
+
+      if (monerooConfig.live_api_key) {
+        const { error: liveError } = await supabase.functions.invoke('update-secrets', {
+          body: {
+            secret_name: 'MONEROO_LIVE_API_KEY',
+            secret_value: monerooConfig.live_api_key
+          }
+        });
+        if (liveError) console.error('Error updating live key:', liveError);
+      }
+
       toast({
         title: "Configuration sauvegardée",
         description: "Les paramètres ont été mis à jour avec succès",
@@ -558,6 +664,133 @@ export default function AdminInterface() {
                     <div className="crypto-card p-3">
                       <div className="text-muted-foreground">Réception Mobile Money</div>
                       <div className="font-medium">Frais: {config.mobile_money_fee_percentage}% du montant</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Moneroo Configuration */}
+                <div className="border-t border-border pt-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Settings className="w-5 h-5 text-primary" />
+                    <h3 className="text-lg font-semibold text-foreground">Configuration Moneroo</h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Mode Selection */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Mode de fonctionnement</Label>
+                      <Select 
+                        value={monerooConfig.mode} 
+                        onValueChange={(value: 'sandbox' | 'live') => 
+                          setMonerooConfig(prev => ({ ...prev, mode: value }))
+                        }
+                      >
+                        <SelectTrigger className="crypto-input">
+                          <SelectValue placeholder="Choisir le mode" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="sandbox">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="secondary" className="text-xs">TEST</Badge>
+                              Sandbox (Test)
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="live">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="destructive" className="text-xs">LIVE</Badge>
+                              Production (Live)
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        {monerooConfig.mode === 'sandbox' 
+                          ? "Mode test - Aucun vrai paiement ne sera traité"
+                          : "Mode production - Les vrais paiements seront traités"
+                        }
+                      </p>
+                    </div>
+
+                    {/* API Keys */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="sandbox_key" className="text-sm font-medium">
+                          Clé API Sandbox
+                        </Label>
+                        <Input
+                          id="sandbox_key"
+                          type="password"
+                          value={monerooConfig.sandbox_api_key}
+                          onChange={(e) => setMonerooConfig(prev => ({ 
+                            ...prev, 
+                            sandbox_api_key: e.target.value 
+                          }))}
+                          className="crypto-input"
+                          placeholder="sk_sandbox_..."
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Clé pour les tests et développement
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="live_key" className="text-sm font-medium">
+                          Clé API Live
+                        </Label>
+                        <Input
+                          id="live_key"
+                          type="password"
+                          value={monerooConfig.live_api_key}
+                          onChange={(e) => setMonerooConfig(prev => ({ 
+                            ...prev, 
+                            live_api_key: e.target.value 
+                          }))}
+                          className="crypto-input"
+                          placeholder="sk_live_..."
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          ⚠️ Clé pour la production - À garder secrète
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Webhook Secret */}
+                    <div className="space-y-2">
+                      <Label htmlFor="webhook_secret" className="text-sm font-medium">
+                        Secret Webhook (optionnel)
+                      </Label>
+                      <Input
+                        id="webhook_secret"
+                        type="password"
+                        value={monerooConfig.webhook_secret}
+                        onChange={(e) => setMonerooConfig(prev => ({ 
+                          ...prev, 
+                          webhook_secret: e.target.value 
+                        }))}
+                        className="crypto-input"
+                        placeholder="whsec_..."
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Secret pour valider les webhooks Moneroo
+                      </p>
+                    </div>
+
+                    {/* Current Mode Indicator */}
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <div className="flex items-center gap-2 text-sm">
+                        <div className={`w-2 h-2 rounded-full ${
+                          monerooConfig.mode === 'live' ? 'bg-destructive' : 'bg-warning'
+                        }`} />
+                        <span className="font-medium">
+                          Mode actuel: {monerooConfig.mode === 'live' ? 'Production' : 'Test'}
+                        </span>
+                        <Badge 
+                          variant={monerooConfig.mode === 'live' ? 'destructive' : 'secondary'}
+                          className="text-xs"
+                        >
+                          {monerooConfig.mode.toUpperCase()}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                 </div>

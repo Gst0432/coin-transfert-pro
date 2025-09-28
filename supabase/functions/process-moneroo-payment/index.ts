@@ -8,7 +8,30 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-const monerooApiKey = Deno.env.get('MONEROO_API_KEY')!
+
+async function getMonerooApiKey(supabase: any) {
+  // Get Moneroo configuration from app_settings
+  const { data: settings, error } = await supabase
+    .from('app_settings')
+    .select('setting_value')
+    .eq('setting_key', 'moneroo_config')
+    .single();
+
+  if (error || !settings) {
+    console.error('Error fetching Moneroo config:', error);
+    // Fallback to environment variable
+    return Deno.env.get('MONEROO_API_KEY');
+  }
+
+  const config = settings.setting_value as any;
+  const mode = config.mode || 'sandbox';
+  
+  if (mode === 'live') {
+    return config.live_api_key || Deno.env.get('MONEROO_LIVE_API_KEY');
+  } else {
+    return config.sandbox_api_key || Deno.env.get('MONEROO_API_KEY');
+  }
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -30,6 +53,13 @@ serve(async (req) => {
       } = await req.json()
 
       console.log('Creating Moneroo payment for transaction:', transactionId)
+
+      // Get the appropriate Moneroo API key
+      const monerooApiKey = await getMonerooApiKey(supabase);
+
+      if (!monerooApiKey) {
+        throw new Error('Moneroo API key not configured');
+      }
 
       // Create Moneroo payment
       const monerooResponse = await fetch('https://api.moneroo.io/v1/payments/initialize', {
