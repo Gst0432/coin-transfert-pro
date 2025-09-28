@@ -29,6 +29,8 @@ export default function TradingInterface() {
     fees: {
       usdt_withdrawal_fee: 1, // 1 USDT flat fee for crypto reception
       mobile_money_fee_percentage: 1.5, // 1.5% fee for mobile money reception
+      moneroo_gateway_fee_percentage: 3, // 3% frais de passerelle Moneroo supporté par le client
+      moneroo_fixed_fee: 100, // 100 FCFA frais fixe Moneroo
       nowpayments_fee: 0.5 // 0.5 USDT flat fee for NOWPayments (USDT to mobile money)
     }
   };
