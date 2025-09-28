@@ -15,10 +15,12 @@ import {
   AlertCircle, 
   Search,
   RefreshCw,
-  Eye
+  Eye,
+  RotateCcw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useRetryPayment } from '@/hooks/useRetryPayment';
 
 interface Transaction {
   id: string;
@@ -62,6 +64,7 @@ export default function TransactionManagement() {
   const [adminNotes, setAdminNotes] = useState('');
   
   const { toast } = useToast();
+  const { retryPayment, isLoading: isRetrying } = useRetryPayment();
 
   useEffect(() => {
     fetchTransactions();
@@ -105,7 +108,14 @@ export default function TransactionManagement() {
     }
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(transaction => transaction.status === statusFilter);
+      if (statusFilter === 'failed,rejected') {
+        // Filter for transactions that can be retried
+        filtered = filtered.filter(transaction => 
+          ['failed', 'rejected'].includes(transaction.status)
+        );
+      } else {
+        filtered = filtered.filter(transaction => transaction.status === statusFilter);
+      }
     }
 
     if (typeFilter !== 'all') {
@@ -167,6 +177,27 @@ export default function TransactionManagement() {
     }
   };
 
+  const handleRetryPayment = async (transaction: Transaction) => {
+    try {
+      const paymentMethod = transaction.transaction_type === 'fcfa_to_usdt' ? 'moneroo' : 'nowpayments';
+      
+      await retryPayment({
+        transactionId: transaction.id,
+        paymentMethod: paymentMethod
+      });
+
+      // Refresh transactions after retry
+      await fetchTransactions();
+      
+    } catch (error) {
+      console.error('Failed to retry payment:', error);
+    }
+  };
+
+  const canRetryTransaction = (transaction: Transaction) => {
+    return ['failed', 'rejected'].includes(transaction.status);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: '2-digit',
@@ -196,6 +227,8 @@ export default function TransactionManagement() {
     processing: transactions.filter(t => t.status === 'processing').length,
     completed: transactions.filter(t => t.status === 'completed').length,
     rejected: transactions.filter(t => t.status === 'rejected').length,
+    failed: transactions.filter(t => t.status === 'failed').length,
+    canRetry: transactions.filter(t => ['failed', 'rejected'].includes(t.status)).length,
   };
 
   return (
@@ -217,7 +250,7 @@ export default function TransactionManagement() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card className="crypto-card">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/20 rounded-lg">
@@ -265,6 +298,18 @@ export default function TransactionManagement() {
             </div>
           </div>
         </Card>
+
+        <Card className="crypto-card">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-orange-500/20 rounded-lg">
+              <RotateCcw className="w-5 h-5 text-orange-500" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">À relancer</p>
+              <p className="text-2xl font-bold text-foreground">{stats.canRetry}</p>
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Filters */}
@@ -292,6 +337,7 @@ export default function TransactionManagement() {
                 <SelectItem value="completed">Complétées</SelectItem>
                 <SelectItem value="rejected">Rejetées</SelectItem>
                 <SelectItem value="failed">Échouées</SelectItem>
+                <SelectItem value="failed,rejected">À relancer</SelectItem>
               </SelectContent>
             </Select>
 
@@ -479,6 +525,20 @@ export default function TransactionManagement() {
                             )}
                           </DialogContent>
                         </Dialog>
+                        
+                        {/* Bouton de relance pour les transactions échouées */}
+                        {canRetryTransaction(transaction) && (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => handleRetryPayment(transaction)}
+                            disabled={isRetrying}
+                            className="text-xs bg-warning hover:bg-warning/90 text-warning-foreground"
+                          >
+                            <RotateCcw className="w-3 h-3 mr-1" />
+                            Relancer
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
