@@ -148,7 +148,7 @@ export default function AuthPage() {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -180,6 +180,24 @@ export default function AuthPage() {
         title: "Inscription réussie",
         description: "Vérifiez votre email pour confirmer votre compte"
       });
+
+      // Send welcome notification and email
+      try {
+        if (data?.user?.id) {
+          await supabase.functions.invoke('create-notification', {
+            body: {
+              userId: data.user.id,
+              title: 'Bienvenue !',
+              message: 'Votre compte a été créé avec succès. Vous pouvez maintenant commencer à échanger.',
+              type: 'success',
+              category: 'account',
+              important: true
+            }
+          });
+        }
+      } catch (notificationError) {
+        console.error('Error sending welcome notifications:', notificationError);
+      }
       
       // Switch to login tab
       setIsLogin(true);

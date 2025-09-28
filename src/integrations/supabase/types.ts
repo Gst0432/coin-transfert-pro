@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      email_logs: {
+        Row: {
+          created_at: string
+          data: Json | null
+          email_type: string
+          error_message: string | null
+          id: string
+          recipient_email: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          email_type: string
+          error_message?: string | null
+          id?: string
+          recipient_email: string
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          email_type?: string
+          error_message?: string | null
+          id?: string
+          recipient_email?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       landing_page_settings: {
         Row: {
           created_at: string
@@ -68,6 +107,48 @@ export type Database = {
           setting_type?: string
           setting_value?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          category: string
+          created_at: string
+          data: Json | null
+          id: string
+          important: boolean
+          message: string
+          read: boolean
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          important?: boolean
+          message: string
+          read?: boolean
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          important?: boolean
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

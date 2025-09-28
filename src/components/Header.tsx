@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { NotificationBell } from "@/components/NotificationBell";
 import { 
   Menu, 
   X, 
@@ -108,6 +109,9 @@ export const Header = ({
 
           {/* Actions Desktop */}
           <div className="hidden md:flex items-center space-x-2">
+            {/* Notifications */}
+            {showUserMenu && user && <NotificationBell />}
+            
             {/* Theme Toggle */}
             <Button 
               variant="outline" 

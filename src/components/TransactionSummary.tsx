@@ -98,6 +98,40 @@ export default function TransactionSummary({
 
       const transaction = await createTransaction(transactionData);
       
+      // Send transaction notifications
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // Send transaction confirmation email and notification to user
+          await supabase.functions.invoke('send-notification-email', {
+            body: {
+              userId: user.id,
+              emailType: 'transaction_confirmation',
+              data: {
+                transactionId: transaction.id,
+                type: transactionData.transaction_type,
+                amount: !isInverted ? sourceAmount : sourceAmount,
+                rate: rate
+              }
+            }
+          });
+
+          await supabase.functions.invoke('create-notification', {
+            body: {
+              userId: user.id,
+              title: 'Transaction initiée',
+              message: `Votre transaction ${!isInverted ? 'FCFA → USDT' : 'USDT → FCFA'} de ${!isInverted ? sourceAmount.toLocaleString() + ' FCFA' : sourceAmount + ' USDT'} est en cours de traitement.`,
+              type: 'info',
+              category: 'transaction',
+              important: true,
+              data: { transactionId: transaction.id, type: transactionData.transaction_type }
+            }
+          });
+        }
+      } catch (notificationError) {
+        console.error('Error sending transaction notifications:', notificationError);
+      }
+      
       // Get real user data from auth instead of hardcoded values
       const { data: { user } } = await supabase.auth.getUser();
       const userDisplayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || "Client Exchange";
