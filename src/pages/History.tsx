@@ -61,23 +61,6 @@ export default function History() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Show loading while checking auth
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Chargement...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render if not authenticated
-  if (!user) {
-    return null;
-  }
-
   // Function definitions
   const fetchTransactions = async () => {
     try {
@@ -141,7 +124,7 @@ export default function History() {
     setCurrentPage(1);
   };
 
-  // Effects - AFTER function definitions
+  // Effects - ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL LOGIC
   useEffect(() => {
     if (!authLoading && !user) {
       navigate('/');
@@ -155,6 +138,23 @@ export default function History() {
   useEffect(() => {
     filterAndSortTransactions();
   }, [transactions, searchTerm, statusFilter, typeFilter, sortBy, sortOrder]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   const getStatusBadge = (status: Transaction['status']) => {
     const statusConfig = {
