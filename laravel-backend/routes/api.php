@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\InstallController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,18 @@ use App\Http\Controllers\Api\AdminController;
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
+
+// Installation routes (no auth required, but protected by CheckInstallation middleware)
+Route::prefix('install')->group(function () {
+    Route::post('/check-requirements', [InstallController::class, 'checkRequirements']);
+    Route::post('/test-database', [InstallController::class, 'testDatabase']);
+    Route::post('/run-migrations', [InstallController::class, 'runMigrations']);
+    Route::post('/configure-app', [InstallController::class, 'configureApp']);
+    Route::post('/configure-smtp', [InstallController::class, 'configureSmtp']);
+    Route::post('/configure-payments', [InstallController::class, 'configurePayments']);
+    Route::post('/create-admin', [InstallController::class, 'createAdmin']);
+    Route::post('/finalize', [InstallController::class, 'finalize']);
+});
 
 // Webhook routes (no auth required)
 Route::post('/webhooks/moneroo', [PaymentController::class, 'monerooWebhook']);

@@ -27,6 +27,7 @@ import LandingPage from "./pages/LandingPage";
 import LandingPageManagement from "./pages/LandingPageManagement";
 import PasswordSettings from "./pages/PasswordSettings";
 import AdminAuth from "./pages/AdminAuth";
+import Install from "./pages/Install";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/landing" element={<LandingPage />} />
+          <Route path="/install" element={<Install />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin-auth" element={<AdminAuth />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
