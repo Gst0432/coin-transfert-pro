@@ -59,9 +59,9 @@ export default function Wallet() {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Redirect to auth if not authenticated
+    // Redirect to home (landing page) if not authenticated
     if (!authLoading && !user) {
-      navigate('/auth');
+      navigate('/');
     }
   }, [user, authLoading, navigate]);
 

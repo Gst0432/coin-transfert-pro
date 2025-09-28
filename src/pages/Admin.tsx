@@ -14,7 +14,7 @@ const Admin = () => {
   useEffect(() => {
     const checkAdminRole = async () => {
       if (!user) {
-        navigate('/auth');
+        navigate('/');
         return;
       }
 

@@ -1,18 +1,9 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import TradingInterface from '@/components/TradingInterface';
+import LandingPage from '@/components/LandingPage';
 
 const Index = () => {
   const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Redirect to auth if not authenticated
-    if (!isLoading && !user) {
-      navigate('/auth');
-    }
-  }, [user, isLoading, navigate]);
 
   // Show loading while checking auth
   if (isLoading) {
@@ -26,12 +17,8 @@ const Index = () => {
     );
   }
 
-  // Don't render if not authenticated (will redirect)
-  if (!user) {
-    return null;
-  }
-
-  return <TradingInterface />;
+  // Show landing page if not authenticated, trading interface if authenticated
+  return user ? <TradingInterface /> : <LandingPage />;
 };
 
 export default Index;
