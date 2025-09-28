@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { useBrandingSettings } from '@/hooks/useBrandingSettings';
 import { NotificationBell } from "@/components/NotificationBell";
 import { 
   Menu, 
@@ -39,12 +40,17 @@ export const Header = ({
   showNavigation = true, 
   showUserMenu = true,
   logoUrl,
-  siteName = "Exchange Pro"
+  siteName
 }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const { settings } = useBrandingSettings();
   const location = useLocation();
+  
+  // Utiliser les paramètres de branding si pas de props spécifiques
+  const finalLogoUrl = logoUrl || settings.main_logo_url;
+  const finalSiteName = siteName || settings.site_name;
 
   const navigationItems = [
     { label: "Accueil", href: "/", icon: Home },
@@ -72,15 +78,18 @@ export const Header = ({
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-            {logoUrl && (
+            {finalLogoUrl && (
               <img 
-                src={logoUrl} 
+                src={finalLogoUrl} 
                 alt="Logo" 
                 className="h-8 w-8 object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
             <span className="text-xl font-bold text-foreground">
-              {siteName}
+              {finalSiteName}
             </span>
           </Link>
 

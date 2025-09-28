@@ -37,6 +37,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { useBrandingSettings } from '@/hooks/useBrandingSettings';
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -66,6 +67,7 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
+  const { settings } = useBrandingSettings();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -103,12 +105,25 @@ export function AppSidebar() {
       {/* Header */}
       <SidebarHeader className="p-2 border-b border-sidebar-border bg-sidebar">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-sidebar-primary flex items-center justify-center">
-            <span className="text-sidebar-primary-foreground font-bold text-xs">E</span>
-          </div>
+          {settings.dashboard_logo_url && !collapsed ? (
+            <img 
+              src={settings.dashboard_logo_url} 
+              alt="Logo" 
+              className="h-6 w-6 object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          ) : (
+            <div className="w-6 h-6 rounded-md bg-sidebar-primary flex items-center justify-center">
+              <span className="text-sidebar-primary-foreground font-bold text-xs">
+                {settings.site_name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
           {!collapsed && (
             <div>
-              <h2 className="font-medium text-sidebar-foreground text-sm">Exchange</h2>
+              <h2 className="font-medium text-sidebar-foreground text-sm">{settings.site_name}</h2>
               <p className="text-[10px] text-sidebar-foreground/70">Crypto Exchange</p>
             </div>
           )}

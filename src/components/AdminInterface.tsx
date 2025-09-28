@@ -16,12 +16,19 @@ import {
   Clock,
   AlertCircle,
   RefreshCw,
-  Settings
+  Settings,
+  ShieldCheck,
+  CreditCard,
+  Wallet,
+  Bell,
+  Globe
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import TransactionManagement from './TransactionManagement';
 import AdminSettings from './AdminSettings';
 import { AdminCredentialsManager } from './AdminCredentialsManager';
+import BrandingManager from './BrandingManager';
+import { useBrandingSettings } from '@/hooks/useBrandingSettings';
 
 interface Order {
   id: string;
@@ -89,118 +96,14 @@ const statusConfig = {
 };
 
 export default function AdminInterface() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>(mockOrders);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [isLoading, setIsLoading] = useState(false);
-  
+  const { settings } = useBrandingSettings();
   const { toast } = useToast();
-
-  // Filter orders
-  useEffect(() => {
-    let filtered = orders;
-
-    if (searchTerm) {
-      filtered = filtered.filter(order => 
-        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.phone.includes(searchTerm)
-      );
-    }
-
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(order => order.status === statusFilter);
-    }
-
-    if (typeFilter !== 'all') {
-      filtered = filtered.filter(order => order.type === typeFilter);
-    }
-
-    setFilteredOrders(filtered);
-  }, [orders, searchTerm, statusFilter, typeFilter]);
-
-  const handleOrderAction = async (orderId: string, action: string) => {
-    setIsLoading(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setOrders(prev => prev.map(order => 
-        order.id === orderId 
-          ? { ...order, status: action === 'complete' ? 'completed' : 'confirmed' as any }
-          : order
-      ));
-
-      toast({
-        title: "Action effectuée",
-        description: `Commande ${orderId} mise à jour avec succès`,
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible d'effectuer l'action",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const refreshOrders = async () => {
-    setIsLoading(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast({
-        title: "Données actualisées",
-        description: "Liste des commandes mise à jour",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible d'actualiser les données",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const renderStatusBadge = (status: Order['status']) => {
-    const config = statusConfig[status];
-    const Icon = config.icon;
-
-    return (
-      <Badge variant={config.variant} className="gap-1 text-[11px]">
-        <Icon className="w-2.5 h-2.5" />
-        {config.label}
-      </Badge>
-    );
-  };
-
-  // Statistics
-  const stats = {
-    totalOrders: orders.length,
-    pendingOrders: orders.filter(o => o.status === 'pending').length,
-    totalVolumeFCFA: orders.reduce((sum, o) => sum + o.amount_fcfa, 0),
-    totalVolumeUSDT: orders.reduce((sum, o) => sum + o.amount_usdt, 0)
-  };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile Header - Only visible on small screens */}
       <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card/80 backdrop-blur-sm">
-        <h1 className="text-xl font-semibold text-foreground">Gestion</h1>
-        <Button 
-          onClick={refreshOrders} 
-          disabled={isLoading}
-          size="sm"
-          variant="ghost"
-        >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-        </Button>
+        <h1 className="text-xl font-semibold text-foreground">{settings.site_name} Admin</h1>
       </div>
       
       <div className="p-4 lg:p-8 space-y-6 max-w-7xl mx-auto">
@@ -208,235 +111,76 @@ export default function AdminInterface() {
         <div className="hidden lg:flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Gestion Exchange
+              {settings.site_name} - Administration
             </h1>
-            <p className="text-muted-foreground">Gestion des commandes et transactions</p>
+            <p className="text-muted-foreground">Gestion de la plateforme d'échange</p>
           </div>
-          <Button 
-            onClick={refreshOrders} 
-            disabled={isLoading}
-            className="crypto-button-secondary"
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Actualiser
-          </Button>
         </div>
 
         {/* Tabs for Orders and Configuration */}
-        <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="orders" className="flex items-center gap-2">
-              <Activity className="w-4 h-4" />
-              Commandes
+        <Tabs defaultValue="branding" className="w-full">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="branding" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              Identité
             </TabsTrigger>
             <TabsTrigger value="transactions" className="flex items-center gap-2">
-              <Activity className="w-4 h-4" />
+              <CreditCard className="w-4 h-4" />
               Transactions
             </TabsTrigger>
-            <TabsTrigger value="admin" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Admin
+            <TabsTrigger value="payouts" className="flex items-center gap-2">
+              <Wallet className="w-4 h-4" />
+              Payouts
             </TabsTrigger>
-            <TabsTrigger value="config" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              Configuration
+            <TabsTrigger value="users" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Utilisateurs
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="flex items-center gap-2">
+              <Bell className="w-4 h-4" />
+              Notifications
+            </TabsTrigger>
+            <TabsTrigger value="admin" className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4" />
+              Admin
             </TabsTrigger>
           </TabsList>
 
+          {/* Onglet Identité de marque */}
+          <TabsContent value="branding">
+            <BrandingManager />
+          </TabsContent>
+
           <TabsContent value="orders" className="space-y-6">
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="crypto-card">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/20 rounded-lg">
-                    <Activity className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Commandes total</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.totalOrders}</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="crypto-card">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-warning/20 rounded-lg">
-                    <Clock className="w-5 h-5 text-warning" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">En attente</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.pendingOrders}</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="crypto-card">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-success/20 rounded-lg">
-                    <DollarSign className="w-5 h-5 text-success" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Volume FCFA</p>
-                    <p className="text-xl font-bold text-foreground">
-                      {stats.totalVolumeFCFA.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="crypto-card">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/20 rounded-lg">
-                    <TrendingUp className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Volume USDT</p>
-                    <p className="text-xl font-bold text-foreground">
-                      {stats.totalVolumeUSDT.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              </Card>
+            <div className="p-6 text-center text-muted-foreground">
+              Module Commandes déplacé vers Transactions
             </div>
-
-            {/* Filters */}
-            <Card className="crypto-card">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Rechercher par ID, nom ou téléphone..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="crypto-input pl-10"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="crypto-input w-40">
-                      <SelectValue placeholder="Statut" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tous les statuts</SelectItem>
-                      <SelectItem value="pending">En attente</SelectItem>
-                      <SelectItem value="confirmed">Confirmé</SelectItem>
-                      <SelectItem value="completed">Terminé</SelectItem>
-                      <SelectItem value="failed">Échoué</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={typeFilter} onValueChange={setTypeFilter}>
-                    <SelectTrigger className="crypto-input w-32">
-                      <SelectValue placeholder="Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tous</SelectItem>
-                      <SelectItem value="buy">Achat</SelectItem>
-                      <SelectItem value="sell">Vente</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </Card>
-
-            {/* Orders Table */}
-            <Card className="crypto-card">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Client</TableHead>
-                      <TableHead>Montants</TableHead>
-                      <TableHead>Statut</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredOrders.map((order) => {
-                      return (
-                        <TableRow key={order.id}>
-                          <TableCell className="font-mono text-sm">
-                            {order.id}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={order.type === 'buy' ? 'default' : 'secondary'} className="text-xs">
-                              {order.type === 'buy' ? 'Achat' : 'Vente'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <div className="font-medium text-sm">{order.customer_name}</div>
-                              <div className="text-xs text-muted-foreground">{order.phone}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="text-sm">
-                              <div className="font-medium">{order.amount_fcfa.toLocaleString()} FCFA</div>
-                              <div className="text-muted-foreground">{order.amount_usdt.toFixed(6)} USDT</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {renderStatusBadge(order.status)}
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {new Date(order.created_at).toLocaleString('fr-FR')}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              {(order.status === 'pending' || order.status === 'confirmed') && (
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleOrderAction(order.id, 'complete')}
-                                  disabled={isLoading}
-                                  className="text-xs"
-                                >
-                                  Terminer
-                                </Button>
-                              )}
-                              {order.status === 'created' && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleOrderAction(order.id, 'confirm')}
-                                  disabled={isLoading}
-                                  className="text-xs"
-                                >
-                                  Confirmer
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-              
-              {filteredOrders.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  Aucune commande trouvée
-                </div>
-              )}
-            </Card>
           </TabsContent>
 
           <TabsContent value="transactions" className="space-y-6">
             <TransactionManagement />
           </TabsContent>
+          
+          <TabsContent value="payouts" className="space-y-6">
+            <div className="p-6 text-center text-muted-foreground">
+              Module Payouts à venir...
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="users" className="space-y-6">
+            <div className="p-6 text-center text-muted-foreground">
+              Module Utilisateurs à venir...
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="notifications" className="space-y-6">
+            <div className="p-6 text-center text-muted-foreground">
+              Module Notifications à venir...
+            </div>
+          </TabsContent>
 
           <TabsContent value="admin" className="space-y-6">
             <AdminCredentialsManager />
-          </TabsContent>
-
-          <TabsContent value="config" className="space-y-6">
-            <AdminSettings />
           </TabsContent>
         </Tabs>
       </div>
