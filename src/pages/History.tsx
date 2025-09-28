@@ -61,22 +61,6 @@ export default function History() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Effects
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/');
-    }
-  }, [user, authLoading, navigate]);
-
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  useEffect(() => {
-    filterAndSortTransactions();
-  }, [transactions, searchTerm, statusFilter, typeFilter, sortBy, sortOrder]);
-  
-  // Authentication check
   // Show loading while checking auth
   if (authLoading) {
     return (
@@ -94,6 +78,7 @@ export default function History() {
     return null;
   }
 
+  // Function definitions
   const fetchTransactions = async () => {
     try {
       setLoading(true);
@@ -155,6 +140,21 @@ export default function History() {
     setFilteredTransactions(filtered);
     setCurrentPage(1);
   };
+
+  // Effects - AFTER function definitions
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/');
+    }
+  }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    filterAndSortTransactions();
+  }, [transactions, searchTerm, statusFilter, typeFilter, sortBy, sortOrder]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getStatusBadge = (status: Transaction['status']) => {
     const statusConfig = {
