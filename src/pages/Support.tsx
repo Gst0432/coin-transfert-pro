@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { PageLayout } from "@/components/PageLayout";
 
 interface FAQItem {
   id: string;
@@ -209,7 +210,9 @@ export default function Support() {
   };
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <PageLayout>
+      <div className="container mx-auto py-6 px-4">
+        <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Centre d'Aide</h1>
@@ -662,6 +665,8 @@ export default function Support() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+        </div>
+      </div>
+    </PageLayout>
   );
 }

@@ -28,6 +28,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { PageLayout } from "@/components/PageLayout";
 import { Link } from "react-router-dom";
 
 export default function Settings() {
@@ -129,7 +130,9 @@ export default function Settings() {
   };
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <PageLayout>
+      <div className="container mx-auto py-6 px-4">
+        <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Paramètres</h1>
@@ -531,6 +534,8 @@ export default function Settings() {
           Sauvegarder les modifications
         </Button>
       </div>
-    </div>
+        </div>
+      </div>
+    </PageLayout>
   );
 }

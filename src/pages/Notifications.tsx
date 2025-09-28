@@ -23,6 +23,7 @@ import {
   VolumeX
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { PageLayout } from "@/components/PageLayout";
 
 interface Notification {
   id: string;
@@ -226,7 +227,9 @@ export default function Notifications() {
   };
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <PageLayout>
+      <div className="container mx-auto py-6 px-4">
+        <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -623,6 +626,8 @@ export default function Notifications() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+        </div>
+      </div>
+    </PageLayout>
   );
 }

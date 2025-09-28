@@ -25,6 +25,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
+import { PageLayout } from "@/components/PageLayout";
 
 export default function Security() {
   const { user } = useAuth();
@@ -173,7 +174,9 @@ export default function Security() {
   };
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <PageLayout>
+      <div className="container mx-auto py-6 px-4">
+        <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Sécurité</h1>
@@ -488,6 +491,8 @@ export default function Security() {
           </div>
         </CardContent>
       </Card>
-    </div>
+        </div>
+      </div>
+    </PageLayout>
   );
 }
