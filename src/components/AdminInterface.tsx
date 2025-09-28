@@ -118,6 +118,12 @@ export default function AdminInterface() {
     webhook_secret: ''
   });
 
+  // NOWPayments configuration state
+  const [nowpaymentsConfig, setNowpaymentsConfig] = useState({
+    api_key: '',
+    webhook_secret: ''
+  });
+
   const { toast } = useToast();
 
   // Load settings from database
@@ -155,6 +161,9 @@ export default function AdminInterface() {
             break;
           case 'moneroo_config':
             setMonerooConfig(value);
+            break;
+          case 'nowpayments_config':
+            setNowpaymentsConfig(value);
             break;
         }
       });
@@ -261,6 +270,10 @@ export default function AdminInterface() {
         {
           setting_key: 'moneroo_config',
           setting_value: monerooConfig
+        },
+        {
+          setting_key: 'nowpayments_config',
+          setting_value: nowpaymentsConfig
         }
       ];
 
@@ -291,6 +304,17 @@ export default function AdminInterface() {
           }
         });
         if (liveError) console.error('Error updating live key:', liveError);
+      }
+
+      // Update NOWPayments API key
+      if (nowpaymentsConfig.api_key) {
+        const { error: nowpaymentsError } = await supabase.functions.invoke('update-secrets', {
+          body: {
+            secret_name: 'NOWPAYMENTS_API_KEY',
+            secret_value: nowpaymentsConfig.api_key
+          }
+        });
+        if (nowpaymentsError) console.error('Error updating NOWPayments key:', nowpaymentsError);
       }
 
       toast({
@@ -790,6 +814,73 @@ export default function AdminInterface() {
                         >
                           {monerooConfig.mode.toUpperCase()}
                         </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* NOWPayments Configuration */}
+                <div className="border-t border-border pt-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Settings className="w-5 h-5 text-primary" />
+                    <h3 className="text-lg font-semibold text-foreground">Configuration NOWPayments</h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* API Key */}
+                    <div className="space-y-2">
+                      <Label htmlFor="nowpayments_key" className="text-sm font-medium">
+                        Clé API NOWPayments
+                      </Label>
+                      <Input
+                        id="nowpayments_key"
+                        type="password"
+                        value={nowpaymentsConfig.api_key}
+                        onChange={(e) => setNowpaymentsConfig(prev => ({ 
+                          ...prev, 
+                          api_key: e.target.value 
+                        }))}
+                        className="crypto-input"
+                        placeholder="NP_..."
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Clé API pour les paiements USDT via NOWPayments
+                      </p>
+                    </div>
+
+                    {/* Webhook Secret */}
+                    <div className="space-y-2">
+                      <Label htmlFor="nowpayments_webhook" className="text-sm font-medium">
+                        Secret Webhook (optionnel)
+                      </Label>
+                      <Input
+                        id="nowpayments_webhook"
+                        type="password"
+                        value={nowpaymentsConfig.webhook_secret}
+                        onChange={(e) => setNowpaymentsConfig(prev => ({ 
+                          ...prev, 
+                          webhook_secret: e.target.value 
+                        }))}
+                        className="crypto-input"
+                        placeholder="Secret webhook..."
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Secret pour valider les webhooks NOWPayments
+                      </p>
+                    </div>
+
+                    {/* Supported Networks Info */}
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <div className="text-sm">
+                        <div className="font-medium mb-2">Réseaux supportés:</div>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="outline" className="text-xs">TRC20</Badge>
+                          <Badge variant="outline" className="text-xs">ERC20</Badge>
+                          <Badge variant="outline" className="text-xs">BEP20</Badge>
+                        </div>
+                        <p className="text-muted-foreground text-xs mt-2">
+                          Frais: 0.5 USDT pour les conversions USDT → Mobile Money
+                        </p>
                       </div>
                     </div>
                   </div>
