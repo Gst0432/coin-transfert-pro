@@ -360,7 +360,7 @@ export default function TradingInterface() {
           </div>
 
           {/* Next Button - Positioned after form sections */}
-          <div className="mt-6 sm:mt-8">
+          <div className="mt-2 sm:mt-3">
             <Button
               onClick={handleNext}
               disabled={isLoading}
