@@ -243,18 +243,18 @@ export default function LandingPage() {
             {/* Right side - Auth form */}
             <div className="flex justify-center lg:justify-end">
               <Card className="w-full max-w-sm crypto-card">
-                <div className="p-6">
-                  <div className="text-center mb-6">
-                    <h2 className="text-xl font-bold text-foreground mb-2">
+                <div className="p-4">
+                  <div className="text-center mb-4">
+                    <h2 className="text-lg font-bold text-foreground mb-1">
                       {isLogin ? 'Connexion' : 'Inscription'}
                     </h2>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {isLogin ? 'Accédez à votre compte' : 'Créez votre compte gratuit'}
                     </p>
                   </div>
 
                   <Tabs value={isLogin ? "login" : "signup"} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-6 h-9">
+                    <TabsList className="grid w-full grid-cols-2 mb-4 h-8">
                       <TabsTrigger 
                         value="login" 
                         onClick={() => setIsLogin(true)}
@@ -273,30 +273,30 @@ export default function LandingPage() {
                       </TabsTrigger>
                     </TabsList>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <TabsContent value="login" className="space-y-4 mt-0">
-                        <div className="space-y-2">
-                          <Label htmlFor="email" className="text-sm">Email</Label>
+                    <form onSubmit={handleSubmit} className="space-y-3">
+                      <TabsContent value="login" className="space-y-3 mt-0">
+                        <div className="space-y-1">
+                          <Label htmlFor="email" className="text-xs">Email</Label>
                           <Input
                             id="email"
                             type="email"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
-                            className="crypto-input h-10"
+                            className="crypto-input h-9"
                             placeholder="votre@email.com"
                             required
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="password" className="text-sm">Mot de passe</Label>
+                        <div className="space-y-1">
+                          <Label htmlFor="password" className="text-xs">Mot de passe</Label>
                           <div className="relative">
                             <Input
                               id="password"
                               type={showPassword ? "text" : "password"}
                               value={formData.password}
                               onChange={(e) => handleInputChange('password', e.target.value)}
-                              className="crypto-input pr-10 h-10"
+                              className="crypto-input pr-8 h-9"
                               placeholder="••••••••"
                               required
                             />
@@ -304,42 +304,42 @@ export default function LandingPage() {
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              className="absolute right-0 top-0 h-full px-2 py-1 hover:bg-transparent"
                               onClick={() => setShowPassword(!showPassword)}
                             >
                               {showPassword ? (
-                                <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                <EyeOff className="h-3 w-3 text-muted-foreground" />
                               ) : (
-                                <Eye className="h-4 w-4 text-muted-foreground" />
+                                <Eye className="h-3 w-3 text-muted-foreground" />
                               )}
                             </Button>
                           </div>
                         </div>
                       </TabsContent>
 
-                      <TabsContent value="signup" className="space-y-4 mt-0">
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-email" className="text-sm">Email</Label>
+                      <TabsContent value="signup" className="space-y-3 mt-0">
+                        <div className="space-y-1">
+                          <Label htmlFor="signup-email" className="text-xs">Email</Label>
                           <Input
                             id="signup-email"
                             type="email"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
-                            className="crypto-input h-10"
+                            className="crypto-input h-9"
                             placeholder="votre@email.com"
                             required
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-password" className="text-sm">Mot de passe</Label>
+                        <div className="space-y-1">
+                          <Label htmlFor="signup-password" className="text-xs">Mot de passe</Label>
                           <div className="relative">
                             <Input
                               id="signup-password"
                               type={showPassword ? "text" : "password"}
                               value={formData.password}
                               onChange={(e) => handleInputChange('password', e.target.value)}
-                              className="crypto-input pr-10 h-10"
+                              className="crypto-input pr-8 h-9"
                               placeholder="••••••••"
                               required
                             />
@@ -347,13 +347,13 @@ export default function LandingPage() {
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              className="absolute right-0 top-0 h-full px-2 py-1 hover:bg-transparent"
                               onClick={() => setShowPassword(!showPassword)}
                             >
                               {showPassword ? (
-                                <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                <EyeOff className="h-3 w-3 text-muted-foreground" />
                               ) : (
-                                <Eye className="h-4 w-4 text-muted-foreground" />
+                                <Eye className="h-3 w-3 text-muted-foreground" />
                               )}
                             </Button>
                           </div>
@@ -362,26 +362,26 @@ export default function LandingPage() {
                           </p>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="displayName" className="text-sm">Nom d'affichage</Label>
+                        <div className="space-y-1">
+                          <Label htmlFor="displayName" className="text-xs">Nom d'affichage</Label>
                           <Input
                             id="displayName"
                             type="text"
                             value={formData.displayName}
                             onChange={(e) => handleInputChange('displayName', e.target.value)}
-                            className="crypto-input h-10"
+                            className="crypto-input h-9"
                             placeholder="Votre nom"
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="phoneNumber" className="text-sm">Numéro de téléphone</Label>
+                        <div className="space-y-1">
+                          <Label htmlFor="phoneNumber" className="text-xs">Numéro de téléphone</Label>
                           <Input
                             id="phoneNumber"
                             type="tel"
                             value={formData.phoneNumber}
                             onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                            className="crypto-input h-10"
+                            className="crypto-input h-9"
                             placeholder="+227 XX XX XX XX"
                           />
                           <p className="text-xs text-muted-foreground">
@@ -393,7 +393,7 @@ export default function LandingPage() {
                       <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full crypto-button-primary h-10"
+                        className="w-full crypto-button-primary h-9 px-3 text-sm"
                       >
                         {isLoading ? (
                           'Chargement...'

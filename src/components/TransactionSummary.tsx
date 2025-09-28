@@ -174,31 +174,31 @@ export default function TransactionSummary({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="p-3 space-y-4 max-w-md mx-auto">
+      <div className="p-3 space-y-3 max-w-sm mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <Button
             onClick={onBack}
             variant="ghost"
             size="sm"
-            className="gap-2"
+            className="gap-1 h-8 px-3 text-xs"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3 h-3" />
             Retour
           </Button>
-          <h1 className="text-xl font-bold text-foreground">
+          <h1 className="text-lg font-bold text-foreground">
             Récapitulatif
           </h1>
-          <div className="w-16" /> {/* Spacer for centering */}
+          <div className="w-12" /> {/* Spacer for centering */}
         </div>
 
         {/* Transaction Type */}
-        <Card className="crypto-card p-4">
+        <Card className="crypto-card p-3">
           <div className="text-center">
-            <h2 className="text-lg font-bold text-foreground mb-2">
+            <h2 className="text-base font-bold text-foreground mb-2">
               {!isInverted ? "FCFA → USDT" : "USDT → FCFA"}
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Vérifiez les détails de votre transaction
             </p>
           </div>
@@ -206,8 +206,8 @@ export default function TransactionSummary({
 
         {/* Source Amount */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-foreground">Vous donnez</h3>
-          <Card className="crypto-card p-4">
+          <h3 className="text-xs font-medium text-foreground">Vous donnez</h3>
+          <Card className="crypto-card p-3">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="text-2xl font-bold text-foreground">

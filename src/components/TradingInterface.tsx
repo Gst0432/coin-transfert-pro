@@ -171,29 +171,29 @@ export default function TradingInterface() {
   return (
     <div className="min-h-screen bg-background">
       {/* Content - Interface mobile compacte */}
-      <div className="p-3 space-y-4 max-w-md mx-auto">
+      <div className="p-3 space-y-3 max-w-sm mx-auto">
         {/* Header avec bouton d'inversion */}
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-bold text-foreground">
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-lg font-bold text-foreground">
             {!isInverted ? "FCFA → USDT" : "USDT → FCFA"}
           </h1>
           <Button
             onClick={handleInvert}
             variant="outline"
             size="sm"
-            className="gap-2"
+            className="gap-1 h-8 px-3 text-xs"
           >
-            <ArrowUpDown className="w-4 h-4" />
+            <ArrowUpDown className="w-3 h-3" />
             Inverser
           </Button>
         </div>
 
         {/* Je Donne Section */}
         <div className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">Je Donne</h2>
+          <h2 className="text-base font-bold text-foreground">Je Donne</h2>
           
           <div className="relative">
-            <div className="crypto-card p-3 rounded-lg">
+            <div className="crypto-card p-2 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="text-xs text-muted-foreground mb-1">
@@ -203,21 +203,21 @@ export default function TradingInterface() {
                     type="number"
                     value={!isInverted ? amountFcfa : amountUsdt}
                     onChange={(e) => !isInverted ? setAmountFcfa(e.target.value) : setAmountUsdt(e.target.value)}
-                    className="text-3xl font-bold bg-transparent border-0 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="text-2xl font-bold bg-transparent border-0 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
                     placeholder="0"
                   />
                 </div>
-                <div className="ml-3">
-                  <Badge className="bg-primary/20 text-primary border border-primary/30 px-2 py-1 text-xs">
-                    <div className="flex items-center gap-1.5">
+                <div className="ml-2">
+                  <Badge className="bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 text-xs">
+                    <div className="flex items-center gap-1">
                       {!isInverted ? (
                         <>
-                          <Smartphone className="w-4 h-4" />
+                          <Smartphone className="w-3 h-3" />
                           <span className="font-medium text-xs">Mobile Money</span>
                         </>
                       ) : (
                         <>
-                          <WalletIcon className="w-4 h-4" />
+                          <WalletIcon className="w-3 h-3" />
                           <span className="font-medium text-xs">Crypto</span>
                         </>
                       )}
@@ -232,14 +232,14 @@ export default function TradingInterface() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm text-foreground font-medium">
+            <label className="text-xs text-foreground font-medium">
               {!isInverted ? 'Sélectionner votre compte Mobile Money' : 'Sélectionner votre adresse Crypto'}
             </label>
             <Select 
               value={!isInverted ? selectedNumber : selectedAddress} 
               onValueChange={!isInverted ? setSelectedNumber : setSelectedAddress}
             >
-              <SelectTrigger className="crypto-input h-12 text-sm">
+              <SelectTrigger className="crypto-input h-9 text-xs">
                 <SelectValue placeholder={!isInverted ? "Choisir un numéro" : "Choisir une adresse"} />
               </SelectTrigger>
               <SelectContent>
@@ -267,33 +267,33 @@ export default function TradingInterface() {
 
         {/* Je Reçois Section */}
         <div className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">Je Reçois</h2>
+          <h2 className="text-base font-bold text-foreground">Je Reçois</h2>
           
           <div className="relative">
-            <div className="crypto-card p-3 rounded-lg">
+            <div className="crypto-card p-2 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="text-xs text-muted-foreground mb-1">
                     Je Reçois ({!isInverted ? 'USDT' : 'FCFA'})
                   </div>
-                  <div className="text-3xl font-bold text-foreground">
+                  <div className="text-2xl font-bold text-foreground">
                     {!isInverted 
                       ? (calculatedUsdt > 0 ? calculatedUsdt.toFixed(8) : '0.00000000')
                       : (calculatedFcfa > 0 ? calculatedFcfa.toLocaleString() : '0')
                     }
                   </div>
                 </div>
-                <div className="ml-3">
-                  <Badge className="bg-primary/20 text-primary border border-primary/30 px-2 py-1 text-xs">
-                    <div className="flex items-center gap-1.5">
+                <div className="ml-2">
+                  <Badge className="bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 text-xs">
+                    <div className="flex items-center gap-1">
                       {!isInverted ? (
                         <>
-                          <WalletIcon className="w-4 h-4" />
+                          <WalletIcon className="w-3 h-3" />
                           <span className="font-medium text-xs">Crypto</span>
                         </>
                       ) : (
                         <>
-                          <Smartphone className="w-4 h-4" />
+                          <Smartphone className="w-3 h-3" />
                           <span className="font-medium text-xs">Mobile Money</span>
                         </>
                       )}
@@ -308,14 +308,14 @@ export default function TradingInterface() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm text-foreground font-medium">
+            <label className="text-xs text-foreground font-medium">
               {!isInverted ? 'Sélectionner votre adresse de réception' : 'Sélectionner votre compte de réception'}
             </label>
             <Select 
               value={!isInverted ? selectedAddress : selectedNumber} 
               onValueChange={!isInverted ? setSelectedAddress : setSelectedNumber}
             >
-              <SelectTrigger className="crypto-input h-12 text-sm">
+              <SelectTrigger className="crypto-input h-9 text-xs">
                 <SelectValue placeholder={!isInverted ? "Choisir une adresse" : "Choisir un numéro"} />
               </SelectTrigger>
               <SelectContent>
@@ -346,7 +346,7 @@ export default function TradingInterface() {
           <Button
             onClick={handleNext}
             disabled={isLoading}
-            className="w-full h-12 text-base font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
+            className="w-full h-9 text-sm font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
           >
             Suivant
           </Button>
