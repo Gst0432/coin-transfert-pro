@@ -58,29 +58,7 @@ export default function Wallet() {
   const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   
-  useEffect(() => {
-    // Redirect to home (landing page) if not authenticated
-    if (!authLoading && !user) {
-      navigate('/');
-    }
-  }, [user, authLoading, navigate]);
-
-  // Show loading while checking auth
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Chargement...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render if not authenticated (will redirect)
-  if (!user) {
-    return null;
-  }
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL LOGIC
   const [wallets, setWallets] = useState<Wallet[]>([
     {
       id: "1",
@@ -109,6 +87,30 @@ export default function Wallet() {
   const [activeTab, setActiveTab] = useState("mobile");
   
   const { toast } = useToast();
+  
+  useEffect(() => {
+    // Redirect to home (landing page) if not authenticated
+    if (!authLoading && !user) {
+      navigate('/');
+    }
+  }, [user, authLoading, navigate]);
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
 
   const handleAutoConvert = () => {
     setActiveTab(activeTab === "mobile" ? "crypto" : "mobile");
