@@ -455,12 +455,30 @@ export default function LandingPageAdmin() {
                   </div>
                   <div>
                     <Label htmlFor="favicon_url">Favicon</Label>
-                    <Input
-                      id="favicon_url"
-                      value={localSettings.favicon_url}
-                      onChange={(e) => updateLocalSetting('favicon_url', e.target.value)}
-                      placeholder="URL du favicon"
-                    />
+                    <div className="space-y-2">
+                      <Input
+                        id="favicon_url"
+                        value={localSettings.favicon_url}
+                        onChange={(e) => updateLocalSetting('favicon_url', e.target.value)}
+                        placeholder="URL du favicon (format PNG ou ICO)"
+                      />
+                      <div className="text-sm text-muted-foreground">
+                        💡 Le favicon apparaîtra dans l'onglet du navigateur. Format recommandé : 32x32px PNG ou ICO.
+                      </div>
+                      {localSettings.favicon_url && (
+                        <div className="flex items-center space-x-2 p-2 bg-muted rounded">
+                          <img 
+                            src={localSettings.favicon_url} 
+                            alt="Aperçu favicon" 
+                            className="w-4 h-4"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                          <span className="text-sm">Aperçu du favicon</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

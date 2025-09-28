@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLandingPageSettings } from "@/hooks/useLandingPageSettings";
 import { useTheme } from "@/components/ThemeProvider";
+import { useFavicon, updatePageMetadata } from "@/hooks/useFavicon";
 import { 
   ArrowUpDown, 
   Smartphone, 
@@ -22,6 +23,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import usdtCoin from "@/assets/usdt-coin.jpg";
+import { useEffect } from "react";
 
 // Mapping des icônes
 const iconMap = {
@@ -43,6 +45,13 @@ export const LandingPageNew = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
+  // Utiliser le hook de favicon et mettre à jour les métadonnées
+  useFavicon(settings.favicon_url);
+  
+  useEffect(() => {
+    updatePageMetadata(settings);
+  }, [settings]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -62,7 +71,7 @@ export const LandingPageNew = () => {
   } as React.CSSProperties;
 
   return (
-    <div className="min-h-screen bg-background" style={dynamicStyles}>
+    <div className="min-h-screen bg-background" style={dynamicStyles} id="home">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-4">
@@ -86,8 +95,8 @@ export const LandingPageNew = () => {
               {Array.isArray(settings.nav_items) && settings.nav_items.map((item: any, index: number) => (
                 <a
                   key={index}
-                  href={item.url}
-                  className="text-foreground hover:text-primary transition-colors"
+                  href={item.href}
+                  className="text-foreground hover:text-primary transition-colors smooth-scroll"
                 >
                   {item.label}
                 </a>
@@ -130,8 +139,8 @@ export const LandingPageNew = () => {
                 {Array.isArray(settings.nav_items) && settings.nav_items.map((item: any, index: number) => (
                   <a
                     key={index}
-                    href={item.url}
-                    className="text-foreground hover:text-primary transition-colors px-2 py-1"
+                    href={item.href}
+                    className="text-foreground hover:text-primary transition-colors px-2 py-1 smooth-scroll"
                   >
                     {item.label}
                   </a>
@@ -243,10 +252,10 @@ export const LandingPageNew = () => {
       <section id="services" className="py-20 px-4 bg-muted/20">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
-            Nos Services
+            {settings.services_title}
           </h2>
           <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
-            Découvrez nos solutions d'échange de cryptomonnaies
+            {settings.services_subtitle}
           </p>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -293,10 +302,10 @@ export const LandingPageNew = () => {
       </section>
 
       {/* Section Partners */}
-      <section className="py-20 px-4 bg-muted/20">
+      <section id="partners" className="py-20 px-4 bg-muted/20">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-12 text-foreground">
-            Nos Partenaires
+            {settings.partners_title}
           </h2>
           
           <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">

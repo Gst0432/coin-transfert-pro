@@ -1,73 +1,89 @@
-# Welcome to your Lovable project
+# Exchange Pro
 
-## Project info
+Une plateforme moderne et sécurisée d'échange de cryptomonnaies.
 
-**URL**: https://lovable.dev/projects/d37cf5a9-5fa0-499c-9927-e02702e9bddc
+## 🚀 Fonctionnalités
 
-## How can I edit this code?
+- **Interface intuitive** - Design moderne et responsive
+- **Sécurité maximale** - Protection des fonds et des données
+- **Transactions rapides** - Échanges instantanés
+- **Support 24/7** - Assistance disponible en permanence
 
-There are several ways of editing your application.
+## 📋 Technologies utilisées
 
-**Use Lovable**
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **Backend**: Supabase
+- **Authentification**: Supabase Auth
+- **Base de données**: PostgreSQL
+- **Déploiement**: Build de production optimisé
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d37cf5a9-5fa0-499c-9927-e02702e9bddc) and start prompting.
+## 🛠️ Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+1. Clonez le repository
+```bash
+git clone [URL_DU_REPO]
+cd exchange-pro
+```
 
-**Use your preferred IDE**
+2. Installez les dépendances
+```bash
+npm install
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3. Configurez les variables d'environnement
+```bash
+cp .env.example .env
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+4. Lancez le serveur de développement
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🏗️ Structure du projet
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+src/
+├── components/          # Composants React réutilisables
+├── pages/              # Pages de l'application
+├── hooks/              # Hooks personnalisés
+├── lib/                # Utilitaires et configurations
+├── assets/             # Images et ressources statiques
+└── integrations/       # Intégrations externes (Supabase)
+```
 
-**Use GitHub Codespaces**
+## 📱 Administration
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+L'interface d'administration permet de personnaliser :
+- Identité de la plateforme (logo, couleurs, favicon)
+- Contenu des pages (hero, services, à propos)
+- Navigation et liens
+- Métadonnées SEO
+- Paramètres avancés
 
-## What technologies are used for this project?
+Accès admin : `/admin/landing-page` (réservé aux administrateurs)
 
-This project is built with:
+## 🔒 Sécurité
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Authentification sécurisée avec Supabase
+- Row Level Security (RLS) sur toutes les tables
+- Validation des données côté client et serveur
+- Protection CSRF et XSS
 
-## How can I deploy this project?
+## 📈 Déploiement
 
-Simply open [Lovable](https://lovable.dev/projects/d37cf5a9-5fa0-499c-9927-e02702e9bddc) and click on Share -> Publish.
+```bash
+npm run build
+```
 
-## Can I connect a custom domain to my Lovable project?
+Le build de production sera généré dans le dossier `dist/`.
 
-Yes, you can!
+## 📄 Licence
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Tous droits réservés - Exchange Pro © 2025
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 📞 Support
+
+Pour toute question ou assistance :
+- 📧 Email: contact@exchangepro.com
+- 🌐 Site web: [URL_DU_SITE]
