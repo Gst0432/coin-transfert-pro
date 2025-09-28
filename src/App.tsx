@@ -28,6 +28,9 @@ import LandingPageManagement from "./pages/LandingPageManagement";
 import PasswordSettings from "./pages/PasswordSettings";
 import AdminAuth from "./pages/AdminAuth";
 import Install from "./pages/Install";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import Footer from "./components/Footer";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
@@ -51,7 +54,7 @@ const AppContent = () => {
   // If user is not authenticated, show simple layout without sidebar
   if (!user) {
     return (
-      <div className="min-h-screen w-full bg-background">
+      <div className="min-h-screen w-full bg-background flex flex-col">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/landing" element={<LandingPage />} />
@@ -60,10 +63,13 @@ const AppContent = () => {
           <Route path="/admin-auth" element={<AdminAuth />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/reset-password-confirm" element={<ResetPasswordConfirm />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/success" element={<PaymentSuccess />} />
           <Route path="/cancel" element={<PaymentCancel />} />
           <Route path="*" element={<LandingPage />} />
         </Routes>
+        <Footer />
       </div>
     );
   }
@@ -87,25 +93,30 @@ const AppContent = () => {
           </header>
           
           {/* Main Content */}
-          <main className="flex-1 overflow-auto pb-16 lg:pb-0">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/trading" element={<Index />} />
-              <Route path="/wallet" element={<Wallet />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/landing-page" element={<LandingPageManagement />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/settings/password" element={<PasswordSettings />} />
-              <Route path="/security" element={<Security />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/success" element={<PaymentSuccess />} />
-              <Route path="/cancel" element={<PaymentCancel />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+          <main className="flex-1 overflow-auto pb-16 lg:pb-0 flex flex-col">
+            <div className="flex-1">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/trading" element={<Index />} />
+                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin/landing-page" element={<LandingPageManagement />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/settings/password" element={<PasswordSettings />} />
+                <Route path="/security" element={<Security />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/success" element={<PaymentSuccess />} />
+                <Route path="/cancel" element={<PaymentCancel />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+            <Footer />
           </main>
           
           {/* Mobile Bottom Navigation */}

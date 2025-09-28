@@ -22,11 +22,13 @@ import {
   Wallet,
   Bell,
   Mail,
+  Globe,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import TransactionManagement from './TransactionManagement';
 import AdminSettings from './AdminSettings';
 import EmailConfiguration from './EmailConfiguration';
+import FooterConfiguration from './FooterConfiguration';
 import { AdminCredentialsManager } from './AdminCredentialsManager';
 import { ApiKeysManager } from './ApiKeysManager';
 import BrandingManager from './BrandingManager';
@@ -121,7 +123,7 @@ export default function AdminInterface() {
 
         {/* Tabs for Orders and Configuration */}
         <Tabs defaultValue="branding" className="w-full">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="branding" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
               Identité
@@ -129,6 +131,10 @@ export default function AdminInterface() {
             <TabsTrigger value="email" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
               Email
+            </TabsTrigger>
+            <TabsTrigger value="footer" className="flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              Footer
             </TabsTrigger>
             <TabsTrigger value="transactions" className="flex items-center gap-2">
               <CreditCard className="w-4 h-4" />
@@ -160,6 +166,11 @@ export default function AdminInterface() {
           {/* Onglet Configuration Email */}
           <TabsContent value="email">
             <EmailConfiguration />
+          </TabsContent>
+
+          {/* Onglet Configuration Footer */}
+          <TabsContent value="footer">
+            <FooterConfiguration />
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">

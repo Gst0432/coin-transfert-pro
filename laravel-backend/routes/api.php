@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\InstallController;
 use App\Http\Controllers\Api\EmailConfigController;
+use App\Http\Controllers\Api\FooterConfigController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +73,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/email-config', [EmailConfigController::class, 'saveEmailConfig']);
         Route::post('/test-smtp', [EmailConfigController::class, 'testSMTP']);
         Route::post('/send-template-preview', [EmailConfigController::class, 'sendTemplatePreview']);
+        
+        // Footer configuration routes
+        Route::get('/footer-settings', [FooterConfigController::class, 'getFooterSettings']);
+        Route::post('/footer-settings', [FooterConfigController::class, 'saveFooterSettings']);
     });
 });
 
