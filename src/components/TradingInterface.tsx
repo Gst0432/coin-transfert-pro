@@ -359,12 +359,12 @@ export default function TradingInterface() {
         </div>
 
         {/* Next Button - Fixed at bottom on mobile */}
-        <div className="fixed bottom-0 left-0 right-0 p-3 bg-background border-t lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:p-0 lg:bg-transparent lg:border-t-0 lg:pt-6 lg:col-span-2">
+        <div className="fixed bottom-0 left-0 right-0 p-3 bg-background border-t z-50 lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:p-0 lg:bg-transparent lg:border-t-0 lg:pt-6 lg:col-span-2 lg:z-auto">
           <div className="max-w-sm sm:max-w-md lg:max-w-2xl xl:max-w-4xl mx-auto">
             <Button
               onClick={handleNext}
               disabled={isLoading}
-              className="w-full h-12 lg:h-12 px-4 lg:px-6 text-base lg:text-base font-semibold bg-primary hover:bg-primary/90 text-white rounded-xl"
+              className="w-full h-12 lg:h-12 px-4 lg:px-6 text-base lg:text-base font-semibold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg"
             >
               Suivant
             </Button>
