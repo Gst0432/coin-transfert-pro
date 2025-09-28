@@ -59,26 +59,100 @@ serve(async (req) => {
       return new Response('Transaction not found', { status: 404 })
     }
 
-        // Handle USDT deposit confirmation (USDT → FCFA)
+        // Handle USDT deposit confirmation (USDT → FCFA) - AUTO PAYOUT
         if (payment_status === 'finished' && transaction.transaction_type === 'usdt_to_fcfa') {
           console.log(`USDT deposit confirmed: ${pay_amount} USDT received for transaction ${order_id}`)
 
-          // Update transaction to pending admin validation instead of auto-processing
-          const { error: updateError } = await supabase
-            .from('transactions')
-            .update({
-              status: 'pending_admin_validation',
-              admin_notes: `USDT reçu: ${pay_amount} USDT - En attente de validation admin pour payout FCFA`,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', order_id)
+          // Get destination wallet info (phone number for Moneroo payout)
+          const destinationWallet = transaction.destination_wallet;
+          const phoneNumber = destinationWallet?.phone_number;
+          const operator = destinationWallet?.operator || 'mtn';
 
-          if (updateError) {
-            console.error('Error updating transaction to pending validation:', updateError)
-            throw updateError
+          if (!phoneNumber) {
+            console.error('No phone number found for FCFA payout');
+            
+            // Update transaction to require manual validation
+            await supabase
+              .from('transactions')
+              .update({
+                status: 'pending_admin_validation',
+                admin_notes: `USDT reçu: ${pay_amount} USDT - Numéro de téléphone manquant, validation manuelle requise`,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', order_id)
+              
+            return new Response('Phone number missing', { status: 400 })
           }
 
-          console.log(`Transaction ${order_id} updated to pending_admin_validation - awaiting manual payout approval`)
+          // Calculate FCFA amount from received USDT
+          const fcfaAmount = parseFloat(pay_amount) * transaction.exchange_rate;
+
+          console.log(`Initiating automatic FCFA payout: ${fcfaAmount} FCFA to ${phoneNumber}`)
+
+          try {
+            // Automatic Moneroo payout
+            const payout = await monerooRequest('payouts/initialize-payout', {
+              currency: 'XOF',
+              amount: fcfaAmount,
+              phone: phoneNumber,
+              operator: operator,
+              reference: `payout_${order_id}`,
+              callback_url: `${supabaseUrl}/functions/v1/moneroo-webhook`,
+              metadata: {
+                type: 'payout',
+                transaction_id: order_id
+              }
+            });
+
+            console.log('Automatic Moneroo payout initiated:', payout);
+
+            // Update transaction status to processing
+            const { error: updateError } = await supabase
+              .from('transactions')
+              .update({
+                status: 'processing',
+                admin_notes: `USDT reçu: ${pay_amount} USDT - Payout FCFA automatique initié (${fcfaAmount} FCFA)`,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', order_id)
+
+            if (updateError) {
+              console.error('Error updating transaction:', updateError)
+              throw updateError
+            }
+
+            console.log(`Transaction ${order_id} updated to processing - automatic FCFA payout initiated`)
+
+          } catch (payoutError) {
+            console.error('Error with automatic Moneroo payout:', payoutError)
+            
+            // Detect specific error types for better admin visibility
+            const errorMessage = payoutError instanceof Error ? payoutError.message : 'Unknown error'
+            let failureReason = 'Payout FCFA automatique échoué'
+            
+            // Check for common failure reasons
+            if (errorMessage.toLowerCase().includes('solde insuffisant') || errorMessage.toLowerCase().includes('insufficient')) {
+              failureReason = 'Solde insuffisant - Payout FCFA'
+            } else if (errorMessage.toLowerCase().includes('balance')) {
+              failureReason = 'Problème de solde - Payout FCFA'
+            } else if (errorMessage.toLowerCase().includes('limit')) {
+              failureReason = 'Limite dépassée - Payout FCFA'
+            } else if (errorMessage.toLowerCase().includes('recipient') || errorMessage.toLowerCase().includes('phone')) {
+              failureReason = 'Numéro invalide - Payout FCFA'
+            }
+            
+            // Update transaction to require manual validation due to error
+            await supabase
+              .from('transactions')
+              .update({
+                status: 'pending_admin_validation',
+                admin_notes: `USDT reçu: ${pay_amount} USDT - ${failureReason}: ${errorMessage} - Validation manuelle requise`,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', order_id)
+              
+            console.log(`Transaction ${order_id} marked for manual validation - reason: ${failureReason}`)
+          }
         }
     
     // Handle other payment statuses
