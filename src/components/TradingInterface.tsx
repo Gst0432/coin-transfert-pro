@@ -198,9 +198,9 @@ export default function TradingInterface() {
           </div>
 
           {/* Layout responsive pour desktop */}
-          <div className="grid lg:grid-cols-2 gap-2 lg:gap-6 flex-1 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-4 lg:gap-6 flex-1 overflow-hidden">
             {/* Je Donne Section */}
-            <div className="flex flex-col space-y-1 lg:space-y-3">
+            <div className="flex flex-col space-y-2 lg:space-y-3">
               <h2 className="text-sm lg:text-xl font-semibold text-foreground">Je Donne</h2>
             
               <div className="relative flex-1">
@@ -250,7 +250,7 @@ export default function TradingInterface() {
                 )}
               </div>
 
-              <div className="space-y-1 lg:space-y-2">
+              <div className="space-y-2 lg:space-y-2">
                 <label className="text-xs lg:text-sm font-medium text-foreground">
                   {!isInverted ? 'Compte Mobile Money' : 'Adresse Crypto'}
                 </label>
@@ -285,7 +285,7 @@ export default function TradingInterface() {
           </div>
 
             {/* Je Reçois Section */}
-            <div className="flex flex-col space-y-1 lg:space-y-3">
+            <div className="flex flex-col space-y-2 lg:space-y-3">
               <h2 className="text-sm lg:text-xl font-semibold text-foreground">Je Reçois</h2>
               
               <div className="relative flex-1">
@@ -324,7 +324,7 @@ export default function TradingInterface() {
                 </div>
               </div>
 
-              <div className="space-y-1 lg:space-y-2">
+              <div className="space-y-2 lg:space-y-2">
                 <label className="text-xs lg:text-sm font-medium text-foreground">
                   {!isInverted ? 'Adresse réception' : 'Compte réception'}
                 </label>
