@@ -83,6 +83,7 @@ export type Database = {
           id: string
           moneroo_checkout_url: string | null
           moneroo_payment_id: string | null
+          nowpayments_checkout_url: string | null
           processed_at: string | null
           processed_by: string | null
           source_wallet: Json | null
@@ -105,6 +106,7 @@ export type Database = {
           id?: string
           moneroo_checkout_url?: string | null
           moneroo_payment_id?: string | null
+          nowpayments_checkout_url?: string | null
           processed_at?: string | null
           processed_by?: string | null
           source_wallet?: Json | null
@@ -127,6 +129,7 @@ export type Database = {
           id?: string
           moneroo_checkout_url?: string | null
           moneroo_payment_id?: string | null
+          nowpayments_checkout_url?: string | null
           processed_at?: string | null
           processed_by?: string | null
           source_wallet?: Json | null
