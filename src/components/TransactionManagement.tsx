@@ -1,26 +1,20 @@
-import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { 
-  Clock, 
-  Check, 
-  X, 
-  AlertCircle, 
-  Search,
-  RefreshCw,
-  Eye,
-  RotateCcw
-} from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { useRetryPayment } from '@/hooks/useRetryPayment';
+import { usePayoutManagement } from '@/hooks/usePayoutManagement';
+import { Search, RotateCcw, CheckCircle, XCircle, Clock, AlertCircle, RefreshCw, Eye, Check, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 interface Transaction {
   id: string;
@@ -33,7 +27,7 @@ interface Transaction {
   fees_usdt: number;
   final_amount_fcfa: number;
   final_amount_usdt: number;
-  status: 'pending' | 'processing' | 'completed' | 'rejected' | 'failed';
+  status: 'pending' | 'pending_admin_validation' | 'processing' | 'completed' | 'rejected' | 'failed';
   moneroo_payment_id?: string;
   moneroo_checkout_url?: string;
   source_wallet: any;
@@ -47,9 +41,10 @@ interface Transaction {
 
 const statusConfig = {
   pending: { label: 'En attente', variant: 'secondary' as const, icon: Clock },
+  pending_admin_validation: { label: 'Validation admin', variant: 'default' as const, icon: AlertCircle },
   processing: { label: 'En traitement', variant: 'default' as const, icon: Clock },
-  completed: { label: 'Complétée', variant: 'default' as const, icon: Check },
-  rejected: { label: 'Rejetée', variant: 'destructive' as const, icon: X },
+  completed: { label: 'Complétée', variant: 'default' as const, icon: CheckCircle },
+  rejected: { label: 'Rejetée', variant: 'destructive' as const, icon: XCircle },
   failed: { label: 'Échouée', variant: 'destructive' as const, icon: AlertCircle },
 };
 
@@ -65,6 +60,7 @@ export default function TransactionManagement() {
   
   const { toast } = useToast();
   const { retryPayment, isLoading: isRetrying } = useRetryPayment();
+  const { handlePayoutAction, isLoading: isProcessingPayout } = usePayoutManagement();
 
   useEffect(() => {
     fetchTransactions();
@@ -177,23 +173,46 @@ export default function TransactionManagement() {
     }
   };
 
-  const handleRetryPayment = async (transaction: Transaction) => {
+  // New payout management functions
+  const handleConfirmPayout = async (transactionId: string) => {
     try {
-      const paymentMethod = transaction.transaction_type === 'fcfa_to_usdt' ? 'moneroo' : 'nowpayments';
-      
-      await retryPayment({
-        transactionId: transaction.id,
-        paymentMethod: paymentMethod
-      });
-
-      // Refresh transactions after retry
+      await handlePayoutAction({ transactionId, action: 'confirm' });
       await fetchTransactions();
-      
     } catch (error) {
-      console.error('Failed to retry payment:', error);
+      console.error('Error confirming payout:', error);
     }
   };
 
+  const handleRejectPayout = async (transactionId: string) => {
+    try {
+      await handlePayoutAction({ transactionId, action: 'reject' });
+      await fetchTransactions();
+    } catch (error) {
+      console.error('Error rejecting payout:', error);
+    }
+  };
+
+  const handleRetryPayout = async (transactionId: string) => {
+    try {
+      await handlePayoutAction({ transactionId, action: 'retry' });
+      await fetchTransactions();
+    } catch (error) {
+      console.error('Error retrying payout:', error);
+    }
+  };
+
+  // Enhanced retry function that handles both payment retry and payout actions
+  const handleRetryPayment = async (transaction: Transaction) => {
+    try {
+      const paymentMethod = transaction.transaction_type === 'fcfa_to_usdt' ? 'moneroo' : 'nowpayments';
+      await retryPayment({ transactionId: transaction.id, paymentMethod });
+      await fetchTransactions();
+    } catch (error) {
+      console.error('Error retrying payment:', error);
+    }
+  };
+
+  // Enhanced function to check if transaction can be retried
   const canRetryTransaction = (transaction: Transaction) => {
     return ['failed', 'rejected'].includes(transaction.status);
   };
@@ -224,6 +243,7 @@ export default function TransactionManagement() {
   // Statistics
   const stats = {
     total: transactions.length,
+    pending_admin_validation: transactions.filter(t => t.status === 'pending_admin_validation').length,
     processing: transactions.filter(t => t.status === 'processing').length,
     completed: transactions.filter(t => t.status === 'completed').length,
     rejected: transactions.filter(t => t.status === 'rejected').length,
@@ -265,12 +285,12 @@ export default function TransactionManagement() {
 
         <Card className="crypto-card">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-warning/20 rounded-lg">
-              <Clock className="w-5 h-5 text-warning" />
+            <div className="p-2 bg-blue-500/20 rounded-lg">
+              <AlertCircle className="w-5 h-5 test-blue-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">En traitement</p>
-              <p className="text-2xl font-bold text-foreground">{stats.processing}</p>
+              <p className="text-sm text-muted-foreground">Validation admin</p>
+              <p className="text-2xl font-bold text-foreground">{stats.pending_admin_validation}</p>
             </div>
           </div>
         </Card>
@@ -333,6 +353,7 @@ export default function TransactionManagement() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les statuts</SelectItem>
+                <SelectItem value="pending_admin_validation">Validation admin</SelectItem>
                 <SelectItem value="processing">En traitement</SelectItem>
                 <SelectItem value="completed">Complétées</SelectItem>
                 <SelectItem value="rejected">Rejetées</SelectItem>
@@ -500,19 +521,19 @@ export default function TransactionManagement() {
                                   />
                                 </div>
 
-                                {selectedTransaction.status === 'processing' && (
+                                {selectedTransaction.status === 'pending_admin_validation' && (
                                   <div className="flex gap-2 pt-4">
                                     <Button
-                                      onClick={() => handleTransactionAction(selectedTransaction.id, 'approve', adminNotes)}
-                                      disabled={isLoading}
-                                      className="flex-1 bg-success hover:bg-success/90"
+                                      onClick={() => handleConfirmPayout(selectedTransaction.id)}
+                                      disabled={isProcessingPayout}
+                                      className="flex-1 bg-green-600 hover:bg-green-700"
                                     >
                                       <Check className="w-4 h-4 mr-2" />
-                                      Approuver
+                                      Confirmer payout
                                     </Button>
                                     <Button
-                                      onClick={() => handleTransactionAction(selectedTransaction.id, 'reject', adminNotes)}
-                                      disabled={isLoading}
+                                      onClick={() => handleRejectPayout(selectedTransaction.id)}
+                                      disabled={isProcessingPayout}
                                       variant="destructive"
                                       className="flex-1"
                                     >
@@ -526,14 +547,46 @@ export default function TransactionManagement() {
                           </DialogContent>
                         </Dialog>
                         
+                        {/* Actions rapides selon le statut */}
+                        {transaction.status === 'pending_admin_validation' && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => handleConfirmPayout(transaction.id)}
+                              disabled={isProcessingPayout}
+                              className="text-xs bg-green-600 hover:bg-green-700"
+                            >
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Confirmer
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleRejectPayout(transaction.id)}
+                              disabled={isProcessingPayout}
+                              className="text-xs"
+                            >
+                              <XCircle className="w-3 h-3 mr-1" />
+                              Rejeter
+                            </Button>
+                          </>
+                        )}
+                        
                         {/* Bouton de relance pour les transactions échouées */}
                         {canRetryTransaction(transaction) && (
                           <Button
                             size="sm"
-                            variant="default"
-                            onClick={() => handleRetryPayment(transaction)}
-                            disabled={isRetrying}
-                            className="text-xs bg-warning hover:bg-warning/90 text-warning-foreground"
+                            variant="outline"
+                            onClick={() => {
+                              if (transaction.admin_notes?.includes('Solde insuffisant')) {
+                                handleRetryPayout(transaction.id);
+                              } else {
+                                handleRetryPayment(transaction);
+                              }
+                            }}
+                            disabled={isRetrying || isProcessingPayout}
+                            className="text-xs"
                           >
                             <RotateCcw className="w-3 h-3 mr-1" />
                             Relancer

@@ -59,99 +59,27 @@ serve(async (req) => {
       return new Response('Transaction not found', { status: 404 })
     }
 
-    // Handle USDT deposit confirmation (USDT → FCFA)
-    if (payment_status === 'finished' && transaction.transaction_type === 'usdt_to_fcfa') {
-      console.log(`Processing FCFA payout for USDT sale: ${pay_amount} USDT received`)
+        // Handle USDT deposit confirmation (USDT → FCFA)
+        if (payment_status === 'finished' && transaction.transaction_type === 'usdt_to_fcfa') {
+          console.log(`USDT deposit confirmed: ${pay_amount} USDT received for transaction ${order_id}`)
 
-      // Get app settings for exchange rate
-      const { data: settings } = await supabase
-        .from('app_settings')
-        .select('setting_value')
-        .eq('setting_key', 'exchange_rate')
-        .single()
+          // Update transaction to pending admin validation instead of auto-processing
+          const { error: updateError } = await supabase
+            .from('transactions')
+            .update({
+              status: 'pending_admin_validation',
+              admin_notes: `USDT reçu: ${pay_amount} USDT - En attente de validation admin pour payout FCFA`,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', order_id)
 
-      const exchangeRate = settings?.setting_value?.rate || 650
-      const fcfaAmount = parseFloat(pay_amount) * exchangeRate
-
-      // Get destination wallet (mobile money number)
-      const mobileNumber = transaction.destination_wallet?.number || transaction.destination_wallet?.address
-
-      if (!mobileNumber) {
-        console.error('No mobile number found for FCFA payout')
-        await supabase
-          .from('transactions')
-          .update({
-            status: 'failed',
-            admin_notes: 'No mobile number found for FCFA payout',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', order_id)
-        
-        return new Response('No mobile number found', { status: 400 })
-      }
-
-      try {
-        // Send FCFA via Moneroo transfer
-        const transfer = await monerooRequest('transfer', {
-          amount: fcfaAmount,
-          currency: 'XOF',
-          recipient: mobileNumber,
-          callback_url: `${supabaseUrl}/functions/v1/moneroo-webhook`,
-          metadata: {
-            type: 'payout',
-            transaction_id: order_id
+          if (updateError) {
+            console.error('Error updating transaction to pending validation:', updateError)
+            throw updateError
           }
-        })
 
-        console.log('Moneroo transfer created:', transfer)
-
-        // Update transaction status to processing
-        const { error: updateError } = await supabase
-          .from('transactions')
-          .update({
-            status: 'processing',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', order_id)
-
-        if (updateError) {
-          console.error('Error updating transaction:', updateError)
-          throw updateError
+          console.log(`Transaction ${order_id} updated to pending_admin_validation - awaiting manual payout approval`)
         }
-
-        console.log(`Transaction ${order_id} updated to processing - FCFA transfer initiated`)
-
-      } catch (transferError) {
-        console.error('Error creating Moneroo transfer:', transferError)
-        
-        // Detect specific error types for better admin visibility
-        const errorMessage = transferError instanceof Error ? transferError.message : 'Unknown error'
-        let failureReason = 'FCFA transfer failed'
-        
-        // Check for common failure reasons
-        if (errorMessage.toLowerCase().includes('insufficient')) {
-          failureReason = 'Solde insuffisant - FCFA transfer'
-        } else if (errorMessage.toLowerCase().includes('balance')) {
-          failureReason = 'Problème de solde - FCFA transfer'
-        } else if (errorMessage.toLowerCase().includes('limit')) {
-          failureReason = 'Limite dépassée - FCFA transfer'
-        } else if (errorMessage.toLowerCase().includes('recipient')) {
-          failureReason = 'Numéro mobile invalide - FCFA transfer'
-        }
-        
-        // Update transaction as failed with detailed reason
-        await supabase
-          .from('transactions')
-          .update({
-            status: 'failed',
-            admin_notes: `${failureReason}: ${errorMessage} - Peut être relancé`,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', order_id)
-          
-        console.log(`Transaction ${order_id} marked as failed - reason: ${failureReason}`)
-      }
-    }
     
     // Handle other payment statuses
     else {

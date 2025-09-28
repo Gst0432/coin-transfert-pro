@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.retry-payment]
 verify_jwt = false
+
+[functions.initiate-payout]
+verify_jwt = false
