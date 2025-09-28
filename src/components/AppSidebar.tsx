@@ -143,24 +143,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Balance Overview */}
-        {!collapsed && (
-          <div className="my-3 p-2 rounded-md bg-gradient-to-r from-sidebar-primary/10 to-sidebar-primary/5 border border-sidebar-primary/20">
-            <h3 className="text-xs font-medium text-sidebar-foreground mb-1">
-              Solde Total
-            </h3>
-            <div className="space-y-0.5">
-              <div className="flex justify-between text-xs">
-                <span className="text-sidebar-foreground/70">FCFA</span>
-                <span className="font-medium text-sidebar-foreground">125,000</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-sidebar-foreground/70">USD</span>
-                <span className="font-medium text-sidebar-foreground">210.15</span>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Support & Settings */}
         <SidebarGroup>
