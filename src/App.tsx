@@ -22,9 +22,14 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <SidebarProvider>
-            <div className="min-h-screen flex w-full bg-background">
+            <div className="min-h-screen flex w-full bg-background relative">
               <AppSidebar />
-              <div className="flex-1 flex flex-col">
+              
+              {/* Overlay pour PC */}
+              <div className="hidden lg:block fixed inset-0 bg-black/20 backdrop-blur-sm z-30 data-[state=closed]:hidden data-[state=open]:block opacity-0 data-[state=open]:opacity-100 transition-opacity duration-300" 
+                   data-sidebar-overlay />
+              
+              <div className="flex-1 flex flex-col relative z-40">
                 {/* Header with Sidebar Trigger */}
                 <header className="h-14 flex items-center justify-between px-4 border-b border-border bg-card/80 backdrop-blur-sm lg:px-6">
                   <SidebarTrigger className="text-foreground hover:text-primary lg:hidden" />
