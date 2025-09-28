@@ -26,7 +26,7 @@ export const usePayoutManagement = () => {
     setIsLoading(true);
     
     try {
-      console.log('Processing payout action:', payoutData);
+      // Processing payout action
       
       const { data, error } = await supabase.functions.invoke('initiate-payout', {
         body: {
@@ -35,7 +35,7 @@ export const usePayoutManagement = () => {
         }
       });
 
-      console.log('Payout action response:', data);
+      // Payout action completed
 
       if (error) {
         throw new Error(`Edge Function error: ${error.message}`);

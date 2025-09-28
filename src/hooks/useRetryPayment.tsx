@@ -15,13 +15,13 @@ export const useRetryPayment = () => {
     setIsLoading(true);
     
     try {
-      console.log('Retrying payment with data:', retryData);
+      // Retrying payment
       
       const { data, error } = await supabase.functions.invoke('retry-payment', {
         body: retryData
       });
 
-      console.log('Retry payment response:', data);
+      // Payment retry completed
 
       if (error) {
         throw new Error(`Edge Function error: ${error.message}`);
