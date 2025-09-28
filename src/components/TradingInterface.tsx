@@ -359,19 +359,17 @@ export default function TradingInterface() {
             </div>
           </div>
 
-        </div>
-      </div>
-      
-      {/* Next Button - Fixed at bottom with enhanced styling */}
-      <div className="flex-shrink-0 p-4 sm:p-5 lg:p-6 bg-background/95 backdrop-blur border-t border-border/50 z-10 shadow-lg">
-        <div className="max-w-sm sm:max-w-md lg:max-w-2xl xl:max-w-4xl mx-auto">
-          <Button
-            onClick={handleNext}
-            disabled={isLoading}
-            className="w-full h-12 sm:h-14 px-4 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg transition-all duration-200"
-          >
-            Suivant
-          </Button>
+          {/* Next Button - Positioned after form sections */}
+          <div className="mt-6 sm:mt-8">
+            <Button
+              onClick={handleNext}
+              disabled={isLoading}
+              className="w-full h-12 sm:h-14 px-4 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg transition-all duration-200"
+            >
+              Suivant
+            </Button>
+          </div>
+
         </div>
       </div>
     </div>
