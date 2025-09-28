@@ -187,7 +187,7 @@ export default function LandingPage() {
                   Plateforme de change sécurisée
                 </Badge>
                 <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-4">
-                  G-Transfert
+                  Exchange
                 </h1>
                 <p className="text-xl lg:text-2xl text-muted-foreground mb-6">
                   Échangez facilement entre <span className="text-primary font-semibold">FCFA</span> et <span className="text-primary font-semibold">USDT</span>
