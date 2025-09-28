@@ -228,46 +228,46 @@ export default function Notifications() {
 
   return (
     <PageLayout>
-      <div className="container mx-auto py-6 px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="container mx-auto py-3 sm:py-6 px-2 sm:px-4">
+        <div className="max-w-4xl mx-auto space-y-4 sm:space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Notifications</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl sm:text-3xl font-bold text-foreground">Notifications</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Gérez vos notifications et préférences
           </p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {unreadCount > 0 && (
-            <Badge variant="destructive">{unreadCount} non lues</Badge>
+            <Badge variant="destructive" className="text-xs sm:text-sm">{unreadCount} non lues</Badge>
           )}
           {importantCount > 0 && (
-            <Badge variant="outline">{importantCount} importantes</Badge>
+            <Badge variant="outline" className="text-xs sm:text-sm">{importantCount} importantes</Badge>
           )}
         </div>
       </div>
 
-      <Tabs defaultValue="notifications" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="settings">Paramètres</TabsTrigger>
+      <Tabs defaultValue="notifications" className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-2 h-8 sm:h-10 text-xs sm:text-sm">
+          <TabsTrigger value="notifications" className="px-2 sm:px-4">Notifications</TabsTrigger>
+          <TabsTrigger value="settings" className="px-2 sm:px-4">Paramètres</TabsTrigger>
         </TabsList>
 
         {/* Onglet Notifications */}
-        <TabsContent value="notifications" className="space-y-6">
+        <TabsContent value="notifications" className="space-y-4 sm:space-y-6">
           {/* Actions rapides */}
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Bell className="w-5 h-5 text-muted-foreground" />
+            <CardContent className="pt-4 sm:pt-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">
+                    <p className="font-medium text-sm sm:text-base">
                       {notifications.length} notification{notifications.length > 1 ? 's' : ''}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {unreadCount > 0 
                         ? `${unreadCount} non lue${unreadCount > 1 ? 's' : ''}`
                         : 'Toutes les notifications sont lues'
@@ -276,15 +276,15 @@ export default function Notifications() {
                   </div>
                 </div>
                 
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   {unreadCount > 0 && (
-                    <Button variant="outline" size="sm" onClick={markAllAsRead}>
-                      <CheckCircle className="w-4 h-4 mr-2" />
+                    <Button variant="outline" size="sm" onClick={markAllAsRead} className="text-xs sm:text-sm h-7 sm:h-9">
+                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                       Marquer toutes comme lues
                     </Button>
                   )}
-                  <Button variant="outline" size="sm" onClick={clearAllNotifications}>
-                    <Trash2 className="w-4 h-4 mr-2" />
+                  <Button variant="outline" size="sm" onClick={clearAllNotifications} className="text-xs sm:text-sm h-7 sm:h-9">
+                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     Tout effacer
                   </Button>
                 </div>
@@ -380,24 +380,24 @@ export default function Notifications() {
 
         {/* Onglet Paramètres */}
         <TabsContent value="settings" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Notifications par Email */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="w-5 h-5" />
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
                   Notifications par Email
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Configurez les notifications que vous souhaitez recevoir par email
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label>Transactions</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label className="text-xs sm:text-sm">Transactions</Label>
+                      <p className="text-[10px] sm:text-sm text-muted-foreground">
                         Confirmations et échecs de transactions
                       </p>
                     </div>

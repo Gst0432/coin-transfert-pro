@@ -131,73 +131,73 @@ export default function Settings() {
 
   return (
     <PageLayout>
-      <div className="container mx-auto py-6 px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="container mx-auto py-3 sm:py-6 px-2 sm:px-4">
+        <div className="max-w-4xl mx-auto space-y-4 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Paramètres</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-xl sm:text-3xl font-bold text-foreground">Paramètres</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Gérez votre profil et vos préférences
         </p>
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="profile">Profil</TabsTrigger>
-          <TabsTrigger value="preferences">Préférences</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Sécurité</TabsTrigger>
+      <Tabs defaultValue="profile" className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-8 sm:h-10 text-xs sm:text-sm">
+          <TabsTrigger value="profile" className="text-[10px] sm:text-sm px-1 sm:px-3">Profil</TabsTrigger>
+          <TabsTrigger value="preferences" className="text-[10px] sm:text-sm px-1 sm:px-3">Préférences</TabsTrigger>
+          <TabsTrigger value="notifications" className="text-[10px] sm:text-sm px-1 sm:px-3">Notifications</TabsTrigger>
+          <TabsTrigger value="security" className="text-[10px] sm:text-sm px-1 sm:px-3">Sécurité</TabsTrigger>
         </TabsList>
 
         {/* Onglet Profil */}
-        <TabsContent value="profile" className="space-y-6">
+        <TabsContent value="profile" className="space-y-4 sm:space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="w-5 h-5" />
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <User className="w-4 h-4 sm:w-5 sm:h-5" />
                 Informations du Profil
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm">
                 Gérez vos informations personnelles et votre photo de profil
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 sm:space-y-6">
               {/* Avatar et informations de base */}
-              <div className="flex items-start gap-6">
-                <div className="text-center space-y-2">
-                  <Avatar className="w-24 h-24">
+              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                <div className="text-center space-y-2 mx-auto sm:mx-0">
+                  <Avatar className="w-16 h-16 sm:w-24 sm:h-24">
                     <AvatarImage src={profile.avatar_url} />
-                    <AvatarFallback className="text-lg">
+                    <AvatarFallback className="text-sm sm:text-lg">
                       {profile.display_name ? getInitials(profile.display_name) : 'U'}
                     </AvatarFallback>
                   </Avatar>
-                  <Button variant="outline" size="sm">
-                    <Upload className="w-4 h-4 mr-2" />
+                  <Button variant="outline" size="sm" className="text-xs sm:text-sm h-7 sm:h-9">
+                    <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     Changer
                   </Button>
                 </div>
 
-                <div className="flex-1 space-y-4">
-                  <div className="flex items-center justify-between">
+                <div className="flex-1 w-full space-y-3 sm:space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                      <p className="font-medium text-foreground">
+                      <p className="font-medium text-sm sm:text-base text-foreground">
                         {profile.display_name || "Nom non défini"}
                       </p>
-                      <p className="text-sm text-muted-foreground">{user?.email}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="default" className="text-xs">
-                          <Check className="w-3 h-3 mr-1" />
+                      <p className="text-xs sm:text-sm text-muted-foreground">{user?.email}</p>
+                      <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1">
+                        <Badge variant="default" className="text-[10px] sm:text-xs h-5 sm:h-6">
+                          <Check className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
                           Email vérifié
                         </Badge>
-                        <Badge variant={profile.phone_number ? "default" : "secondary"} className="text-xs">
+                        <Badge variant={profile.phone_number ? "default" : "secondary"} className="text-[10px] sm:text-xs h-5 sm:h-6">
                           {profile.phone_number ? (
                             <>
-                              <Check className="w-3 h-3 mr-1" />
+                              <Check className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
                               Téléphone vérifié
                             </>
                           ) : (
                             <>
-                              <X className="w-3 h-3 mr-1" />
+                              <X className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
                               Téléphone non vérifié
                             </>
                           )}
@@ -208,17 +208,19 @@ export default function Settings() {
                     <Button
                       variant="outline"
                       onClick={() => setIsEditingProfile(!isEditingProfile)}
+                      size="sm"
+                      className="text-xs sm:text-sm h-7 sm:h-9 w-full sm:w-auto"
                     >
-                      <Edit3 className="w-4 h-4 mr-2" />
+                      <Edit3 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                       {isEditingProfile ? "Annuler" : "Modifier"}
                     </Button>
                   </div>
 
                   {isEditingProfile && (
-                    <div className="space-y-4 p-4 bg-secondary/20 rounded-lg">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3 sm:space-y-4 p-3 sm:p-4 bg-secondary/20 rounded-lg">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div>
-                          <Label htmlFor="display_name">Nom complet</Label>
+                          <Label htmlFor="display_name" className="text-xs sm:text-sm">Nom complet</Label>
                           <Input
                             id="display_name"
                             value={profile.display_name}
@@ -227,11 +229,12 @@ export default function Settings() {
                               display_name: e.target.value
                             }))}
                             placeholder="Votre nom complet"
+                            className="h-8 sm:h-10 text-sm"
                           />
                         </div>
 
                         <div>
-                          <Label htmlFor="phone_number">Numéro de téléphone</Label>
+                          <Label htmlFor="phone_number" className="text-xs sm:text-sm">Numéro de téléphone</Label>
                           <Input
                             id="phone_number"
                             value={profile.phone_number}
@@ -240,15 +243,17 @@ export default function Settings() {
                               phone_number: e.target.value
                             }))}
                             placeholder="+229 XX XX XX XX"
+                            className="h-8 sm:h-10 text-sm"
                           />
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           onClick={updateProfile}
                           disabled={isLoading}
                           size="sm"
+                          className="text-xs sm:text-sm h-7 sm:h-9"
                         >
                           {isLoading ? "Enregistrement..." : "Enregistrer"}
                         </Button>
@@ -256,6 +261,7 @@ export default function Settings() {
                           variant="outline"
                           onClick={() => setIsEditingProfile(false)}
                           size="sm"
+                          className="text-xs sm:text-sm h-7 sm:h-9"
                         >
                           Annuler
                         </Button>
@@ -269,18 +275,18 @@ export default function Settings() {
         </TabsContent>
 
         {/* Onglet Préférences */}
-        <TabsContent value="preferences" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <TabsContent value="preferences" className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Languages className="w-5 h-5" />
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Languages className="w-4 h-4 sm:w-5 sm:h-5" />
                   Langue et Région
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4">
                 <div>
-                  <Label htmlFor="language">Langue</Label>
+                  <Label htmlFor="language" className="text-xs sm:text-sm">Langue</Label>
                   <select
                     id="language"
                     value={preferences.language}
@@ -288,7 +294,7 @@ export default function Settings() {
                       ...prev,
                       language: e.target.value
                     }))}
-                    className="w-full p-2 border border-input bg-background rounded-md"
+                    className="w-full p-2 border border-input bg-background rounded-md text-sm h-8 sm:h-10"
                   >
                     <option value="fr">Français</option>
                     <option value="en">English</option>
@@ -296,7 +302,7 @@ export default function Settings() {
                 </div>
 
                 <div>
-                  <Label htmlFor="timezone">Fuseau horaire</Label>
+                  <Label htmlFor="timezone" className="text-xs sm:text-sm">Fuseau horaire</Label>
                   <select
                     id="timezone"
                     value={preferences.timezone}
@@ -304,7 +310,7 @@ export default function Settings() {
                       ...prev,
                       timezone: e.target.value
                     }))}
-                    className="w-full p-2 border border-input bg-background rounded-md"
+                    className="w-full p-2 border border-input bg-background rounded-md text-sm h-8 sm:h-10"
                   >
                     <option value="Africa/Porto-Novo">Afrique/Porto-Novo (GMT+1)</option>
                     <option value="Africa/Abidjan">Afrique/Abidjan (GMT)</option>

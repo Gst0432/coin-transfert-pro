@@ -211,76 +211,76 @@ export default function Support() {
 
   return (
     <PageLayout>
-      <div className="container mx-auto py-6 px-4">
-        <div className="max-w-6xl mx-auto space-y-8">
+      <div className="container mx-auto py-3 sm:py-6 px-2 sm:px-4">
+        <div className="max-w-6xl mx-auto space-y-4 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Centre d'Aide</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-xl sm:text-3xl font-bold text-foreground">Centre d'Aide</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Trouvez des réponses à vos questions ou contactez notre équipe support
         </p>
       </div>
 
       {/* Recherche globale */}
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="pt-4 sm:pt-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               placeholder="Rechercher dans la FAQ, guides, articles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 h-8 sm:h-10 text-sm"
             />
           </div>
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="faq" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="faq">FAQ</TabsTrigger>
-          <TabsTrigger value="contact">Contacter le Support</TabsTrigger>
-          <TabsTrigger value="tickets">Mes Tickets</TabsTrigger>
-          <TabsTrigger value="resources">Ressources</TabsTrigger>
+      <Tabs defaultValue="faq" className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-8 sm:h-10 text-xs sm:text-sm">
+          <TabsTrigger value="faq" className="px-1 sm:px-3">FAQ</TabsTrigger>
+          <TabsTrigger value="contact" className="px-1 sm:px-3">Contact</TabsTrigger>
+          <TabsTrigger value="tickets" className="px-1 sm:px-3">Mes Tickets</TabsTrigger>
+          <TabsTrigger value="resources" className="px-1 sm:px-3">Ressources</TabsTrigger>
         </TabsList>
 
         {/* Onglet FAQ */}
-        <TabsContent value="faq" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-4">
-              <h2 className="text-xl font-semibold">Questions Fréquentes</h2>
+        <TabsContent value="faq" className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+              <h2 className="text-lg sm:text-xl font-semibold">Questions Fréquentes</h2>
               
               {filteredFAQ.length === 0 ? (
                 <Card>
-                  <CardContent className="pt-6 text-center">
-                    <HelpCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
+                  <CardContent className="pt-4 sm:pt-6 text-center">
+                    <HelpCircle className="w-8 h-8 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                    <p className="text-sm sm:text-base text-muted-foreground">
                       Aucune question trouvée pour "{searchQuery}"
                     </p>
                   </CardContent>
                 </Card>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {filteredFAQ.map((item) => (
                     <Card key={item.id}>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <CardTitle className="text-base">{item.question}</CardTitle>
-                          <Badge variant="outline">{item.category}</Badge>
+                      <CardHeader className="pb-2 sm:pb-3">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                          <CardTitle className="text-sm sm:text-base">{item.question}</CardTitle>
+                          <Badge variant="outline" className="text-xs self-start sm:self-auto">{item.category}</Badge>
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-muted-foreground mb-4">{item.answer}</p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">{item.answer}</p>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                          <div className="flex items-center gap-4 text-xs sm:text-sm text-muted-foreground">
                             <span>{item.helpful_count} personnes ont trouvé cela utile</span>
                           </div>
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm">
-                              <CheckCircle className="w-4 h-4 mr-2" />
+                            <Button variant="outline" size="sm" className="text-xs h-7 sm:h-9 flex-1 sm:flex-none">
+                              <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                               Utile
                             </Button>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" className="text-xs h-7 sm:h-9 flex-1 sm:flex-none">
                               Pas utile
                             </Button>
                           </div>
@@ -293,17 +293,17 @@ export default function Support() {
             </div>
 
             {/* Sidebar avec catégories */}
-            <div>
+            <div className="space-y-3 sm:space-y-4">
               <Card>
-                <CardHeader>
-                  <CardTitle>Catégories</CardTitle>
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="text-base sm:text-lg">Catégories</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-1 sm:space-y-2">
                   {['Échanges', 'Frais', 'Délais', 'Vérification', 'Dépannage', 'Sécurité'].map((category) => (
                     <Button
                       key={category}
                       variant="ghost"
-                      className="w-full justify-start"
+                      className="w-full justify-start text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3"
                       onClick={() => setSearchQuery(category)}
                     >
                       {category}
@@ -314,23 +314,23 @@ export default function Support() {
 
               {/* Contact rapide */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Besoin d'aide ?</CardTitle>
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="text-base sm:text-lg">Besoin d'aide ?</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button className="w-full" asChild>
+                <CardContent className="space-y-2 sm:space-y-3">
+                  <Button className="w-full text-xs sm:text-sm h-7 sm:h-9" asChild>
                     <a href="#contact">
-                      <MessageSquare className="w-4 h-4 mr-2" />
+                      <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                       Contacter le Support
                     </a>
                   </Button>
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2 text-xs sm:text-sm">
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
                       <span>Réponse sous 24h</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-muted-foreground" />
+                      <Users className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
                       <span>Support 7j/7</span>
                     </div>
                   </div>

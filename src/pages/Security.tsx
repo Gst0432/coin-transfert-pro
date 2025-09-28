@@ -175,34 +175,34 @@ export default function Security() {
 
   return (
     <PageLayout>
-      <div className="container mx-auto py-6 px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="container mx-auto py-3 sm:py-6 px-2 sm:px-4">
+        <div className="max-w-4xl mx-auto space-y-4 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Sécurité</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-xl sm:text-3xl font-bold text-foreground">Sécurité</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Protégez votre compte avec nos outils de sécurité avancés
         </p>
       </div>
 
       {/* Statut de sécurité global */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5" />
+        <CardHeader className="pb-3 sm:pb-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
             Niveau de Sécurité
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <div className="h-2 bg-secondary rounded-full flex-1">
                   <div className="h-full bg-success rounded-full w-4/5"></div>
                 </div>
-                <Badge variant="default">Élevé</Badge>
+                <Badge variant="default" className="text-xs sm:text-sm">Élevé</Badge>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Votre compte est bien protégé. Activez l'authentification à deux facteurs pour une sécurité maximale.
               </p>
             </div>
@@ -210,28 +210,28 @@ export default function Security() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {/* Authentification */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Key className="w-5 h-5" />
+          <CardHeader className="pb-3 sm:pb-6">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Key className="w-4 h-4 sm:w-5 sm:h-5" />
               Authentification
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Gérez vos méthodes d'authentification
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 sm:space-y-6">
             {/* Mot de passe */}
-            <div className="flex items-center justify-between p-4 bg-secondary/20 rounded-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-secondary/20 rounded-lg gap-2 sm:gap-0">
               <div>
-                <h4 className="font-medium">Mot de passe</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium text-sm sm:text-base">Mot de passe</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Dernière modification il y a 7 jours
                 </p>
               </div>
-              <Button asChild variant="outline" size="sm">
+              <Button asChild variant="outline" size="sm" className="text-xs sm:text-sm h-7 sm:h-9 w-full sm:w-auto">
                 <Link to="/settings/password">Modifier</Link>
               </Button>
             </div>
