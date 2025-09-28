@@ -12,47 +12,49 @@ serve(async (req) => {
   }
 
   try {
-    const { transactionId, amount, customerEmail, description, subPartnerId } = await req.json();
+    const { transactionId, amount, customerEmail, description } = await req.json();
 
-    console.log('Processing NOWPayments write-off for transaction:', transactionId);
+    console.log('Processing NOWPayments payment for transaction:', transactionId);
 
     const nowpaymentsApiKey = Deno.env.get('NOWPAYMENTS_API_KEY');
     if (!nowpaymentsApiKey) {
       throw new Error('NOWPAYMENTS_API_KEY not configured');
     }
 
-    // Use NOWPayments write-off API to transfer funds from sub-partner account
-    const writeOffData = {
-      currency: "usdt", // Use USDT exclusively as requested
-      amount: amount,
-      sub_partner_id: subPartnerId || "1631380403" // Default sub-partner ID or from request
+    // Create NOWPayments payment using standard API
+    const paymentData = {
+      price_amount: amount,
+      price_currency: "USD",
+      pay_currency: "USDT", // Use USDT exclusively as requested
+      ipn_callback_url: `https://bvleffevnnugjdwygqyz.supabase.co/functions/v1/nowpayments-webhook`,
+      order_id: transactionId,
+      order_description: description || `Transaction Exchange - ${transactionId}`,
+      success_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/wallet?status=success`,
+      cancel_url: `${req.headers.get('origin') || 'https://coin-transfert-pro.lovable.app'}/trading`,
     };
 
-    console.log('Creating NOWPayments write-off with data:', writeOffData);
+    console.log('Creating NOWPayments payment with data:', paymentData);
 
-    const response = await fetch('https://api.nowpayments.io/v1/sub-partner/write-off', {
+    const response = await fetch('https://api.nowpayments.io/v1/payment', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${nowpaymentsApiKey}`,
         'x-api-key': nowpaymentsApiKey,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(writeOffData),
+      body: JSON.stringify(paymentData),
     });
 
     const result = await response.json();
-    console.log('NOWPayments write-off API response:', result);
+    console.log('NOWPayments API response:', result);
 
     if (!response.ok) {
-      throw new Error(`NOWPayments write-off API error: ${JSON.stringify(result)}`);
+      throw new Error(`NOWPayments API error: ${JSON.stringify(result)}`);
     }
 
-    // Update transaction with NOWPayments write-off transfer ID
+    // Update transaction with NOWPayments payment ID
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    const transferResult = result.result || result;
-    
     const updateResponse = await fetch(
       `${supabaseUrl}/rest/v1/transactions?id=eq.${transactionId}`,
       {
@@ -63,11 +65,9 @@ serve(async (req) => {
           'apikey': supabaseServiceKey,
         },
         body: JSON.stringify({
-          nowpayments_payment_id: transferResult.id,
-          nowpayments_checkout_url: null, // No checkout URL for write-off transfers
-          status: transferResult.status === 'WAITING' ? 'processing' : 
-                  transferResult.status === 'COMPLETED' ? 'completed' : 
-                  transferResult.status === 'REJECTED' ? 'failed' : 'processing'
+          nowpayments_payment_id: result.payment_id,
+          nowpayments_checkout_url: result.payment_url || result.invoice_url,
+          status: 'processing'
         }),
       }
     );
@@ -79,14 +79,9 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        transfer_id: transferResult.id,
-        transfer_status: transferResult.status,
-        amount: transferResult.amount,
-        currency: transferResult.currency,
-        from_sub_id: transferResult.from_sub_id,
-        to_sub_id: transferResult.to_sub_id,
-        created_at: transferResult.created_at,
-        updated_at: transferResult.updated_at
+        payment_id: result.payment_id,
+        payment_url: result.payment_url || result.invoice_url,
+        checkout_url: result.payment_url || result.invoice_url
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
