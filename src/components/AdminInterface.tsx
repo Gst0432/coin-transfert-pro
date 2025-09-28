@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
 import { 
   Users, 
   DollarSign, 
@@ -15,7 +17,9 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Settings,
+  Save
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -91,6 +95,15 @@ export default function AdminInterface() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Configuration state
+  const [config, setConfig] = useState({
+    rate: 595.23,
+    min_fcfa: 3000,
+    min_usd: 2,
+    usdt_withdrawal_fee: 1,
+    mobile_money_fee_percentage: 1.5
+  });
 
   const { toast } = useToast();
 
@@ -164,6 +177,26 @@ export default function AdminInterface() {
     }
   };
 
+  const handleConfigSave = async () => {
+    setIsLoading(true);
+    try {
+      // Simulate API call to save configuration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast({
+        title: "Configuration sauvegardée",
+        description: "Les paramètres ont été mis à jour avec succès",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de sauvegarder la configuration",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Statistics
   const stats = {
     totalOrders: orders.length,
@@ -205,6 +238,21 @@ export default function AdminInterface() {
             Actualiser
           </Button>
         </div>
+
+        {/* Tabs for Orders and Configuration */}
+        <Tabs defaultValue="orders" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="orders" className="flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              Commandes
+            </TabsTrigger>
+            <TabsTrigger value="config" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              Configuration
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="orders" className="space-y-6">
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -402,6 +450,120 @@ export default function AdminInterface() {
             </div>
           )}
         </Card>
+          </TabsContent>
+
+          <TabsContent value="config" className="space-y-6">
+            {/* Configuration Section */}
+            <Card className="crypto-card">
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-primary" />
+                  <h3 className="text-lg font-semibold text-foreground">Configuration des taux et frais</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Exchange Rate */}
+                  <div className="space-y-2">
+                    <Label htmlFor="rate" className="text-sm font-medium">
+                      Taux de conversion (1 USD = ? FCFA)
+                    </Label>
+                    <Input
+                      id="rate"
+                      type="number"
+                      value={config.rate}
+                      onChange={(e) => setConfig(prev => ({ ...prev, rate: parseFloat(e.target.value) || 0 }))}
+                      className="crypto-input"
+                      step="0.01"
+                    />
+                  </div>
+
+                  {/* Minimum amounts */}
+                  <div className="space-y-2">
+                    <Label htmlFor="min_fcfa" className="text-sm font-medium">
+                      Montant minimum FCFA
+                    </Label>
+                    <Input
+                      id="min_fcfa"
+                      type="number"
+                      value={config.min_fcfa}
+                      onChange={(e) => setConfig(prev => ({ ...prev, min_fcfa: parseInt(e.target.value) || 0 }))}
+                      className="crypto-input"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="min_usd" className="text-sm font-medium">
+                      Montant minimum USD
+                    </Label>
+                    <Input
+                      id="min_usd"
+                      type="number"
+                      value={config.min_usd}
+                      onChange={(e) => setConfig(prev => ({ ...prev, min_usd: parseInt(e.target.value) || 0 }))}
+                      className="crypto-input"
+                    />
+                  </div>
+
+                  {/* Fees */}
+                  <div className="space-y-2">
+                    <Label htmlFor="usdt_fee" className="text-sm font-medium">
+                      Frais de retrait USDT (fixe)
+                    </Label>
+                    <Input
+                      id="usdt_fee"
+                      type="number"
+                      value={config.usdt_withdrawal_fee}
+                      onChange={(e) => setConfig(prev => ({ ...prev, usdt_withdrawal_fee: parseFloat(e.target.value) || 0 }))}
+                      className="crypto-input"
+                      step="0.1"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="momo_fee" className="text-sm font-medium">
+                      Frais Mobile Money (%)
+                    </Label>
+                    <Input
+                      id="momo_fee"
+                      type="number"
+                      value={config.mobile_money_fee_percentage}
+                      onChange={(e) => setConfig(prev => ({ ...prev, mobile_money_fee_percentage: parseFloat(e.target.value) || 0 }))}
+                      className="crypto-input"
+                      step="0.1"
+                    />
+                  </div>
+                </div>
+
+                {/* Preview */}
+                <div className="border-t border-border pt-4">
+                  <h4 className="text-sm font-medium text-foreground mb-3">Aperçu des frais</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="crypto-card p-3">
+                      <div className="text-muted-foreground">Réception USDT</div>
+                      <div className="font-medium">Frais: {config.usdt_withdrawal_fee} USDT</div>
+                    </div>
+                    <div className="crypto-card p-3">
+                      <div className="text-muted-foreground">Réception Mobile Money</div>
+                      <div className="font-medium">Frais: {config.mobile_money_fee_percentage}% du montant</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleConfigSave}
+                    disabled={isLoading}
+                    className="crypto-button-primary w-auto"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {isLoading ? 'Sauvegarde...' : 'Sauvegarder'}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

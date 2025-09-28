@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpDown, ArrowLeft, Home, Briefcase, Clock, User, Smartphone, Wallet as WalletIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import TransactionSummary from './TransactionSummary';
 
 export default function TradingInterface() {
   const [amountFcfa, setAmountFcfa] = useState('1000');
@@ -16,12 +17,20 @@ export default function TradingInterface() {
   const [calculatedFcfa, setCalculatedFcfa] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isInverted, setIsInverted] = useState(false); // false = FCFA->USDT, true = USDT->FCFA
+  const [showSummary, setShowSummary] = useState(false);
   
   const { toast } = useToast();
   
-  const RATE = 595.23; // 1 USD = 595.23 FCFA
-  const MIN_FCFA = 3000;
-  const MIN_USD = 2;
+  // Configuration from admin (mock - should come from backend)
+  const config = {
+    rate: 595.23, // 1 USD = 595.23 FCFA
+    min_fcfa: 3000,
+    min_usd: 2,
+    fees: {
+      usdt_withdrawal_fee: 1, // 1 USDT flat fee for crypto reception
+      mobile_money_fee_percentage: 1.5 // 1.5% fee for mobile money reception
+    }
+  };
 
   // Mock wallets from localStorage simulation
   const mockWallets = [
@@ -40,19 +49,19 @@ export default function TradingInterface() {
   useEffect(() => {
     if (!isInverted && amountFcfa) {
       const fcfa = parseFloat(amountFcfa);
-      const usd = fcfa / RATE;
+      const usd = fcfa / config.rate;
       setCalculatedUsdt(usd);
       setAmountUsdt('');
     } else if (isInverted && amountUsdt) {
       const usd = parseFloat(amountUsdt);
-      const fcfa = usd * RATE;
+      const fcfa = usd * config.rate;
       setCalculatedFcfa(fcfa);
       setAmountFcfa('');
     } else {
       setCalculatedUsdt(0);
       setCalculatedFcfa(0);
     }
-  }, [amountFcfa, amountUsdt, isInverted]);
+  }, [amountFcfa, amountUsdt, isInverted, config.rate]);
 
   const handleInvert = () => {
     setIsInverted(!isInverted);
@@ -71,9 +80,9 @@ export default function TradingInterface() {
   const mobileWallets = mockWallets.filter(w => w.type === 'mobile_money');
   const cryptoWallets = mockWallets.filter(w => w.type === 'crypto');
 
-  const handleConfirm = async () => {
+  const handleNext = () => {
     const amount = !isInverted ? parseFloat(amountFcfa) : parseFloat(amountUsdt);
-    const minAmount = !isInverted ? MIN_FCFA : MIN_USD;
+    const minAmount = !isInverted ? config.min_fcfa : config.min_usd;
     const currency = !isInverted ? 'FCFA' : 'USD';
     
     if (isNaN(amount) || amount < minAmount) {
@@ -103,6 +112,10 @@ export default function TradingInterface() {
       return;
     }
 
+    setShowSummary(true);
+  };
+
+  const handleConfirm = async () => {
     setIsLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -110,6 +123,14 @@ export default function TradingInterface() {
         title: "Transaction confirmée",
         description: "Votre transaction a été confirmée avec succès",
       });
+      setShowSummary(false);
+      // Reset form
+      setAmountFcfa('1000');
+      setAmountUsdt('');
+      setSelectedNumber('');
+      setSelectedAddress('');
+      setCalculatedUsdt(0);
+      setCalculatedFcfa(0);
     } catch (error) {
       toast({
         title: "Erreur",
@@ -120,6 +141,31 @@ export default function TradingInterface() {
       setIsLoading(false);
     }
   };
+
+  const handleBack = () => {
+    setShowSummary(false);
+  };
+
+  if (showSummary) {
+    return (
+      <TransactionSummary
+        isInverted={isInverted}
+        amountFcfa={amountFcfa}
+        amountUsdt={amountUsdt}
+        calculatedUsdt={calculatedUsdt}
+        calculatedFcfa={calculatedFcfa}
+        selectedNumber={selectedNumber}
+        selectedAddress={selectedAddress}
+        mobileWallets={mobileWallets}
+        cryptoWallets={cryptoWallets}
+        rate={config.rate}
+        fees={config.fees}
+        onBack={handleBack}
+        onConfirm={handleConfirm}
+        isLoading={isLoading}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -180,7 +226,7 @@ export default function TradingInterface() {
               </div>
             </div>
             <div className="text-xs text-destructive mt-1">
-              Montant minimum: {!isInverted ? MIN_FCFA.toLocaleString() + ' FCFA' : MIN_USD + ' USDT'}
+              Montant minimum: {!isInverted ? config.min_fcfa.toLocaleString() + ' FCFA' : config.min_usd + ' USDT'}
             </div>
           </div>
 
@@ -256,7 +302,7 @@ export default function TradingInterface() {
               </div>
             </div>
             <div className="text-xs text-destructive mt-1">
-              Montant minimum: {!isInverted ? MIN_USD + ' USDT' : MIN_FCFA.toLocaleString() + ' FCFA'}
+              Montant minimum: {!isInverted ? config.min_usd + ' USDT' : config.min_fcfa.toLocaleString() + ' FCFA'}
             </div>
           </div>
 
@@ -294,14 +340,14 @@ export default function TradingInterface() {
           </div>
         </div>
 
-        {/* Confirm Button */}
+        {/* Next Button */}
         <div className="pt-2">
           <Button
-            onClick={handleConfirm}
+            onClick={handleNext}
             disabled={isLoading}
             className="w-full h-12 text-base font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
           >
-            {isLoading ? 'Traitement...' : 'Confirmer'}
+            Suivant
           </Button>
         </div>
       </div>
