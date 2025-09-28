@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.process-nowpayments-payment]
 verify_jwt = false
+
+[functions.make-admin]
+verify_jwt = false
