@@ -88,7 +88,7 @@ const AppContent = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="g-transfert-theme">
+    <ThemeProvider defaultTheme="dark" storageKey="exchange-theme">
       <TooltipProvider>
         <Toaster />
         <Sonner />

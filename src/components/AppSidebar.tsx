@@ -81,11 +81,11 @@ export function AppSidebar() {
       <SidebarHeader className="p-2 border-b border-sidebar-border bg-sidebar">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-md bg-sidebar-primary flex items-center justify-center">
-            <span className="text-sidebar-primary-foreground font-bold text-xs">G</span>
+            <span className="text-sidebar-primary-foreground font-bold text-xs">E</span>
           </div>
           {!collapsed && (
             <div>
-              <h2 className="font-medium text-sidebar-foreground text-sm">G-Transfert</h2>
+              <h2 className="font-medium text-sidebar-foreground text-sm">Exchange</h2>
               <p className="text-[10px] text-sidebar-foreground/70">Crypto Exchange</p>
             </div>
           )}

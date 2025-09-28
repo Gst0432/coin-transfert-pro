@@ -360,7 +360,7 @@ export default function AdminInterface() {
         <div className="hidden lg:flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Gestion G-Transfert
+              Gestion Exchange
             </h1>
             <p className="text-muted-foreground">Gestion des commandes et transactions</p>
           </div>

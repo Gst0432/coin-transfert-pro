@@ -87,7 +87,7 @@ export default function LandingPage() {
 
       toast({
         title: "Connexion réussie",
-        description: "Bienvenue sur G-Transfert!"
+        description: "Bienvenue sur Exchange!"
       });
       
     } catch (error) {
@@ -430,7 +430,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">
-              Pourquoi choisir G-Transfert ?
+              Pourquoi choisir Exchange ?
             </h2>
             <p className="text-lg text-muted-foreground">
               La plateforme de confiance pour vos échanges crypto-fiat

@@ -210,7 +210,7 @@ export default function AuthPage() {
         <div className="p-4">
           <div className="text-center mb-4">
             <h1 className="text-xl font-bold text-foreground mb-1">
-              G-Transfert
+              Exchange
             </h1>
             <p className="text-sm text-muted-foreground">
               Plateforme d'échange FCFA ↔ USDT
