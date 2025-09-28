@@ -95,7 +95,7 @@ serve(async (req) => {
 
           // Initiate Moneroo payout
           const payoutResponse = await initiateMonerooPayout(
-            parseFloat(transaction.final_amount_fcfa),
+            Math.round(parseFloat(transaction.final_amount_fcfa) * 100), // Convert to centimes
             phone,
             operator
           )
@@ -206,7 +206,7 @@ serve(async (req) => {
           console.log(`Retrying payout: ${transaction.final_amount_fcfa} FCFA to ${phone}`)
 
           const retryResponse = await initiateMonerooPayout(
-            parseFloat(transaction.final_amount_fcfa),
+            Math.round(parseFloat(transaction.final_amount_fcfa) * 100), // Convert to centimes
             phone,
             operator
           )
