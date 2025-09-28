@@ -6,26 +6,19 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { 
   Users, 
   DollarSign, 
   Activity, 
   TrendingUp, 
   Search,
-  Filter,
   CheckCircle,
   Clock,
   AlertCircle,
   RefreshCw,
-  Settings,
-  Save,
-  Check,
-  X
+  Settings
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import TransactionManagement from './TransactionManagement';
 import AdminSettings from './AdminSettings';
 
@@ -102,81 +95,7 @@ export default function AdminInterface() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(false);
   
-  // Configuration state
-  const [config, setConfig] = useState({
-    rate: 595.23,
-    min_fcfa: 3000,
-    min_usd: 2,
-    usdt_withdrawal_fee: 1,
-    mobile_money_fee_percentage: 1.5
-  });
-
-  // Moneroo configuration state
-  const [monerooConfig, setMonerooConfig] = useState({
-    mode: 'sandbox' as 'sandbox' | 'live',
-    sandbox_api_key: '',
-    live_api_key: '',
-    webhook_secret: ''
-  });
-
-  // NOWPayments configuration state
-  const [nowpaymentsConfig, setNowpaymentsConfig] = useState({
-    api_key: '',
-    webhook_secret: ''
-  });
-
   const { toast } = useToast();
-
-  // Load settings from database
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
-  const loadSettings = async () => {
-    try {
-      const { data: settings, error } = await supabase
-        .from('app_settings')
-        .select('*');
-
-      if (error) throw error;
-
-      settings?.forEach(setting => {
-        const value = setting.setting_value as any;
-        switch (setting.setting_key) {
-          case 'exchange_rate':
-            setConfig(prev => ({ ...prev, rate: value.rate }));
-            break;
-          case 'minimum_amounts':
-            setConfig(prev => ({ 
-              ...prev, 
-              min_fcfa: value.min_fcfa,
-              min_usd: value.min_usd 
-            }));
-            break;
-          case 'fees':
-            setConfig(prev => ({ 
-              ...prev, 
-              usdt_withdrawal_fee: value.usdt_withdrawal_fee,
-              mobile_money_fee_percentage: value.mobile_money_fee_percentage 
-            }));
-            break;
-          case 'moneroo_config':
-            setMonerooConfig(value);
-            break;
-          case 'nowpayments_config':
-            setNowpaymentsConfig(value);
-            break;
-        }
-      });
-    } catch (error) {
-      console.error('Error loading settings:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger la configuration",
-        variant: "destructive"
-      });
-    }
-  };
 
   // Filter orders
   useEffect(() => {
@@ -248,89 +167,16 @@ export default function AdminInterface() {
     }
   };
 
-  const handleConfigSave = async () => {
-    setIsLoading(true);
-    try {
-      // Save app settings
-      const settingsToUpdate = [
-        {
-          setting_key: 'exchange_rate',
-          setting_value: { rate: config.rate }
-        },
-        {
-          setting_key: 'minimum_amounts',
-          setting_value: { min_fcfa: config.min_fcfa, min_usd: config.min_usd }
-        },
-        {
-          setting_key: 'fees',
-          setting_value: { 
-            usdt_withdrawal_fee: config.usdt_withdrawal_fee,
-            mobile_money_fee_percentage: config.mobile_money_fee_percentage 
-          }
-        },
-        {
-          setting_key: 'moneroo_config',
-          setting_value: monerooConfig
-        },
-        {
-          setting_key: 'nowpayments_config',
-          setting_value: nowpaymentsConfig
-        }
-      ];
+  const renderStatusBadge = (status: Order['status']) => {
+    const config = statusConfig[status];
+    const Icon = config.icon;
 
-      for (const setting of settingsToUpdate) {
-        const { error } = await supabase
-          .from('app_settings')
-          .upsert(setting);
-        
-        if (error) throw error;
-      }
-
-      // Update Supabase secrets for Moneroo
-      if (monerooConfig.sandbox_api_key) {
-        const { error: sandboxError } = await supabase.functions.invoke('update-secrets', {
-          body: {
-            secret_name: 'MONEROO_API_KEY',
-            secret_value: monerooConfig.sandbox_api_key
-          }
-        });
-        if (sandboxError) console.error('Error updating sandbox key:', sandboxError);
-      }
-
-      if (monerooConfig.live_api_key) {
-        const { error: liveError } = await supabase.functions.invoke('update-secrets', {
-          body: {
-            secret_name: 'MONEROO_LIVE_API_KEY',
-            secret_value: monerooConfig.live_api_key
-          }
-        });
-        if (liveError) console.error('Error updating live key:', liveError);
-      }
-
-      // Update NOWPayments API key
-      if (nowpaymentsConfig.api_key) {
-        const { error: nowpaymentsError } = await supabase.functions.invoke('update-secrets', {
-          body: {
-            secret_name: 'NOWPAYMENTS_API_KEY',
-            secret_value: nowpaymentsConfig.api_key
-          }
-        });
-        if (nowpaymentsError) console.error('Error updating NOWPayments key:', nowpaymentsError);
-      }
-
-      toast({
-        title: "Configuration sauvegardée",
-        description: "Les paramètres ont été mis à jour avec succès",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder la configuration",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    return (
+      <Badge variant={config.variant} className="gap-1 text-[11px]">
+        <Icon className="w-2.5 h-2.5" />
+        {config.label}
+      </Badge>
+    );
   };
 
   // Statistics
@@ -394,202 +240,186 @@ export default function AdminInterface() {
 
           <TabsContent value="orders" className="space-y-6">
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="crypto-card">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/20 rounded-lg">
-                <Activity className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Commandes total</p>
-                <p className="text-2xl font-bold text-foreground">{stats.totalOrders}</p>
-              </div>
-            </div>
-          </Card>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="crypto-card">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <Activity className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Commandes total</p>
+                    <p className="text-2xl font-bold text-foreground">{stats.totalOrders}</p>
+                  </div>
+                </div>
+              </Card>
 
-          <Card className="crypto-card">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-warning/20 rounded-lg">
-                <Clock className="w-5 h-5 text-warning" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">En attente</p>
-                <p className="text-2xl font-bold text-foreground">{stats.pendingOrders}</p>
-              </div>
-            </div>
-          </Card>
+              <Card className="crypto-card">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-warning/20 rounded-lg">
+                    <Clock className="w-5 h-5 text-warning" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">En attente</p>
+                    <p className="text-2xl font-bold text-foreground">{stats.pendingOrders}</p>
+                  </div>
+                </div>
+              </Card>
 
-          <Card className="crypto-card">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-success/20 rounded-lg">
-                <DollarSign className="w-5 h-5 text-success" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Volume FCFA</p>
-                <p className="text-xl font-bold text-foreground">
-                  {stats.totalVolumeFCFA.toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </Card>
+              <Card className="crypto-card">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-success/20 rounded-lg">
+                    <DollarSign className="w-5 h-5 text-success" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Volume FCFA</p>
+                    <p className="text-xl font-bold text-foreground">
+                      {stats.totalVolumeFCFA.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </Card>
 
-          <Card className="crypto-card">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/20 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Volume USDT</p>
-                <p className="text-xl font-bold text-foreground">
-                  {stats.totalVolumeUSDT.toFixed(2)}
-                </p>
-              </div>
+              <Card className="crypto-card">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <TrendingUp className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Volume USDT</p>
+                    <p className="text-xl font-bold text-foreground">
+                      {stats.totalVolumeUSDT.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </Card>
             </div>
-          </Card>
-        </div>
 
-        {/* Filters */}
-        <Card className="crypto-card">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Rechercher par ID, nom ou téléphone..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="crypto-input pl-10"
-                />
+            {/* Filters */}
+            <Card className="crypto-card">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Rechercher par ID, nom ou téléphone..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="crypto-input pl-10"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="crypto-input w-40">
+                      <SelectValue placeholder="Statut" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous les statuts</SelectItem>
+                      <SelectItem value="pending">En attente</SelectItem>
+                      <SelectItem value="confirmed">Confirmé</SelectItem>
+                      <SelectItem value="completed">Terminé</SelectItem>
+                      <SelectItem value="failed">Échoué</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={typeFilter} onValueChange={setTypeFilter}>
+                    <SelectTrigger className="crypto-input w-32">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous</SelectItem>
+                      <SelectItem value="buy">Achat</SelectItem>
+                      <SelectItem value="sell">Vente</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="crypto-input w-40">
-                  <SelectValue placeholder="Statut" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous les statuts</SelectItem>
-                  <SelectItem value="pending">En attente</SelectItem>
-                  <SelectItem value="confirmed">Confirmé</SelectItem>
-                  <SelectItem value="completed">Terminé</SelectItem>
-                  <SelectItem value="failed">Échoué</SelectItem>
-                </SelectContent>
-              </Select>
+            </Card>
 
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="crypto-input w-32">
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous</SelectItem>
-                  <SelectItem value="buy">Achat</SelectItem>
-                  <SelectItem value="sell">Vente</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </Card>
-
-        {/* Orders Table */}
-        <Card className="crypto-card">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Client</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Montant</TableHead>
-                  <TableHead>Réseau</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredOrders.map((order) => {
-                  const statusInfo = statusConfig[order.status];
-                  const StatusIcon = statusInfo.icon;
-                  
-                  return (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-mono text-sm">
-                        {order.id}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{order.customer_name}</div>
-                          <div className="text-sm text-muted-foreground">{order.phone}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={order.type === 'buy' ? 'default' : 'secondary'}>
-                          {order.type === 'buy' ? 'Achat' : 'Vente'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div className="font-medium">
-                            {order.amount_fcfa.toLocaleString()} FCFA
-                          </div>
-                          <div className="text-muted-foreground">
-                            {order.amount_usdt.toFixed(6)} USDT
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{order.network}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <StatusIcon className="w-4 h-4" />
-                          <Badge variant={statusInfo.variant} className="status-badge">
-                            {statusInfo.label}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(order.created_at).toLocaleString('fr-FR')}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          {(order.status === 'pending' || order.status === 'confirmed') && (
-                            <Button
-                              size="sm"
-                              onClick={() => handleOrderAction(order.id, 'complete')}
-                              disabled={isLoading}
-                              className="text-xs"
-                            >
-                              Terminer
-                            </Button>
-                          )}
-                          {order.status === 'created' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleOrderAction(order.id, 'confirm')}
-                              disabled={isLoading}
-                              className="text-xs"
-                            >
-                              Confirmer
-                            </Button>
-                          )}
-                        </div>
-                      </TableCell>
+            {/* Orders Table */}
+            <Card className="crypto-card">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Client</TableHead>
+                      <TableHead>Montants</TableHead>
+                      <TableHead>Statut</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-          
-          {filteredOrders.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              Aucune commande trouvée
-            </div>
-          )}
-        </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredOrders.map((order) => {
+                      return (
+                        <TableRow key={order.id}>
+                          <TableCell className="font-mono text-sm">
+                            {order.id}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={order.type === 'buy' ? 'default' : 'secondary'} className="text-xs">
+                              {order.type === 'buy' ? 'Achat' : 'Vente'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium text-sm">{order.customer_name}</div>
+                              <div className="text-xs text-muted-foreground">{order.phone}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              <div className="font-medium">{order.amount_fcfa.toLocaleString()} FCFA</div>
+                              <div className="text-muted-foreground">{order.amount_usdt.toFixed(6)} USDT</div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {renderStatusBadge(order.status)}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {new Date(order.created_at).toLocaleString('fr-FR')}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              {(order.status === 'pending' || order.status === 'confirmed') && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleOrderAction(order.id, 'complete')}
+                                  disabled={isLoading}
+                                  className="text-xs"
+                                >
+                                  Terminer
+                                </Button>
+                              )}
+                              {order.status === 'created' && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleOrderAction(order.id, 'confirm')}
+                                  disabled={isLoading}
+                                  className="text-xs"
+                                >
+                                  Confirmer
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              {filteredOrders.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  Aucune commande trouvée
+                </div>
+              )}
+            </Card>
           </TabsContent>
 
           <TabsContent value="transactions" className="space-y-6">
