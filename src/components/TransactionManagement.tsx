@@ -231,10 +231,13 @@ export default function TransactionManagement() {
     if (!wallet) return 'N/A';
     
     if (wallet.type === 'mobile') {
-      return `${wallet.operator} - ${wallet.phoneNumber}`;
+      const phone = wallet.phoneNumber || '';
+      const operator = wallet.operator || '';
+      return `${operator} - ${phone.slice(0, 8)}***${phone.slice(-2)}`;
     } else if (wallet.type === 'crypto') {
       const address = wallet.address || '';
-      return `${wallet.network} - ${address.slice(0, 8)}...${address.slice(-4)}`;
+      const network = wallet.network || '';
+      return `${network} - ${address.slice(0, 6)}...${address.slice(-4)}`;
     }
     
     return 'N/A';

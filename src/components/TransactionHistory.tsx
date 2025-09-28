@@ -75,6 +75,22 @@ export default function TransactionHistory() {
     );
   };
 
+  const formatWalletInfo = (wallet: any) => {
+    if (!wallet) return 'N/A';
+    
+    if (wallet.type === 'mobile') {
+      const phone = wallet.phoneNumber || '';
+      const operator = wallet.operator || '';
+      return `${operator} - ${phone.slice(0, 8)}***${phone.slice(-2)}`;
+    } else if (wallet.type === 'crypto') {
+      const address = wallet.address || '';
+      const network = wallet.network || '';
+      return `${network} - ${address.slice(0, 6)}...${address.slice(-4)}`;
+    }
+    
+    return 'N/A';
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: '2-digit',
@@ -174,6 +190,17 @@ export default function TransactionHistory() {
                   : `${transaction.fees_fcfa.toLocaleString()} FCFA`
                 }
               </span>
+            </div>
+          </div>
+
+          <div className="mt-1 text-[11px] space-y-1">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Source:</span>
+              <span className="font-mono text-right">{formatWalletInfo(transaction.source_wallet)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Destination:</span>
+              <span className="font-mono text-right">{formatWalletInfo(transaction.destination_wallet)}</span>
             </div>
           </div>
 
