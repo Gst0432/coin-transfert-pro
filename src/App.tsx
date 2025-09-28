@@ -19,9 +19,13 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ResetPasswordConfirm from "./pages/ResetPasswordConfirm";
-import PasswordSettings from "./pages/PasswordSettings";
+import Settings from "./pages/Settings";
+import Security from "./pages/Security";
+import Notifications from "./pages/Notifications";
+import Support from "./pages/Support";
 import LandingPage from "./pages/LandingPage";
 import LandingPageManagement from "./pages/LandingPageManagement";
+import PasswordSettings from "./pages/PasswordSettings";
 
 const queryClient = new QueryClient();
 
@@ -87,7 +91,11 @@ const AppContent = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/landing-page" element={<LandingPageManagement />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="/settings/password" element={<PasswordSettings />} />
+              <Route path="/security" element={<Security />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/support" element={<Support />} />
               <Route path="/success" element={<PaymentSuccess />} />
               <Route path="/cancel" element={<PaymentCancel />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
