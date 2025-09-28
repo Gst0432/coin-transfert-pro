@@ -879,7 +879,7 @@ export default function AdminInterface() {
                           <Badge variant="outline" className="text-xs">BEP20</Badge>
                         </div>
                         <p className="text-muted-foreground text-xs mt-2">
-                          Frais: 0.5 USDT pour les conversions USDT → Mobile Money
+                          Frais: 3 USDT pour les conversions USDT → Mobile Money
                         </p>
                       </div>
                     </div>

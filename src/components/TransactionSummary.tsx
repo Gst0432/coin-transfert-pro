@@ -280,7 +280,7 @@ export default function TransactionSummary({
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-[11px] text-muted-foreground">
-                  Frais de retrait {!isInverted ? '' : '(0.5 USDT)'}
+                  Frais de retrait {!isInverted ? '' : '(3 USDT)'}
                 </span>
                 <span className="text-destructive font-medium text-xs">
                   -{!isInverted 

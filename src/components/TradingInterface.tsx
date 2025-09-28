@@ -25,13 +25,13 @@ export default function TradingInterface() {
   const config = {
     rate: 595.23, // 1 USD = 595.23 FCFA
     min_fcfa: 3000,
-    min_usd: 2,
+    min_usd: 15, // Minimum 15 USDT
     fees: {
       usdt_withdrawal_fee: 1, // 1 USDT flat fee for crypto reception
       mobile_money_fee_percentage: 1.5, // 1.5% fee for mobile money reception
       moneroo_gateway_fee_percentage: 3, // 3% frais de passerelle Moneroo supporté par le client
       moneroo_fixed_fee: 100, // 100 FCFA frais fixe Moneroo
-      nowpayments_fee: 0.5 // 0.5 USDT flat fee for NOWPayments (USDT to mobile money)
+      nowpayments_fee: 3 // 3 USDT flat fee for NOWPayments (USDT to mobile money)
     }
   };
 
