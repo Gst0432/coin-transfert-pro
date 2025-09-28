@@ -33,6 +33,7 @@ serve(async (req) => {
     const response = await fetch('https://api.nowpayments.io/v1/sub-partner/write-off', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${nowpaymentsApiKey}`,
         'x-api-key': nowpaymentsApiKey,
         'Content-Type': 'application/json',
       },
