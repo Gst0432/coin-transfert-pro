@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AppSidebar } from "./components/AppSidebar";
+import { MobileBottomNav } from "./components/MobileBottomNav";
 import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
@@ -32,15 +33,20 @@ const App = () => (
                 </header>
                 
                 {/* Main Content */}
-                <main className="flex-1 overflow-auto">
+                <main className="flex-1 overflow-auto pb-16 lg:pb-0">
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/trading" element={<Index />} />
+                    <Route path="/wallet" element={<Index />} />
+                    <Route path="/history" element={<Index />} />
                     <Route path="/admin" element={<Admin />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
+                
+                {/* Mobile Bottom Navigation */}
+                <MobileBottomNav />
               </div>
             </div>
           </SidebarProvider>
