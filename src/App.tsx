@@ -28,7 +28,6 @@ import LandingPageManagement from "./pages/LandingPageManagement";
 import PasswordSettings from "./pages/PasswordSettings";
 import AdminAuth from "./pages/AdminAuth";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { AdminLoginLink } from "./components/AdminLoginLink";
 
 const queryClient = new QueryClient();
 
@@ -63,7 +62,6 @@ const AppContent = () => {
           <Route path="/cancel" element={<PaymentCancel />} />
           <Route path="*" element={<LandingPage />} />
         </Routes>
-        <AdminLoginLink />
       </div>
     );
   }
