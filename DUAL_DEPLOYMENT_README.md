@@ -215,6 +215,42 @@ npm run deploy:hostinger   # Package Hostinger complet
 - 📖 `deploy.md` - Guide Netlify détaillé
 - 📖 `hostinger-deploy/DEPLOYMENT_INSTRUCTIONS.md` - Guide Hostinger
 - 📖 `laravel-backend/README.md` - Documentation API Laravel
+- 🆕 **`MIGRATION_GUIDE.md`** - Guide complet de migration automatique
+- 🆕 **`QUICK_START.md`** - Démarrage rapide du système d'automatisation
+- 🆕 **`migration-tools/`** - Outils d'automatisation complets
+
+## 🚀 Nouveau : Système d'automatisation
+
+Exchange Pro dispose maintenant d'un **système complet d'automatisation** pour :
+
+### 📋 Scripts d'automatisation
+```bash
+npm run config:env           # Configuration interactive des variables
+npm run migrate:supabase     # Migration automatique entre projets Supabase
+npm run functions:manage     # Gestionnaire d'Edge Functions
+npm run functions:deploy     # Déploiement rapide des fonctions
+npm run migration:help       # Aide sur les outils de migration
+npm run migration:demo       # Démonstration du système
+```
+
+### 🎯 Fonctionnalités principales
+- ✅ **Migration automatique** entre projets Supabase
+- ✅ **Sauvegarde et restauration** automatique
+- ✅ **Gestion des Edge Functions** avec interface interactive
+- ✅ **Configuration des variables** d'environnement guidée
+- ✅ **Support dual-mode** Supabase ↔ Laravel
+- ✅ **Validation et tests** automatiques
+
+### 🚀 Changement de base de données simplifié
+Plus besoin de migration manuelle ! Le système automatise :
+1. Sauvegarde de l'ancien projet
+2. Export des migrations et fonctions
+3. Configuration du nouveau projet
+4. Déploiement automatique
+5. Mise à jour des variables d'environnement
+6. Génération de rapport détaillé
+
+**➡️ Consultez `MIGRATION_GUIDE.md` pour le guide complet**
 
 ---
 
