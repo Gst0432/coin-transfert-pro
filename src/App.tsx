@@ -26,6 +26,8 @@ import Support from "./pages/Support";
 import LandingPage from "./pages/LandingPage";
 import LandingPageManagement from "./pages/LandingPageManagement";
 import PasswordSettings from "./pages/PasswordSettings";
+import AdminAuth from "./pages/AdminAuth";
+import { AdminLoginLink } from "./components/AdminLoginLink";
 
 const queryClient = new QueryClient();
 
@@ -53,12 +55,14 @@ const AppContent = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/admin-auth" element={<AdminAuth />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/reset-password-confirm" element={<ResetPasswordConfirm />} />
           <Route path="/success" element={<PaymentSuccess />} />
           <Route path="/cancel" element={<PaymentCancel />} />
           <Route path="*" element={<LandingPage />} />
         </Routes>
+        <AdminLoginLink />
       </div>
     );
   }
