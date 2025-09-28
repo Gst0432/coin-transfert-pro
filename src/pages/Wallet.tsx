@@ -42,7 +42,7 @@ const westAfricaCountries = [
   { code: "CI", name: "Côte d'Ivoire", operators: ["Orange Money", "MTN Money", "Moov Money"] },
   { code: "ML", name: "Mali", operators: ["Orange Money", "Malitel Money"] },
   { code: "BF", name: "Burkina Faso", operators: ["Orange Money", "Telmob"] },
-  { code: "NE", name: "Niger", operators: ["Orange Money", "Airtel Money"] },
+  { code: "NE", name: "Niger", operators: ["Orange Money", "Airtel Money", "Mynita", "Amanata"] },
   { code: "GN", name: "Guinée", operators: ["Orange Money", "MTN Money"] },
   { code: "BJ", name: "Bénin", operators: ["MTN Money", "Moov Money"] },
   { code: "TG", name: "Togo", operators: ["Togocel Money", "Moov Money"] },
