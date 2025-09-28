@@ -1,0 +1,41 @@
+# Sécurité globale
+/*
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Robots-Tag: index, follow
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://bvleffevnnugjdwygqyz.supabase.co wss://bvleffevnnugjdwygqyz.supabase.co https://www.google-analytics.com https://api.stripe.com; media-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+
+# Cache pour les assets statiques
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache pour les fonts
+*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache pour les images
+*.png
+  Cache-Control: public, max-age=2592000
+
+*.jpg
+  Cache-Control: public, max-age=2592000
+
+*.ico
+  Cache-Control: public, max-age=2592000
+
+# Service Worker
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Manifest
+/manifest.json
+  Cache-Control: public, max-age=86400
+
+# API endpoints (si vous en avez)
+/api/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Authorization

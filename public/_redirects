@@ -1,0 +1,20 @@
+# SPA fallback - toutes les routes vers index.html
+/*    /index.html   200
+
+# API redirections pour Supabase (optionnel)
+/api/*  https://bvleffevnnugjdwygqyz.supabase.co/:splat  200
+
+# Redirections spécifiques
+/admin  /admin-auth  302
+/dashboard  /  302
+/login  /auth  302
+/register  /auth  302
+
+# Redirections pour les anciennes URLs (si nécessaire)
+/old-path  /new-path  301
+
+# Force HTTPS
+http://exchange-pro.netlify.app/*  https://exchange-pro.netlify.app/:splat  301!
+
+# Gestion des erreurs
+/404  /  200
