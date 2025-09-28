@@ -21,6 +21,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import TransactionManagement from './TransactionManagement';
 import AdminSettings from './AdminSettings';
+import { AdminCredentialsManager } from './AdminCredentialsManager';
 
 interface Order {
   id: string;
@@ -223,7 +224,7 @@ export default function AdminInterface() {
 
         {/* Tabs for Orders and Configuration */}
         <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="orders" className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
               Commandes
@@ -231,6 +232,10 @@ export default function AdminInterface() {
             <TabsTrigger value="transactions" className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
               Transactions
+            </TabsTrigger>
+            <TabsTrigger value="admin" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Admin
             </TabsTrigger>
             <TabsTrigger value="config" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
@@ -424,6 +429,10 @@ export default function AdminInterface() {
 
           <TabsContent value="transactions" className="space-y-6">
             <TransactionManagement />
+          </TabsContent>
+
+          <TabsContent value="admin" className="space-y-6">
+            <AdminCredentialsManager />
           </TabsContent>
 
           <TabsContent value="config" className="space-y-6">

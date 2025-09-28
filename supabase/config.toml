@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.create-notification]
 verify_jwt = false
+
+[functions.setup-default-admin]
+verify_jwt = false
+
+[functions.update-admin-credentials]
+verify_jwt = true
