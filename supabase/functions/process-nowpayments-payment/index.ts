@@ -21,11 +21,24 @@ serve(async (req) => {
       throw new Error('NOWPAYMENTS_API_KEY not configured');
     }
 
-    // Create NOWPayments payment using a more stable currency pair
+    // Create NOWPayments payment with proper minimum amount handling
+    let payCurrency = "USDT"; // Use USDT by default as it has lower minimums
+    let priceAmount = amount;
+    
+    // For small amounts, use a cryptocurrency with lower minimum
+    if (amount < 20) {
+      payCurrency = "TRX"; // TRON has very low minimums
+      priceAmount = Math.max(amount, 1); // Ensure minimum $1
+    } else if (amount >= 20 && amount < 100) {
+      payCurrency = "USDT"; // USDT for medium amounts
+    } else {
+      payCurrency = "BTC"; // Bitcoin for larger amounts
+    }
+
     const paymentData = {
-      price_amount: amount,
+      price_amount: priceAmount,
       price_currency: "USD",
-      pay_currency: "BTC", // Bitcoin is more stable than USDT/USDC
+      pay_currency: payCurrency,
       ipn_callback_url: `https://bvleffevnnugjdwygqyz.supabase.co/functions/v1/nowpayments-webhook`,
       order_id: transactionId,
       order_description: description || `Transaction Exchange - ${transactionId}`,
