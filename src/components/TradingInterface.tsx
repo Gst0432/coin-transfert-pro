@@ -74,6 +74,11 @@ export default function TradingInterface() {
   const mobileWallets = mockWallets.filter(w => w.type === 'mobile_money');
   const cryptoWallets = mockWallets.filter(w => w.type === 'crypto');
 
+  // Validation minimale (afficher l'avertissement uniquement si le montant saisi est inférieur au minimum)
+  const sourceAmount = !isInverted ? parseFloat(amountFcfa) : parseFloat(amountUsdt);
+  const minAmount = !isInverted ? settings.min_fcfa : settings.min_usdt;
+  const showMinWarning = !isNaN(sourceAmount) && sourceAmount > 0 && sourceAmount < minAmount;
+
   const handleNext = () => {
     const amount = !isInverted ? parseFloat(amountFcfa) : parseFloat(amountUsdt);
     const minAmount = !isInverted ? settings.min_fcfa : settings.min_usdt;
@@ -168,7 +173,7 @@ export default function TradingInterface() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-3 lg:p-6">
+    <div className="min-h-screen bg-background p-3 pb-24 lg:p-6">
       {/* Content - Interface responsive */}
       <div className="space-y-3 lg:space-y-6 max-w-sm sm:max-w-md lg:max-w-2xl xl:max-w-4xl mx-auto">
         {/* Header avec bouton d'inversion */}
@@ -227,9 +232,11 @@ export default function TradingInterface() {
                   </div>
                 </div>
               </div>
-              <div className="text-sm lg:text-sm text-destructive mt-3">
-                Minimum: {!isInverted ? settings.min_fcfa.toLocaleString() + ' FCFA' : settings.min_usdt + ' USDT'}
-              </div>
+              {showMinWarning && (
+                <div className="text-sm lg:text-sm text-destructive mt-3">
+                  Minimum: {!isInverted ? settings.min_fcfa.toLocaleString() + ' FCFA' : settings.min_usdt + ' USDT'}
+                </div>
+              )}
             </div>
 
             <div className="space-y-3 lg:space-y-3">
@@ -243,7 +250,7 @@ export default function TradingInterface() {
                 <SelectTrigger className="crypto-input h-12 lg:h-12 px-4 lg:px-4 text-sm lg:text-base">
                   <SelectValue placeholder={!isInverted ? "Numéro" : "Adresse"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-50 bg-popover">
                   {(!isInverted ? mobileWallets : cryptoWallets).map((wallet) => (
                     <SelectItem key={wallet.id} value={!isInverted ? wallet.phoneNumber : wallet.address}>
                       <div className="flex items-center gap-2">
@@ -303,9 +310,6 @@ export default function TradingInterface() {
                   </div>
                 </div>
               </div>
-              <div className="text-sm lg:text-sm text-destructive mt-3">
-                Minimum: {!isInverted ? settings.min_usdt + ' USDT' : settings.min_fcfa.toLocaleString() + ' FCFA'}
-              </div>
             </div>
 
             <div className="space-y-3 lg:space-y-3">
@@ -319,7 +323,7 @@ export default function TradingInterface() {
                 <SelectTrigger className="crypto-input h-12 lg:h-12 px-4 lg:px-4 text-sm lg:text-base">
                   <SelectValue placeholder={!isInverted ? "Adresse" : "Numéro"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-50 bg-popover">
                   {(!isInverted ? cryptoWallets : mobileWallets).map((wallet) => (
                     <SelectItem key={wallet.id} value={!isInverted ? wallet.address : wallet.phoneNumber}>
                       <div className="flex items-center gap-2">
@@ -343,15 +347,17 @@ export default function TradingInterface() {
           </div>
         </div>
 
-        {/* Next Button */}
-        <div className="pt-4 lg:pt-6 lg:col-span-2">
-          <Button
-            onClick={handleNext}
-            disabled={isLoading}
-            className="w-full h-12 lg:h-12 px-4 lg:px-6 text-base lg:text-base font-semibold bg-primary hover:bg-primary/90 text-white rounded-xl"
-          >
-            Suivant
-          </Button>
+        {/* Next Button - fixed footer */}
+        <div className="fixed inset-x-0 bottom-0 z-40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border p-3">
+          <div className="max-w-sm sm:max-w-md lg:max-w-2xl xl:max-w-4xl mx-auto">
+            <Button
+              onClick={handleNext}
+              disabled={isLoading}
+              className="w-full h-12 px-4 text-base font-semibold bg-primary hover:bg-primary/90 text-white rounded-xl"
+            >
+              Suivant
+            </Button>
+          </div>
         </div>
       </div>
     </div>
